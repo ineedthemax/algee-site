@@ -20,6 +20,7 @@ const MILESTONES = [
     story: 'Let It Shine on Disney Channel. The first screen credit — and the first proof that the instinct for storytelling was already fully formed.',
     side:  'left',
     image: '/images/timeline/Let it shine 1.jpg',
+    imagePosition: 'center 70%',
   },
   {
     id:    3,
@@ -209,7 +210,7 @@ function TimelineItem({ milestone, index }) {
               alt={milestone.title}
               fill
               sizes="(max-width: 640px) 90vw, 380px"
-              style={{ objectFit: 'cover' }}
+              style={{ objectFit: 'cover', objectPosition: milestone.imagePosition || 'center' }}
             />
           </div>
         ) : (
