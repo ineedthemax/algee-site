@@ -1,5 +1,6 @@
 'use client'
 import { useEffect, useRef } from 'react'
+import Image from 'next/image'
 import { ContainerScroll } from './ContainerScroll'
 
 const MILESTONES = [
@@ -18,6 +19,7 @@ const MILESTONES = [
     title: 'First Camera. First Take.',
     story: 'Let It Shine on Disney Channel. The first screen credit — and the first proof that the instinct for storytelling was already fully formed.',
     side:  'left',
+    image: '/images/timeline/Let-it-Shine.jpg',
   },
   {
     id:    3,
@@ -26,6 +28,7 @@ const MILESTONES = [
     title: 'He Became Ralph Tresvant.',
     story: 'BET\'s The New Edition Story didn\'t just introduce Algee to the country — it announced him. The performance felt lived-in. Millions felt it.',
     side:  'right',
+    image: '/images/timeline/New-Edition.jpeg',
   },
   {
     id:    4,
@@ -34,6 +37,7 @@ const MILESTONES = [
     title: 'Kathryn Bigelow Called.',
     story: 'Detroit. A harrowing true story. A director who doesn\'t cast twice without reason. He answered.',
     side:  'left',
+    image: '/images/timeline/Detroit.webp',
   },
   {
     id:    5,
@@ -42,6 +46,7 @@ const MILESTONES = [
     title: 'The Role That Shifted Everything.',
     story: 'Khalil Harris in The Hate U Give. Brief on screen, permanent in memory. The kind of performance that reframes a career.',
     side:  'right',
+    image: '/images/timeline/the-hate-u-give-algee-smith-ver.webp',
   },
   {
     id:    6,
@@ -50,6 +55,7 @@ const MILESTONES = [
     title: 'A Generation Claimed Him.',
     story: 'Euphoria on HBO. McKay. A new generation found him — and didn\'t let go.',
     side:  'left',
+    image: '/images/timeline/Euphoria.webp',
   },
   {
     id:    7,
@@ -58,6 +64,7 @@ const MILESTONES = [
     title: 'History. On Screen.',
     story: 'Judas and the Black Messiah. Warner Bros. The Black Panther Party. A story that demanded to be told exactly right.',
     side:  'right',
+    image: '/images/timeline/Judas.jpg',
   },
   {
     id:    8,
@@ -66,6 +73,7 @@ const MILESTONES = [
     title: 'LeBron\'s Origin. His Chapter.',
     story: 'Shooting Stars on Peacock. The untold story of where greatness is born, before the world is watching.',
     side:  'left',
+    image: null,
   },
   {
     id:    9,
@@ -74,6 +82,7 @@ const MILESTONES = [
     title: 'Sundance. His Story.',
     story: 'Young Wild Free. An independent film that premiered at Sundance — raw, personal, and entirely his own.',
     side:  'right',
+    image: '/images/timeline/Young-wild-free.webp',
   },
   {
     id:    10,
@@ -82,6 +91,7 @@ const MILESTONES = [
     title: 'The Music Never Stopped.',
     story: 'Love Lost — his debut album. Direct to the fans who built him. No middleman. No filter. Just the music.',
     side:  'left',
+    image: '/images/timeline/Love-Lost.jpg',
   },
   {
     id:      11,
@@ -90,6 +100,7 @@ const MILESTONES = [
     title:   'The Story Continues.',
     story:   'The Gates. Now streaming on Apple TV, YouTube, Google Play and Fandango at Home. The journey keeps going.',
     side:    'left',
+    image:   '/images/timeline/the-gates.jpg',
     current: true,
   },
 ]
@@ -190,13 +201,25 @@ function TimelineItem({ milestone, index }) {
         <h3 className="tl-title">{milestone.title}</h3>
         <p className="tl-story">{milestone.story}</p>
 
-        {/* Photo placeholder */}
-        <div className="tl-img-placeholder">
-          <div className="tl-img-placeholder-inner">
-            <span className="tl-img-icon">◻</span>
-            <span className="tl-img-label">Photo coming soon</span>
+        {/* Photo */}
+        {milestone.image ? (
+          <div className="tl-img-wrap">
+            <Image
+              src={milestone.image}
+              alt={milestone.title}
+              fill
+              sizes="(max-width: 640px) 90vw, 380px"
+              style={{ objectFit: 'cover' }}
+            />
           </div>
-        </div>
+        ) : (
+          <div className="tl-img-placeholder">
+            <div className="tl-img-placeholder-inner">
+              <span className="tl-img-icon">◻</span>
+              <span className="tl-img-label">Photo coming soon</span>
+            </div>
+          </div>
+        )}
 
         {milestone.current && (
           <div className="tl-current-badge">● Now</div>
