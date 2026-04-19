@@ -14,9 +14,9 @@ const MILESTONES = [
   {
     id:    2,
     year:  '2012',
-    tag:   'Television',
+    tag:   'Film',
     title: 'First Camera. First Take.',
-    story: 'How to Rock on Nickelodeon. The first screen credit — and the first proof that the instinct for storytelling was already fully formed.',
+    story: 'Let It Shine on Disney Channel. The first screen credit — and the first proof that the instinct for storytelling was already fully formed.',
     side:  'left',
   },
   {
