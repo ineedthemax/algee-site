@@ -20,7 +20,8 @@ const MILESTONES = [
     story: 'Let It Shine on Disney Channel. The first screen credit — and the first proof that the instinct for storytelling was already fully formed.',
     side:  'left',
     image: '/images/timeline/Let it shine 1.jpg',
-    imagePosition: 'center 70%',
+    imagePosition: 'center 30%',
+    imageAspect: '4 / 5',
   },
   {
     id:    3,
@@ -204,7 +205,7 @@ function TimelineItem({ milestone, index }) {
 
         {/* Photo */}
         {milestone.image ? (
-          <div className="tl-img-wrap">
+          <div className="tl-img-wrap" style={{ aspectRatio: milestone.imageAspect || '16 / 9' }}>
             <Image
               src={milestone.image}
               alt={milestone.title}
