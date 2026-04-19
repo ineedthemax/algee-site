@@ -96,7 +96,7 @@ export const PROJECTS = [
     cover:    '/images/film/young-wild-free.jpg',
     role:     'Brandon Huffman',
     type:     'Film',
-    year:     '2012',
+    year:     '2023',
     studio:   'Independent',
     logline:  'Three friends navigate the crossroads of loyalty, ambition, and growing up.',
     status:   'released',

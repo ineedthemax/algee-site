@@ -14,9 +14,9 @@ const MILESTONES = [
   {
     id:    2,
     year:  '2012',
-    tag:   'Film',
+    tag:   'Television',
     title: 'First Camera. First Take.',
-    story: 'Young Wild Free. An independent film and an early signal that the instinct for storytelling was already fully formed.',
+    story: 'How to Rock on Nickelodeon. The first screen credit — and the first proof that the instinct for storytelling was already fully formed.',
     side:  'left',
   },
   {
