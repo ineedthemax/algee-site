@@ -19,7 +19,7 @@ const MILESTONES = [
     title: 'First Camera. First Take.',
     story: 'Let It Shine on Disney Channel. The first screen credit — and the first proof that the instinct for storytelling was already fully formed.',
     side:  'left',
-    image: '/images/timeline/Let-it-Shine.jpg',
+    image: '/images/timeline/Let it shine 1.jpg',
   },
   {
     id:    3,
@@ -28,7 +28,7 @@ const MILESTONES = [
     title: 'He Became Ralph Tresvant.',
     story: 'BET\'s The New Edition Story didn\'t just introduce Algee to the country — it announced him. The performance felt lived-in. Millions felt it.',
     side:  'right',
-    image: '/images/timeline/New-Edition.jpeg',
+    image: '/images/timeline/New-Edition1.jpg',
   },
   {
     id:    4,
@@ -46,7 +46,7 @@ const MILESTONES = [
     title: 'The Role That Shifted Everything.',
     story: 'Khalil Harris in The Hate U Give. Brief on screen, permanent in memory. The kind of performance that reframes a career.',
     side:  'right',
-    image: '/images/timeline/the-hate-u-give-algee-smith-ver.webp',
+    image: '/images/timeline/The hate you give 1.jpg',
   },
   {
     id:    6,
@@ -73,7 +73,7 @@ const MILESTONES = [
     title: 'LeBron\'s Origin. His Chapter.',
     story: 'Shooting Stars on Peacock. The untold story of where greatness is born, before the world is watching.',
     side:  'left',
-    image: null,
+    image: '/images/timeline/SHOOTING-STARS.jpg',
   },
   {
     id:    9,
