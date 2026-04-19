@@ -19,7 +19,7 @@ const MILESTONES = [
     title: 'First Camera. First Take.',
     story: 'Let It Shine on Disney Channel. The first screen credit — and the first proof that the instinct for storytelling was already fully formed.',
     side:  'left',
-    image: '/images/timeline/Let it shine 1.jpg',
+    image: '/images/timeline/Let it shine 2.jpg',
     imagePosition: 'center 30%',
     imageAspect: '4 / 5',
   },
