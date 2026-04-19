@@ -5143,34 +5143,16 @@ footer::before {
 }
 
 /* ── Vertical line ── */
-.tl-line-wrap {
+/* ── Curved SVG line ── */
+.tl-svg-line {
   position: absolute;
   left: 50%;
   top: 0;
-  bottom: 0;
-  width: 1px;
-  transform: translateX(-50%);
-  overflow: hidden;
-}
-
-.tl-line {
-  width: 1px;
+  width: 40px;
   height: 100%;
-  background: linear-gradient(
-    to bottom,
-    transparent 0%,
-    rgba(196, 34, 46, 0.6) 8%,
-    rgba(245, 240, 235, 0.15) 40%,
-    rgba(245, 240, 235, 0.15) 90%,
-    transparent 100%
-  );
-  transform: scaleY(0);
-  transform-origin: top;
-  transition: transform 2s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-.tl-line-animate .tl-line {
-  transform: scaleY(1);
+  transform: translateX(-50%);
+  pointer-events: none;
+  overflow: visible;
 }
 
 /* ── Individual items ── */
@@ -5358,8 +5340,9 @@ footer::before {
     height: 22rem;
   }
 
-  .tl-line-wrap {
+  .tl-svg-line {
     left: 20px;
+    transform: none;
   }
 
   .tl-item {

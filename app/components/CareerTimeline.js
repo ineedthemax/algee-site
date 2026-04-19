@@ -86,6 +86,63 @@ const MILESTONES = [
   },
 ]
 
+function CurvedLine() {
+  const svgRef  = useRef(null)
+  const pathRef = useRef(null)
+
+  useEffect(() => {
+    const path = pathRef.current
+    const svg  = svgRef.current
+    if (!path || !svg) return
+
+    const length = path.getTotalLength()
+    path.style.strokeDasharray  = length
+    path.style.strokeDashoffset = length
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          path.style.transition      = 'stroke-dashoffset 2.5s cubic-bezier(0.16, 1, 0.3, 1)'
+          path.style.strokeDashoffset = 0
+          observer.unobserve(svg)
+        }
+      },
+      { threshold: 0.02 }
+    )
+    observer.observe(svg)
+    return () => observer.disconnect()
+  }, [])
+
+  return (
+    <svg
+      ref={svgRef}
+      className="tl-svg-line"
+      viewBox="0 0 40 2400"
+      preserveAspectRatio="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <defs>
+        <linearGradient id="tlLineGrad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   stopColor="transparent" />
+          <stop offset="5%"   stopColor="rgba(196, 34, 46, 0.9)" />
+          <stop offset="25%"  stopColor="rgba(245, 240, 235, 0.3)" />
+          <stop offset="85%"  stopColor="rgba(245, 240, 235, 0.15)" />
+          <stop offset="100%" stopColor="transparent" />
+        </linearGradient>
+      </defs>
+      {/* Gentle S-curve — deviates ~14px left/right of center every ~900 units */}
+      <path
+        ref={pathRef}
+        d="M 20 0 C 6 300, 34 600, 20 900 C 6 1200, 34 1500, 20 1800 C 6 2100, 34 2400, 20 2400"
+        fill="none"
+        stroke="url(#tlLineGrad)"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
+
 function TimelineItem({ milestone, index }) {
   const ref = useRef(null)
 
@@ -142,23 +199,6 @@ function TimelineItem({ milestone, index }) {
 }
 
 export default function CareerTimeline() {
-  const lineRef = useRef(null)
-
-  useEffect(() => {
-    const el = lineRef.current
-    if (!el) return
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.classList.add('tl-line-animate')
-          observer.unobserve(el)
-        }
-      },
-      { threshold: 0.05 }
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [])
 
   return (
     <section className="career-timeline-section">
@@ -212,10 +252,8 @@ export default function CareerTimeline() {
       {/* ── Timeline track ── */}
       <div className="tl-track">
 
-        {/* Animated vertical line */}
-        <div className="tl-line-wrap" ref={lineRef}>
-          <div className="tl-line" />
-        </div>
+        {/* Animated curved SVG line */}
+        <CurvedLine />
 
         {/* Milestones */}
         {MILESTONES.map((m, i) => (
