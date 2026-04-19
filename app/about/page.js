@@ -1,5 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
+import CareerTimeline from '../components/CareerTimeline'
 
 export const metadata = {
   title:       'About — Algee Smith',
@@ -106,6 +107,9 @@ export default function AboutPage() {
           <div className="about-quote-attr">Algee Smith</div>
         </div>
       </div>
+
+      {/* ─── Career Timeline ─── */}
+      <CareerTimeline />
 
     </div>
   )
