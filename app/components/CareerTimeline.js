@@ -20,8 +20,7 @@ const MILESTONES = [
     story: 'Let It Shine on Disney Channel. The first screen credit — and the first proof that the instinct for storytelling was already fully formed.',
     side:  'left',
     image: '/images/timeline/Let it shine 2.jpg',
-    imagePosition: 'center 30%',
-    imageAspect: '4 / 5',
+    imagePosition: 'center 20%',
   },
   {
     id:    3,
