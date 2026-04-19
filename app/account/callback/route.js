@@ -1,0 +1,66 @@
+import { createServerClient } from '@supabase/ssr'
+import { cookies } from 'next/headers'
+import { NextResponse } from 'next/server'
+
+export async function GET(request) {
+  const { searchParams, origin } = new URL(request.url)
+  const code = searchParams.get('code')
+  const next = searchParams.get('next') ?? '/account/dashboard'
+
+  if (code) {
+    const cookieStore = await cookies()
+    const supabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+      {
+        cookies: {
+          getAll()      { return cookieStore.getAll() },
+          setAll(toSet) {
+            toSet.forEach(({ name, value, options }) =>
+              cookieStore.set(name, value, options)
+            )
+          },
+        },
+      }
+    )
+
+    const { data, error } = await supabase.auth.exchangeCodeForSession(code)
+
+    if (!error && data?.user) {
+      const user    = data.user
+      const isNew   = !data.session?.user?.last_sign_in_at ||
+                      data.session.user.last_sign_in_at === data.session.user.created_at
+
+      // Upsert profile — saves email + phone on first login, updates on return visits
+      const { data: existing } = await supabase
+        .from('profiles')
+        .select('id')
+        .eq('id', user.id)
+        .single()
+
+      await supabase.from('profiles').upsert({
+        id:    user.id,
+        email: user.email,
+        phone: user.user_metadata?.phone ?? null,
+      }, { onConflict: 'id' })
+
+      // Send welcome email only to brand new fans
+      if (!existing) {
+        try {
+          await fetch(`${origin}/api/welcome`, {
+            method:  'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body:    JSON.stringify({ email: user.email }),
+          })
+        } catch (e) {
+          // Non-blocking — don't fail the login if email fails
+          console.error('Welcome email error:', e)
+        }
+      }
+
+      return NextResponse.redirect(`${origin}${next}`)
+    }
+  }
+
+  return NextResponse.redirect(`${origin}/account?error=auth`)
+}
