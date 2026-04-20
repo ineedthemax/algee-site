@@ -137,26 +137,31 @@ function CurvedLine() {
     <svg
       ref={svgRef}
       className="tl-svg-line"
-      viewBox="0 0 40 2400"
+      viewBox="0 0 80 3200"
       preserveAspectRatio="none"
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
         <linearGradient id="tlLineGrad" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0%"   stopColor="transparent" />
-          <stop offset="5%"   stopColor="rgba(196, 34, 46, 0.9)" />
-          <stop offset="25%"  stopColor="rgba(245, 240, 235, 0.3)" />
-          <stop offset="85%"  stopColor="rgba(245, 240, 235, 0.15)" />
+          <stop offset="4%"   stopColor="rgba(196, 34, 46, 1)" />
+          <stop offset="20%"  stopColor="rgba(245, 240, 235, 0.4)" />
+          <stop offset="80%"  stopColor="rgba(245, 240, 235, 0.2)" />
           <stop offset="100%" stopColor="transparent" />
         </linearGradient>
       </defs>
-      {/* Gentle S-curve — deviates ~14px left/right of center every ~900 units */}
+      {/* Organic winding road — irregular rhythm, wide swings ±30px from center */}
       <path
         ref={pathRef}
-        d="M 20 0 C 6 300, 34 600, 20 900 C 6 1200, 34 1500, 20 1800 C 6 2100, 34 2400, 20 2400"
+        d="M 40 0
+           C 8  220,  72  480,  38  700
+           C 6  920,  70 1180,  42 1400
+           C 10 1600,  74 1850,  36 2100
+           C 5  2300,  75 2550,  40 2750
+           C 8  2950,  70 3100,  40 3200"
         fill="none"
         stroke="url(#tlLineGrad)"
-        strokeWidth="1.5"
+        strokeWidth="1.8"
         strokeLinecap="round"
       />
     </svg>

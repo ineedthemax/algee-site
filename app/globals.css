@@ -5148,7 +5148,7 @@ footer::before {
   position: absolute;
   left: 50%;
   top: 0;
-  width: 40px;
+  width: 80px;
   height: 100%;
   transform: translateX(-50%);
   pointer-events: none;
