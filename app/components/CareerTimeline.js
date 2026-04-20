@@ -104,7 +104,16 @@ const MILESTONES = [
     image: '/images/timeline/Love-Lost.jpg',
   },
   {
-    id:      12,
+    id:    12,
+    year:  '2023',
+    tag:   'Animation',
+    title: 'The Voice Behind the Character.',
+    story: 'Solar Opposites on Hulu. Two episodes, two characters, one voice. Skunt and Harrison brought to life.',
+    side:  'left',
+    image: '/images/film/Solar-Opposites.jpg',
+  },
+  {
+    id:      13,
     year:    '2026',
     tag:     'Now',
     title:   'The Story Continues.',
