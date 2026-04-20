@@ -42,6 +42,15 @@ const MILESTONES = [
   },
   {
     id:    5,
+    year:  '2017',
+    tag:   'Music',
+    title: 'His Voice. His Terms.',
+    story: 'The Listen EP. While the world was watching him act, the music never stopped. His voice, unfiltered.',
+    side:  'right',
+    image: '/images/timeline/Listen-Cover.jpeg',
+  },
+  {
+    id:    6,
     year:  '2018',
     tag:   'Film',
     title: 'The Role That Shifted Everything.',
@@ -50,7 +59,7 @@ const MILESTONES = [
     image: '/images/timeline/The hate you give 1.jpg',
   },
   {
-    id:    6,
+    id:    7,
     year:  '2019',
     tag:   'Series',
     title: 'A Generation Claimed Him.',
@@ -59,7 +68,7 @@ const MILESTONES = [
     image: '/images/timeline/Euphoria.webp',
   },
   {
-    id:    7,
+    id:    8,
     year:  '2021',
     tag:   'Film',
     title: 'History. On Screen.',
@@ -68,7 +77,7 @@ const MILESTONES = [
     image: '/images/timeline/Judas.jpg',
   },
   {
-    id:    8,
+    id:    9,
     year:  '2023',
     tag:   'Film',
     title: 'LeBron\'s Origin. His Chapter.',
@@ -77,7 +86,7 @@ const MILESTONES = [
     image: '/images/timeline/SHOOTING-STARS.jpg',
   },
   {
-    id:    9,
+    id:    10,
     year:  '2023',
     tag:   'Film',
     title: 'Sundance. His Story.',
@@ -86,7 +95,7 @@ const MILESTONES = [
     image: '/images/timeline/Young-wild-free.webp',
   },
   {
-    id:    10,
+    id:    11,
     year:  '2025',
     tag:   'Music',
     title: 'The Music Never Stopped.',
@@ -95,7 +104,7 @@ const MILESTONES = [
     image: '/images/timeline/Love-Lost.jpg',
   },
   {
-    id:      11,
+    id:      12,
     year:    '2026',
     tag:     'Now',
     title:   'The Story Continues.',
