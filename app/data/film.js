@@ -90,6 +90,18 @@ export const PROJECTS = [
     status:   'released',
   },
   {
+    id:       'solar-opposites',
+    title:    'Solar Opposites',
+    slug:     'solar-opposites',
+    cover:    '/images/film/Solar-Opposites.jpg',
+    role:     'Skunt / Harrison (voice)',
+    type:     'Series · Hulu',
+    year:     '2023',
+    studio:   'Hulu',
+    logline:  'A family of aliens from a better world are stuck in middle America, where they are constantly at odds over whether life on Earth is horrible or great.',
+    status:   'released',
+  },
+  {
     id:       'young-wild-free',
     title:    'Young Wild Free',
     slug:     'young-wild-free',
