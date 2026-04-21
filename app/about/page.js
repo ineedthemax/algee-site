@@ -10,7 +10,7 @@ export const metadata = {
 const STATS = [
   { value: '7+',   label: 'Years Active'    },
   { value: '10+',  label: 'Screen Credits'  },
-  { value: '1',    label: 'Album'           },
+  { value: '2',    label: 'Albums'          },
   { value: '∞',    label: 'Stories to Tell' },
 ]
 
