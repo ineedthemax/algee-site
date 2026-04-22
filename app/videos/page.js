@@ -20,27 +20,28 @@ const VIDEOS = [
   },
   {
     id:        'v2',
-    videoId:   'TjOHVPo5iwM',   // ← swap with live performance ID when ready
-    title:     'Love Lost (Live)',
-    label:     'Live Performance',
+    videoId:   'KSwsT4WS-Uo',
+    title:     'Algee Smith',
+    label:     'Video',
     year:      '2025',
     live:      true,
   },
   {
     id:        'v3',
-    videoId:   null,             // ← add visualizer ID when ready
-    title:     'Next Visual',
-    label:     'Visualizer',
+    videoId:   'uj49zYTGMRE',
+    title:     'Algee Smith',
+    label:     'Video',
     year:      '2025',
-    live:      false,
+    live:      true,
   },
   {
     id:        'v4',
-    videoId:   null,             // ← add BTS ID when ready
-    title:     'Behind the Music',
-    label:     'Behind the Scenes',
+    videoId:   'v3PAewddV4M',
+    videoUrl:  'https://www.youtube.com/watch?v=v3PAewddV4M&t=450s',
+    title:     'Algee Smith',
+    label:     'Video',
     year:      '2025',
-    live:      false,
+    live:      true,
   },
 ]
 
@@ -86,9 +87,10 @@ function VideoCard({ video }) {
   )
 
   if (video.live && video.videoId) {
+    const href = video.videoUrl ?? `https://www.youtube.com/watch?v=${video.videoId}`
     return (
       <a
-        href={`https://www.youtube.com/watch?v=${video.videoId}`}
+        href={href}
         target="_blank"
         rel="noopener noreferrer"
         style={{ textDecoration: 'none' }}
