@@ -13,7 +13,7 @@ const VIDEOS = [
   {
     id:        'v1',
     videoId:   'TjOHVPo5iwM',
-    title:     'Love Lost',
+    title:     'Spiraling',
     label:     'Official Video',
     year:      '2025',
     live:      true,
@@ -122,9 +122,9 @@ export default function VideosPage() {
         <div className="video-reveal-content">
           <div className="video-reveal-header">
             <div className="video-reveal-label">Latest Visual</div>
-            <h3 className="video-reveal-title">Love Lost</h3>
+            <h3 className="video-reveal-title">Spiraling</h3>
             <p className="video-reveal-sub">
-              The official visual for Love Lost. Available on all platforms.
+              The official visual for Spiraling. Available on all platforms.
             </p>
           </div>
           <div className="video-reveal-actions">
