@@ -3,8 +3,9 @@
 import { useState, useEffect } from 'react'
 import LinksManager from './LinksManager'
 import PlaylistTracker from './PlaylistTracker'
+import LinkAnalytics from './LinkAnalytics'
 
-const TABS = ['Overview', 'Engagement', 'Playlists', 'Platform', 'Links', 'Fans']
+const TABS = ['Overview', 'Engagement', 'Playlists', 'Platform', 'Links', 'Analytics', 'Fans']
 
 function StatCard({ label, value, sub, color }) {
   return (
@@ -309,6 +310,14 @@ export default function AdminDashboard({
         {tab === 'Links' && (
           <div className="adm-tab-content">
             <LinksManager />
+          </div>
+
+        )}
+
+        {/* ── ANALYTICS TAB ── */}
+        {tab === 'Analytics' && (
+          <div className="adm-tab-content">
+            <LinkAnalytics />
           </div>
         )}
 

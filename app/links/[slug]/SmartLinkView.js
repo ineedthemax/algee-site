@@ -12,11 +12,11 @@ export default function SmartLinkView({ link, destinations }) {
   const border   = dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.08)'
 
   useEffect(() => {
-    // Track view
+    // Track view with referrer
     fetch('/api/links/track', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ slug: link.slug, type: 'view' }),
+      body: JSON.stringify({ slug: link.slug, type: 'view', referrer: document.referrer || null }),
     }).catch(() => {})
   }, [link.slug])
 

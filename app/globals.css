@@ -7434,3 +7434,79 @@ footer::before {
   .sl-type-row  { flex-direction: column; }
   .sl-dest-name { width: 70px; }
 }
+
+/* ── Link Analytics Dashboard ────────────────────────────── */
+.la-wrap        { display: flex; flex-direction: column; gap: 16px; }
+
+.la-header      { display: flex; align-items: center; justify-content: space-between; margin-bottom: 4px; }
+.la-period-btns { display: flex; gap: 4px; }
+.la-period-btn  {
+  padding: 5px 12px; background: var(--card); border: 1px solid var(--border);
+  border-radius: 8px; font-size: 11px; font-weight: 700; color: var(--muted);
+  cursor: pointer; transition: all 0.15s;
+}
+.la-period-btn:hover  { color: var(--white); }
+.la-period-active     { border-color: var(--red) !important; color: var(--white) !important; }
+
+.la-stats       {
+  display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+}
+.la-stat        {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 16px;
+}
+.la-stat-val    { font-size: 32px; font-weight: 900; letter-spacing: -1.5px; color: var(--white); line-height: 1; margin-bottom: 4px; }
+.la-stat-label  { font-size: 10px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+
+.la-card        {
+  background: var(--card); border: 1px solid var(--border);
+  border-radius: 12px; padding: 18px; display: flex; flex-direction: column; gap: 12px;
+}
+.la-card-header { display: flex; align-items: center; justify-content: space-between; }
+.la-card-title  { font-size: 11px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: var(--muted); }
+.la-legend      { display: flex; align-items: center; gap: 12px; font-size: 11px; color: var(--muted); }
+.la-legend-dot  { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-right: 4px; }
+
+.la-chart-dates { display: flex; justify-content: space-between; font-size: 10px; color: var(--muted); margin-top: -4px; }
+.la-empty-chart { height: 80px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: var(--muted); }
+.la-empty       { font-size: 12px; color: var(--muted); padding: 8px 0; }
+
+.la-two-col     { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+
+/* Bar rows */
+.la-bar-row     { display: flex; align-items: center; gap: 10px; }
+.la-bar-label   { font-size: 12px; color: var(--white); width: 120px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.la-bar-track   { flex: 1; height: 6px; background: rgba(255,255,255,0.06); border-radius: 3px; overflow: hidden; }
+.la-bar-fill    { height: 100%; border-radius: 3px; transition: width 0.4s ease; }
+.la-bar-val     { font-size: 12px; font-weight: 600; color: var(--white); width: 40px; text-align: right; flex-shrink: 0; }
+
+/* City rows */
+.la-city-row    { display: flex; align-items: center; gap: 10px; padding: 4px 0; border-bottom: 1px solid var(--border); }
+.la-city-row:last-child { border: none; }
+.la-city-rank   { font-size: 11px; color: var(--muted); width: 16px; flex-shrink: 0; }
+.la-city-name   { font-size: 13px; color: var(--white); flex: 1; }
+.la-city-count  { font-size: 12px; font-weight: 700; color: var(--white); }
+
+/* Per-link rows */
+.la-link-row    {
+  display: flex; align-items: center; gap: 16px;
+  padding: 10px 0; border-bottom: 1px solid var(--border); position: relative;
+}
+.la-link-row:last-child { border: none; }
+.la-link-info   { flex: 1; min-width: 0; }
+.la-link-name   { font-size: 13px; font-weight: 600; color: var(--white); }
+.la-link-slug   { font-size: 11px; color: var(--muted); }
+.la-link-stats  { display: flex; gap: 20px; flex-shrink: 0; }
+.la-link-stat   { text-align: center; }
+.la-link-stat-val   { font-size: 16px; font-weight: 800; color: var(--white); letter-spacing: -0.5px; }
+.la-link-stat-label { font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted); }
+.la-link-bar-wrap { position: absolute; bottom: 0; left: 0; right: 0; height: 2px; background: rgba(255,255,255,0.04); }
+.la-link-bar    { height: 100%; background: var(--red); border-radius: 1px; transition: width 0.4s; }
+
+.la-note        { font-size: 11px; color: var(--muted); text-align: center; padding: 4px 0 8px; }
+
+@media (max-width: 700px) {
+  .la-stats   { grid-template-columns: repeat(2, 1fr); }
+  .la-two-col { grid-template-columns: 1fr; }
+  .la-link-stats { gap: 12px; }
+}
