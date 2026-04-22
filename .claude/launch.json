@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "playlist-dashboard",
+      "runtimeExecutable": "python3",
+      "runtimeArgs": ["-m", "http.server", "7654", "--directory", "/Users/algee/algee-site"],
+      "port": 7654
+    }
+  ]
+}

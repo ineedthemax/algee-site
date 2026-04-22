@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Playlist Tracker — Algee Smith</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #050505;
+      --surface:  #0f0f0f;
+      --border:   rgba(255,255,255,0.06);
+      --text:     #f5f0eb;
+      --muted:    #5a554f;
+      --accent:   #c4222e;
+      --gold:     #e8a020;
+      --green:    #22c55e;
+      --font:     'Helvetica Neue', Helvetica, Arial, sans-serif;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font);
+      min-height: 100vh;
+      padding: 32px 24px;
+    }
+
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 40px;
+    }
+
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--text);
+    }
+
+    .logo-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+    }
+
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 11px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .live-dot {
+      width: 6px;
+      height: 6px;
+      background: var(--green);
+      border-radius: 50%;
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(0.8); }
+    }
+
+    /* Stats row */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin-bottom: 36px;
+    }
+
+    .stat-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .stat-val {
+      font-size: 40px;
+      font-weight: 900;
+      letter-spacing: -2px;
+      color: var(--text);
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat-val.accent { color: var(--accent); }
+    .stat-val.gold   { color: var(--gold);   }
+    .stat-val.green  { color: var(--green);  }
+
+    .stat-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    /* Section */
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .section { margin-bottom: 32px; }
+
+    /* Placement rows */
+    .placement-list { display: flex; flex-direction: column; gap: 6px; }
+
+    .placement-row {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: border-color 0.2s;
+    }
+
+    .placement-row:hover { border-color: rgba(255,255,255,0.12); }
+    .placement-row.inactive { opacity: 0.45; }
+
+    .row-left { display: flex; align-items: center; gap: 12px; }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      background: var(--muted);
+    }
+
+    .status-dot.active {
+      background: var(--green);
+      box-shadow: 0 0 0 3px rgba(34,197,94,0.15);
+      animation: pulse 2s infinite;
+    }
+
+    .track-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .playlist-name {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .row-right { text-align: right; }
+
+    .time-label {
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 0.5px;
+    }
+
+    /* Empty / loading */
+    .empty {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 32px;
+      text-align: center;
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    /* Refresh bar */
+    .refresh-bar {
+      position: fixed;
+      bottom: 20px;
+      right: 24px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 100px;
+      padding: 10px 16px;
+      font-size: 11px;
+      color: var(--muted);
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+
+    .refresh-btn {
+      background: var(--accent);
+      border: none;
+      border-radius: 100px;
+      padding: 6px 14px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: white;
+      cursor: pointer;
+      transition: opacity 0.15s;
+    }
+
+    .refresh-btn:hover { opacity: 0.85; }
+    .refresh-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+    .countdown {
+      font-variant-numeric: tabular-nums;
+      min-width: 24px;
+      text-align: right;
+    }
+
+    .error-msg {
+      background: rgba(196,34,46,0.1);
+      border: 1px solid rgba(196,34,46,0.3);
+      border-radius: 10px;
+      padding: 16px;
+      font-size: 13px;
+      color: var(--accent);
+      margin-bottom: 24px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">
+    <div class="logo-dot"></div>
+    Algee Smith · Playlist Tracker
+  </div>
+  <div class="status">
+    <div class="live-dot"></div>
+    Live · Auto-refresh 60s
+  </div>
+</header>
+
+<div id="error" class="error-msg" style="display:none;"></div>
+
+<!-- Stats -->
+<div class="stats">
+  <div class="stat-card">
+    <div class="stat-val green" id="stat-active">—</div>
+    <div class="stat-label">Active Placements</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val" id="stat-playlists">—</div>
+    <div class="stat-label">Playlists Monitored</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val accent" id="stat-total">—</div>
+    <div class="stat-label">Total Ever Tracked</div>
+  </div>
+  <div class="stat-card">
+    <div class="stat-val gold" id="stat-unique">—</div>
+    <div class="stat-label">Unique Playlists Hit</div>
+  </div>
+</div>
+
+<!-- Active placements -->
+<div class="section">
+  <div class="section-label">Active Now</div>
+  <div class="placement-list" id="active-list">
+    <div class="empty">Loading...</div>
+  </div>
+</div>
+
+<!-- Previously on -->
+<div class="section" id="inactive-section" style="display:none;">
+  <div class="section-label">Previously On</div>
+  <div class="placement-list" id="inactive-list"></div>
+</div>
+
+<!-- Refresh bar -->
+<div class="refresh-bar">
+  <span>Next refresh in <span class="countdown" id="countdown">60</span>s</span>
+  <button class="refresh-btn" id="refresh-btn" onclick="load()">Refresh Now</button>
+</div>
+
+<script>
+  const API = 'https://algee-site.vercel.app/api/playlist-stats'
+
+  function timeAgo(str) {
+    if (!str) return '—'
+    const diff  = Date.now() - new Date(str).getTime()
+    const mins  = Math.floor(diff / 60000)
+    const hours = Math.floor(diff / 3600000)
+    const days  = Math.floor(diff / 86400000)
+    if (mins  < 1)  return 'Just now'
+    if (hours < 1)  return `${mins}m ago`
+    if (hours < 24) return `${hours}h ago`
+    return `${days}d ago`
+  }
+
+  function renderRow(p, active) {
+    return `
+      <div class="placement-row ${active ? '' : 'inactive'}">
+        <div class="row-left">
+          <div class="status-dot ${active ? 'active' : ''}"></div>
+          <div>
+            <div class="track-name">${p.track_name}</div>
+            <div class="playlist-name">${p.playlist_name}</div>
+          </div>
+        </div>
+        <div class="row-right">
+          ${active
+            ? `<div class="time-label">Since ${timeAgo(p.first_seen)}</div>
+               <div class="time-label">Last seen ${timeAgo(p.last_seen)}</div>`
+            : `<div class="time-label">Removed ${timeAgo(p.last_seen)}</div>`
+          }
+        </div>
+      </div>`
+  }
+
+  async function load() {
+    const btn = document.getElementById('refresh-btn')
+    btn.disabled = true
+    document.getElementById('error').style.display = 'none'
+
+    try {
+      const res  = await fetch(API + '?t=' + Date.now())
+      const data = await res.json()
+
+      if (data.error) throw new Error(data.error)
+
+      // Stats
+      document.getElementById('stat-active').textContent    = data.stats.activePlacements
+      document.getElementById('stat-playlists').textContent = data.stats.playlistsMonitored
+      document.getElementById('stat-total').textContent     = data.stats.totalPlacements
+      document.getElementById('stat-unique').textContent    = data.stats.uniquePlaylists
+
+      // Active
+      const activeEl = document.getElementById('active-list')
+      if (data.active.length === 0) {
+        activeEl.innerHTML = '<div class="empty">No active placements — run a scan to check.</div>'
+      } else {
+        activeEl.innerHTML = data.active.map(p => renderRow(p, true)).join('')
+      }
+
+      // Inactive
+      const inactiveSection = document.getElementById('inactive-section')
+      const inactiveEl      = document.getElementById('inactive-list')
+      if (data.inactive.length > 0) {
+        inactiveSection.style.display = 'block'
+        inactiveEl.innerHTML = data.inactive.map(p => renderRow(p, false)).join('')
+      } else {
+        inactiveSection.style.display = 'none'
+      }
+
+    } catch (e) {
+      document.getElementById('error').style.display = 'block'
+      document.getElementById('error').textContent    = 'Error: ' + e.message
+    } finally {
+      btn.disabled = false
+      resetCountdown()
+    }
+  }
+
+  // Countdown timer
+  let timer, seconds = 60
+
+  function resetCountdown() {
+    clearInterval(timer)
+    seconds = 60
+    document.getElementById('countdown').textContent = seconds
+    timer = setInterval(() => {
+      seconds--
+      document.getElementById('countdown').textContent = seconds
+      if (seconds <= 0) load()
+    }, 1000)
+  }
+
+  load()
+</script>
+</body>
+</html>

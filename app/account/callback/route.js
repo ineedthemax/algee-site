@@ -1,6 +1,8 @@
 import { createServerClient } from '@supabase/ssr'
 import { cookies } from 'next/headers'
 import { NextResponse } from 'next/server'
+import { awardPoints, hasEarned } from '../../../lib/points'
+import { isAdmin } from '../../../lib/isAdmin'
 
 export async function GET(request) {
   const { searchParams, origin } = new URL(request.url)
@@ -44,7 +46,7 @@ export async function GET(request) {
         phone: user.user_metadata?.phone ?? null,
       }, { onConflict: 'id' })
 
-      // Send welcome email only to brand new fans
+      // Send welcome email + award signup points to brand new fans
       if (!existing) {
         try {
           await fetch(`${origin}/api/welcome`, {
@@ -53,12 +55,24 @@ export async function GET(request) {
             body:    JSON.stringify({ email: user.email }),
           })
         } catch (e) {
-          // Non-blocking — don't fail the login if email fails
           console.error('Welcome email error:', e)
+        }
+
+        // Award 100 signup points (only once, guarded by hasEarned)
+        try {
+          const alreadyEarned = await hasEarned(user.id, 'SIGNUP')
+          if (!alreadyEarned) {
+            await awardPoints(user.id, 'SIGNUP')
+          }
+        } catch (e) {
+          console.error('Signup points error:', e)
         }
       }
 
-      return NextResponse.redirect(`${origin}${next}`)
+      // Send admin straight to the admin dashboard
+      const destination = isAdmin(user.email) ? '/admin' : next
+
+      return NextResponse.redirect(`${origin}${destination}`)
     }
   }
 
