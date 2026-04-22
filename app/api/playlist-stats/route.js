@@ -4,6 +4,15 @@ import { NextResponse } from 'next/server'
 // Public endpoint — returns aggregate playlist placement stats
 export const dynamic = 'force-dynamic'
 
+const CORS = {
+  'Access-Control-Allow-Origin':  '*',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+}
+
+export async function OPTIONS() {
+  return new Response(null, { status: 204, headers: CORS })
+}
+
 export async function GET() {
   try {
     const admin = createAdminClient()
@@ -29,8 +38,8 @@ export async function GET() {
         uniquePlaylists:    [...new Set(active.map(p => p.playlist_id))].length,
         lastUpdated:        active[0]?.last_seen ?? null,
       },
-    })
+    }, { headers: CORS })
   } catch (e) {
-    return NextResponse.json({ error: e.message }, { status: 500 })
+    return NextResponse.json({ error: e.message }, { status: 500, headers: CORS })
   }
 }
