@@ -5,7 +5,7 @@ import LinksManager from './LinksManager'
 import PlaylistTracker from './PlaylistTracker'
 import LinkAnalytics from './LinkAnalytics'
 
-const TABS = ['Overview', 'Engagement', 'Playlists', 'Platform', 'Links', 'Analytics', 'Fans']
+const TABS = ['Overview', 'Engagement', 'Playlists', 'Platform', 'Links', 'Fans']
 
 function StatCard({ label, value, sub, color }) {
   return (
@@ -200,6 +200,10 @@ export default function AdminDashboard({
                 </div>
               ))}
             </div>
+
+            {/* Link analytics inline */}
+            <SectionLabel>Link Analytics</SectionLabel>
+            <LinkAnalytics />
           </div>
         )}
 
@@ -312,13 +316,6 @@ export default function AdminDashboard({
             <LinksManager />
           </div>
 
-        )}
-
-        {/* ── ANALYTICS TAB ── */}
-        {tab === 'Analytics' && (
-          <div className="adm-tab-content">
-            <LinkAnalytics />
-          </div>
         )}
 
         {/* ── FANS TAB ── */}
