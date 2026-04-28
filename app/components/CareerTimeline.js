@@ -96,21 +96,21 @@ const MILESTONES = [
   },
   {
     id:    11,
-    year:  '2025',
-    tag:   'Music',
-    title: 'The Music Never Stopped.',
-    story: 'Love Lost. His debut album. Direct to the fans who built him. No middleman. No filter. Just the music.',
-    side:  'left',
-    image: '/images/timeline/Love-Lost.jpg',
-  },
-  {
-    id:    12,
     year:  '2023',
     tag:   'Animation',
     title: 'The Voice Behind the Character.',
     story: 'Solar Opposites on Hulu. Two episodes, two characters, one voice. Skunt and Harrison brought to life.',
     side:  'left',
     image: '/images/film/Solar-Opposites.jpg',
+  },
+  {
+    id:    12,
+    year:  '2025',
+    tag:   'Music',
+    title: 'The Music Never Stopped.',
+    story: 'Love Lost. His debut album. Direct to the fans who built him. No middleman. No filter. Just the music.',
+    side:  'left',
+    image: '/images/timeline/Love-Lost.jpg',
   },
   {
     id:      13,
@@ -273,33 +273,14 @@ export default function CareerTimeline() {
         {/* Cinematic chapter card inside the scroll container */}
         <div className="tl-chapter-card">
           <div className="tl-chapter-card-bg" />
-          <div className="tl-chapter-card-content">
-            <div className="tl-chapter-divider" />
-            <div className="tl-chapter-stats">
-              <div className="tl-chapter-stat">
-                <span className="tl-chapter-stat-value">2012</span>
-                <span className="tl-chapter-stat-label">First Film</span>
-              </div>
-              <div className="tl-chapter-sep">—</div>
-              <div className="tl-chapter-stat">
-                <span className="tl-chapter-stat-value">10+</span>
-                <span className="tl-chapter-stat-label">Screen Credits</span>
-              </div>
-              <div className="tl-chapter-sep">—</div>
-              <div className="tl-chapter-stat">
-                <span className="tl-chapter-stat-value">1</span>
-                <span className="tl-chapter-stat-label">Album</span>
-              </div>
-              <div className="tl-chapter-sep">—</div>
-              <div className="tl-chapter-stat">
-                <span className="tl-chapter-stat-value">∞</span>
-                <span className="tl-chapter-stat-label">Stories</span>
-              </div>
-            </div>
-            <div className="tl-chapter-divider" />
-            <p className="tl-chapter-sub">
-              Two stages. One soul. This is how it unfolded.
-            </p>
+          <div className="tl-chapter-video-wrap">
+            <iframe
+              className="tl-chapter-video"
+              src="https://www.youtube.com/embed/elwuAOZH12A?rel=0&modestbranding=1&color=white"
+              title="Algee Smith"
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+              allowFullScreen
+            />
           </div>
         </div>
       </ContainerScroll>

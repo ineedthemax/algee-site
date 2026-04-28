@@ -1,3 +1,6 @@
+'use client'
+import { usePathname } from 'next/navigation'
+
 const SOCIALS = [
   { label: 'Instagram', href: 'https://www.instagram.com/itsalgee' },
   { label: 'YouTube',   href: 'https://youtube.com/@algeesmith'  },
@@ -6,6 +9,8 @@ const SOCIALS = [
 ]
 
 export default function Footer() {
+  const pathname = usePathname()
+  if (pathname?.startsWith('/admin')) return null
   return (
     <footer>
       {/* Massive tagline */}
@@ -29,6 +34,7 @@ export default function Footer() {
               {label}
             </a>
           ))}
+          <a href="/faq">FAQ</a>
         </nav>
       </div>
     </footer>

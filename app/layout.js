@@ -30,6 +30,7 @@ const barlowCondensed = Barlow_Condensed({
 
 // ─── Metadata ─────────────────────────────────────────────────
 export const metadata = {
+  metadataBase: new URL('https://www.thealgeesmith.com'),
   title: 'Algee Smith | Two Stages, One Soul',
   description:
     'Actor. R&B artist. From Saginaw to Atlanta to LA. Direct from the artist to you. Step inside the music, the films, and everything in between.',
@@ -37,6 +38,18 @@ export const metadata = {
     title: 'Algee Smith | Two Stages, One Soul',
     description: 'Direct from the artist to you.',
     images: ['/images/hero/algee-hero.jpg'],
+    url: 'https://www.thealgeesmith.com',
+    siteName: 'Algee Smith',
+    type: 'website',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Algee Smith | Two Stages, One Soul',
+    description: 'Actor. R&B artist. Direct from the artist to you.',
+    images: ['/images/hero/algee-hero.jpg'],
+  },
+  alternates: {
+    canonical: 'https://www.thealgeesmith.com',
   },
 }
 

@@ -2,10 +2,35 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { PROJECTS } from '../data/film'
 import FilmCardStack from '../components/FilmCardStack'
+import SchemaMarkup from '../components/SchemaMarkup'
 
 export const metadata = {
-  title:       'Film — Algee Smith',
-  description: 'Acting credits, screen roles, and upcoming projects from Algee Smith.',
+  title:       'Film & TV — Algee Smith | Acting Credits',
+  description: 'Full filmography of Algee Smith — including The Hate U Give, Euphoria (HBO), Detroit, Judas and the Black Messiah, The New Edition Story, and more.',
+  openGraph: {
+    title: 'Algee Smith — Film & TV Credits',
+    description: 'Acting credits from The Hate U Give, Euphoria, Detroit, Judas and the Black Messiah, and more.',
+    images: ['/images/film/hate-u-give.jpg'],
+  },
+}
+
+const filmographySchema = {
+  '@context': 'https://schema.org',
+  '@type': 'ItemList',
+  name: 'Algee Smith Filmography',
+  description: 'Film and television credits for actor Algee Smith.',
+  itemListElement: PROJECTS.map((p, i) => ({
+    '@type': 'ListItem',
+    position: i + 1,
+    item: {
+      '@type': p.type?.includes('Series') || p.type?.includes('Miniseries') ? 'TVSeries' : 'Movie',
+      name: p.title,
+      datePublished: p.year,
+      description: p.logline,
+      actor: { '@type': 'Person', name: 'Algee Smith' },
+      ...(p.studio && { productionCompany: { '@type': 'Organization', name: p.studio } }),
+    },
+  })),
 }
 
 export default function FilmPage() {
@@ -14,6 +39,7 @@ export default function FilmPage() {
 
   return (
     <div className="film-page">
+      <SchemaMarkup schema={filmographySchema} />
 
       {/* ─── Page Hero ─── */}
       <div className="page-hero">

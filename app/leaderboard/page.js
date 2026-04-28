@@ -1,4 +1,5 @@
 import { createClient } from '../../lib/supabase/server'
+import { createAdminClient } from '../../lib/supabase/admin'
 import { getLeaderboard, getUserPoints, getTier, getUserRank } from '../../lib/points'
 import LeaderboardView from './LeaderboardView'
 
@@ -14,6 +15,16 @@ export default async function LeaderboardPage() {
   const { data: { user } } = await supabase.auth.getUser()
 
   const board = await getLeaderboard(50)
+
+  // Fan of the Month
+  const admin = createAdminClient()
+  const now   = new Date()
+  const { data: fotmRow } = await admin
+    .from('fan_of_month')
+    .select('*')
+    .eq('month', now.getMonth() + 1)
+    .eq('year',  now.getFullYear())
+    .maybeSingle()
 
   let myPoints = 0
   let myRank   = null
@@ -32,6 +43,7 @@ export default async function LeaderboardPage() {
       myPoints={myPoints}
       myRank={myRank}
       myTier={myTier}
+      fanOfMonth={fotmRow ?? null}
     />
   )
 }

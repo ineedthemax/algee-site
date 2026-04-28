@@ -2,15 +2,42 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { ALBUM, TRACKS } from '../data/music'
 import MusicPhotoStrip from '../components/MusicPhotoStrip'
+import SchemaMarkup from '../components/SchemaMarkup'
 
 export const metadata = {
-  title: 'Music | Algee Smith',
-  description: 'Love Lost and everything coming next. Direct from the artist.',
+  title: 'Music — Algee Smith | Love Lost (Debut Album)',
+  description: 'Stream Love Lost, the debut album from Algee Smith. Available on Spotify, Apple Music, Tidal, Amazon Music, and YouTube Music.',
+  openGraph: {
+    title: 'Algee Smith — Love Lost (Debut Album)',
+    description: 'Stream Love Lost — available everywhere now.',
+    images: ['/images/music/love-lost-cover.png'],
+  },
+}
+
+const albumSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'MusicAlbum',
+  name: 'Love Lost',
+  byArtist: {
+    '@type': 'MusicGroup',
+    name: 'Algee Smith',
+    url: 'https://algeesmith.com',
+  },
+  datePublished: '2025',
+  genre: ['R&B', 'Soul'],
+  url: 'https://algeesmith.com/music',
+  image: 'https://algeesmith.com/images/music/love-lost-cover.png',
+  offers: [
+    { '@type': 'Offer', name: 'Spotify',     url: 'https://open.spotify.com/artist/10gHoEHUPNcTFsyVR2YyeA' },
+    { '@type': 'Offer', name: 'Apple Music', url: 'https://music.apple.com/us/album/love-lost/1826959437' },
+    { '@type': 'Offer', name: 'Tidal',       url: 'https://tidal.com/browse/track/448345017' },
+  ],
 }
 
 export default function MusicPage() {
   return (
     <div className="track-page">
+      <SchemaMarkup schema={albumSchema} />
 
       {/* ─── Page Hero ─── */}
       <div className="page-hero">

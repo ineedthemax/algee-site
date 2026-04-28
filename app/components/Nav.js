@@ -6,12 +6,13 @@ import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '../../lib/supabase/client'
 
 const NAV_LINKS = [
-  { label: 'Music',   href: '/music'   },
-  { label: 'Film',    href: '/film'    },
-  { label: 'Fashion', href: '/fashion' },
-  { label: 'Videos',  href: '/videos'  },
-  { label: 'Merch',   href: '/merch'   },
-  { label: 'About',   href: '/about'   },
+  { label: 'Music',    href: '/music'    },
+  { label: 'Film',     href: '/film'     },
+  { label: 'Fashion',  href: '/fashion'  },
+  { label: 'Videos',   href: '/videos'   },
+  { label: 'Releases', href: '/releases' },
+  { label: 'Merch',    href: '/merch'    },
+  { label: 'About',    href: '/about'    },
 ]
 
 export default function Nav() {
@@ -20,6 +21,9 @@ export default function Nav() {
   const [user,      setUser]      = useState(null)
   const pathname = usePathname()
   const router   = useRouter()
+
+  // Hide entirely on admin pages — admin has its own layout
+  if (pathname?.startsWith('/admin')) return null
 
   // Scroll state
   useEffect(() => {

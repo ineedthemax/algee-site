@@ -1,10 +1,42 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import CareerTimeline from '../components/CareerTimeline'
+import SchemaMarkup from '../components/SchemaMarkup'
 
 export const metadata = {
-  title:       'About — Algee Smith',
-  description: 'Actor, singer, songwriter. Two stages, one soul.',
+  title:       'About Algee Smith — Actor, Recording Artist, Entrepreneur & Philanthropist',
+  description: 'Algee Smith is an actor, recording artist, entrepreneur, and philanthropist from Saginaw, Michigan. Known for The Hate U Give, Euphoria, and his debut album Love Lost.',
+  openGraph: {
+    title: 'About Algee Smith',
+    description: 'Actor, recording artist, entrepreneur, and philanthropist from Saginaw, Michigan.',
+    images: ['/images/hero/algee-hero.jpg'],
+  },
+}
+
+const bioSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  name: 'Algee Smith',
+  description: 'Algee Smith is an actor, recording artist, entrepreneur, and philanthropist from Saginaw, Michigan. He is known for his roles in The Hate U Give, Euphoria on HBO, Detroit, Judas and the Black Messiah, and his debut studio album Love Lost.',
+  url: 'https://algeesmith.com/about',
+  image: 'https://algeesmith.com/images/hero/algee-hero.jpg',
+  birthPlace: { '@type': 'Place', name: 'Saginaw, Michigan, USA' },
+  nationality: 'American',
+  genre: ['R&B', 'Soul'],
+  jobTitle: ['Actor', 'Recording Artist', 'Entrepreneur', 'Philanthropist'],
+  sameAs: [
+    'https://www.instagram.com/algeesmith/',
+    'https://open.spotify.com/artist/10gHoEHUPNcTFsyVR2YyeA',
+    'https://music.apple.com/us/artist/algee-smith/582360998',
+    'https://en.wikipedia.org/wiki/Algee_Smith',
+  ],
+  performerIn: [
+    { '@type': 'Movie',     name: 'The Hate U Give',          datePublished: '2018' },
+    { '@type': 'Movie',     name: 'Detroit',                   datePublished: '2017' },
+    { '@type': 'Movie',     name: 'Judas and the Black Messiah', datePublished: '2021' },
+    { '@type': 'TVSeries',  name: 'Euphoria',                  datePublished: '2019' },
+    { '@type': 'TVSeries',  name: 'The New Edition Story',     datePublished: '2017' },
+  ],
 }
 
 const STATS = [
@@ -22,6 +54,7 @@ const LINKS = [
 export default function AboutPage() {
   return (
     <div className="about-page">
+      <SchemaMarkup schema={bioSchema} />
 
       {/* ─── Page Hero ─── */}
       <div className="page-hero">

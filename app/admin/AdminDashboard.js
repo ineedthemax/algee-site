@@ -1,28 +1,100 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Component } from 'react'
+import { useRouter } from 'next/navigation'
+import { createClient } from '../../lib/supabase/client'
 import LinksManager from './LinksManager'
 import PlaylistTracker from './PlaylistTracker'
 import LinkAnalytics from './LinkAnalytics'
+import AnnouncementManager from './AnnouncementManager'
+import CampaignManager from './CampaignManager'
+import ExclusiveContentManager from './ExclusiveContentManager'
+import PushManager from './PushManager'
+import SpendingManager from './SpendingManager'
+import FanOfMonthManager from './FanOfMonthManager'
+import ReleasesManager from './ReleasesManager'
 
-const TABS = ['Overview', 'Engagement', 'Playlists', 'Platform', 'Links', 'Fans']
+// ── Error boundary ────────────────────────────────────────────────────────────
+class AdminErrorBoundary extends Component {
+  state = { error: null }
+  static getDerivedStateFromError(error) { return { error } }
+  render() {
+    if (this.state.error) {
+      return (
+        <div style={{ padding: 40, color: '#f55', fontFamily: 'monospace', background: '#0a0a0a', minHeight: '100vh' }}>
+          <div style={{ fontSize: 18, marginBottom: 16, color: '#fff' }}>⚠ Admin Dashboard Error</div>
+          <pre style={{ fontSize: 13, whiteSpace: 'pre-wrap', color: '#f88' }}>{this.state.error?.message}</pre>
+          <pre style={{ fontSize: 11, whiteSpace: 'pre-wrap', color: '#888', marginTop: 12 }}>{this.state.error?.stack}</pre>
+          <button onClick={() => window.location.reload()} style={{ marginTop: 24, padding: '10px 20px', background: '#c4222e', color: '#fff', border: 'none', borderRadius: 8, cursor: 'pointer' }}>
+            Reload
+          </button>
+        </div>
+      )
+    }
+    return this.props.children
+  }
+}
 
-function StatCard({ label, value, sub, color }) {
+const NAV = [
+  { id: 'Overview',    icon: '⊞', label: 'Overview'    },
+  { id: 'Engagement',  icon: '★', label: 'Engagement'  },
+  { id: 'Fans',        icon: '◎', label: 'Fans'        },
+  { id: 'Spend',       icon: '$', label: 'Spending'    },
+  { id: 'Links',       icon: '↗', label: 'Smart Links' },
+  { id: 'Announce',    icon: '📢', label: 'Announce'   },
+  { id: 'Campaigns',   icon: '✉',  label: 'Campaigns'  },
+  { id: 'Push',        icon: '🔔', label: 'Push'       },
+  { id: 'Exclusive',   icon: '🔒', label: 'Exclusive'  },
+  { id: 'Playlists',   icon: '♫', label: 'Playlists'  },
+  { id: 'Releases',    icon: '◈', label: 'Releases'     },
+  { id: 'FanOfMonth',  icon: '👑', label: 'Fan of Month' },
+  { id: 'Platform',    icon: '◈', label: 'Platform'   },
+]
+
+function useCountUp(target, duration = 1200) {
+  const [value, setValue] = useState(0)
+  const num = typeof target === 'number' ? target : parseFloat(target) || 0
+  useEffect(() => {
+    if (num === 0) { setValue(0); return }
+    let start = null
+    const step = (ts) => {
+      if (!start) start = ts
+      const progress = Math.min((ts - start) / duration, 1)
+      const ease = 1 - Math.pow(1 - progress, 3)
+      setValue(Math.round(ease * num))
+      if (progress < 1) requestAnimationFrame(step)
+    }
+    requestAnimationFrame(step)
+  }, [num, duration])
+  return value
+}
+
+function StatCard({ label, value, sub, color, accent, pulse }) {
+  const num     = typeof value === 'number' ? value : null
+  const counted = useCountUp(num ?? 0)
+  const display = num !== null ? counted.toLocaleString() : value
+
   return (
-    <div className="adm-stat-card">
-      <div className="adm-stat-value" style={color ? { color } : {}}>{value}</div>
-      <div className="adm-stat-label">{label}</div>
-      {sub && <div className="adm-stat-sub">{sub}</div>}
+    <div className={`adm2-stat${accent ? ' adm2-stat-accent' : ''}${pulse ? ' adm2-stat-pulse' : ''}`}>
+      <div className="adm2-stat-value" style={color ? { color } : {}}>{display}</div>
+      <div className="adm2-stat-label">{label}</div>
+      {sub && <div className="adm2-stat-sub">{sub}</div>}
     </div>
   )
 }
 
 function SectionLabel({ children }) {
-  return <div className="adm-section-label">{children}</div>
+  return (
+    <div className="adm2-section-label">
+      <span>{children}</span>
+      <div className="adm2-section-line" />
+    </div>
+  )
 }
 
-// Mini sparkline bar chart
 function BarChart({ data }) {
+  const [ready, setReady] = useState(false)
+  useEffect(() => { const t = setTimeout(() => setReady(true), 80); return () => clearTimeout(t) }, [])
   const max = Math.max(...data.map(d => d.count), 1)
   return (
     <div className="adm-chart">
@@ -30,7 +102,10 @@ function BarChart({ data }) {
         <div key={i} className="adm-chart-col">
           <div
             className="adm-chart-bar"
-            style={{ height: `${Math.max(4, (d.count / max) * 100)}%` }}
+            style={{
+              height: ready ? `${Math.max(3, (d.count / max) * 100)}%` : '3px',
+              transitionDelay: `${i * 12}ms`,
+            }}
             title={`${d.date}: ${d.count} signups`}
           />
         </div>
@@ -50,7 +125,108 @@ function timeAgo(dateStr) {
   return `${days}d ago`
 }
 
-// ── Platform metrics (YouTube + Discord) ─────────────────────────────────────
+// ── Overview mirror cards ─────────────────────────────────────────────────────
+function MirrorCard({ icon, label, tabId, lines, setTab }) {
+  const [hovered, setHovered] = useState(false)
+  return (
+    <button
+      className={`ov-mirror${hovered ? ' ov-mirror-hovered' : ''}`}
+      onClick={() => setTab(tabId)}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+      <div className="ov-mirror-head">
+        <span className="ov-mirror-icon">{icon}</span>
+        <span className="ov-mirror-label">{label}</span>
+        <span className="ov-mirror-arrow">{hovered ? '↗' : '→'}</span>
+      </div>
+      <div className="ov-mirror-body">
+        {lines.map((line, i) => (
+          <div key={i} className="ov-mirror-line">
+            <span className="ov-mirror-val" style={line.color ? { color: line.color } : {}}>{line.value}</span>
+            <span className="ov-mirror-desc">{line.desc}</span>
+          </div>
+        ))}
+      </div>
+    </button>
+  )
+}
+
+function OverviewTab({ stats, smsRate, engagement, signupChart, recentFans, setTab }) {
+  const [ov, setOv] = useState(null)
+
+  useEffect(() => {
+    fetch('/api/admin/overview').then(r => r.json()).then(setOv).catch(() => {})
+  }, [])
+
+  return (
+    <>
+      {/* Fan stats row */}
+      <div className="adm2-stats-grid" style={{ marginBottom: 28 }}>
+        <StatCard label="Total Fans"     value={stats.total}    accent />
+        <StatCard label="Today"          value={stats.today}    color={stats.today > 0 ? '#4caf50' : undefined} pulse={stats.today > 0} />
+        <StatCard label="This Week"      value={stats.thisWeek} />
+        <StatCard label="This Month"     value={stats.thisMonth} />
+        <StatCard label="SMS Opted In"   value={stats.withPhone} sub={`${smsRate}% rate`} />
+        <StatCard label="Points Awarded" value={engagement.totalPointsAwarded} />
+      </div>
+
+      {/* Section mirrors */}
+      <SectionLabel>Platform Overview</SectionLabel>
+      <div className="ov-mirror-grid">
+        <MirrorCard icon="↗" label="Smart Links" tabId="Links" setTab={setTab} lines={[
+          { value: ov?.links.count ?? '—',  desc: 'links' },
+          { value: ov?.links.views ?? '—',  desc: 'views' },
+          { value: ov?.links.clicks ?? '—', desc: 'clicks' },
+        ]} />
+        <MirrorCard icon="✉" label="Campaigns" tabId="Campaigns" setTab={setTab} lines={[
+          { value: ov?.campaigns.sent ?? '—',       desc: 'sent' },
+          { value: ov?.campaigns.recipients ?? '—', desc: 'total recipients' },
+        ]} />
+        <MirrorCard icon="$" label="Spending" tabId="Spend" setTab={setTab} lines={[
+          { value: ov ? `$${ov.spending.revenue.toFixed(2)}` : '—', desc: 'total revenue', color: '#4caf50' },
+          { value: ov?.spending.purchases ?? '—', desc: 'purchases' },
+        ]} />
+        <MirrorCard icon="♫" label="Playlists" tabId="Playlists" setTab={setTab} lines={[
+          { value: ov?.playlists.active ?? '—', desc: 'active placements' },
+          { value: ov?.playlists.total  ?? '—', desc: 'tracked' },
+        ]} />
+        <MirrorCard icon="★" label="Engagement" tabId="Engagement" setTab={setTab} lines={[
+          { value: engagement.totalPointsAwarded.toLocaleString(), desc: 'points awarded' },
+          { value: engagement.missionCount, desc: 'missions done' },
+        ]} />
+      </div>
+
+      {/* Signup chart */}
+      <SectionLabel>Fan Signups — Last 30 Days</SectionLabel>
+      <div className="adm2-card">
+        <BarChart data={signupChart} />
+        <div className="adm-chart-footer">
+          <span>{signupChart[0]?.date}</span>
+          <span>Today</span>
+        </div>
+      </div>
+
+      {/* Recent signups */}
+      <SectionLabel>Recent Signups</SectionLabel>
+      <div className="adm2-card">
+        {recentFans.length === 0 ? (
+          <div className="adm2-empty">No fans yet.</div>
+        ) : recentFans.map((fan, i) => (
+          <div key={fan.id} className="adm2-row">
+            <span className="adm2-row-num">{i + 1}</span>
+            <span className="adm2-row-main">{fan.email}</span>
+            <div className="adm2-row-meta">
+              {fan.phone && <span className="adm-sms-badge">SMS</span>}
+              <span className="adm2-row-time">{timeAgo(fan.created_at)}</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </>
+  )
+}
+
 function PlatformTab() {
   const [youtube, setYoutube] = useState(null)
   const [discord, setDiscord] = useState(null)
@@ -58,8 +234,7 @@ function PlatformTab() {
   const [error,   setError]   = useState(null)
 
   const fetchMetrics = async () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true); setError(null)
     try {
       const [ytRes, dcRes] = await Promise.all([
         fetch('/api/metrics/youtube'),
@@ -67,11 +242,8 @@ function PlatformTab() {
       ])
       if (ytRes.ok) setYoutube(await ytRes.json())
       if (dcRes.ok) setDiscord(await dcRes.json())
-    } catch (e) {
-      setError(e.message)
-    } finally {
-      setLoading(false)
-    }
+    } catch (e) { setError(e.message) }
+    finally { setLoading(false) }
   }
 
   useEffect(() => { fetchMetrics() }, [])
@@ -86,25 +258,23 @@ function PlatformTab() {
         <span className="adm-refresh-time">Updated {new Date().toLocaleTimeString()}</span>
       </div>
       <div className="adm-platform-grid">
-        {youtube && (
-          <>
-            <div className="adm-platform-card">
-              <div className="adm-platform-source">YouTube</div>
-              <div className="adm-platform-metric">{youtube.subscribers?.toLocaleString()}</div>
-              <div className="adm-platform-label">Subscribers</div>
-            </div>
-            <div className="adm-platform-card">
-              <div className="adm-platform-source">YouTube</div>
-              <div className="adm-platform-metric">{youtube.views?.toLocaleString()}</div>
-              <div className="adm-platform-label">Total Views</div>
-            </div>
-            <div className="adm-platform-card">
-              <div className="adm-platform-source">YouTube</div>
-              <div className="adm-platform-metric">{youtube.videos?.toLocaleString()}</div>
-              <div className="adm-platform-label">Videos Published</div>
-            </div>
-          </>
-        )}
+        {youtube && (<>
+          <div className="adm-platform-card">
+            <div className="adm-platform-source">YouTube</div>
+            <div className="adm-platform-metric">{youtube.subscribers?.toLocaleString()}</div>
+            <div className="adm-platform-label">Subscribers</div>
+          </div>
+          <div className="adm-platform-card">
+            <div className="adm-platform-source">YouTube</div>
+            <div className="adm-platform-metric">{youtube.views?.toLocaleString()}</div>
+            <div className="adm-platform-label">Total Views</div>
+          </div>
+          <div className="adm-platform-card">
+            <div className="adm-platform-source">YouTube</div>
+            <div className="adm-platform-metric">{youtube.videos?.toLocaleString()}</div>
+            <div className="adm-platform-label">Videos Published</div>
+          </div>
+        </>)}
         {discord && (
           <div className="adm-platform-card">
             <div className="adm-platform-source">Discord</div>
@@ -117,125 +287,165 @@ function PlatformTab() {
   )
 }
 
-// ── Main component ────────────────────────────────────────────────────────────
-export default function AdminDashboard({
+function AdminDashboardInner({
   fans, stats, signupChart, engagement,
   tierCounts, top5, topActions,
   recentFans, recentPosts, tiers
 }) {
-  const [tab,    setTab]    = useState('Overview')
-  const [search, setSearch] = useState('')
+  const [tab,        setTab]        = useState('Overview')
+  const [search,     setSearch]     = useState('')
+  const [menuOpen,   setMenuOpen]   = useState(false)
+  const [signingOut, setSigningOut] = useState(false)
+  const [fansList,   setFansList]   = useState(fans)
+  const [addingFan,  setAddingFan]  = useState(false)
+  const [newFan,     setNewFan]     = useState({ email: '', display_name: '', phone: '' })
+  const [addingErr,  setAddingErr]  = useState(null)
+  const [addingSaving, setAddingSaving] = useState(false)
+  const [clock,      setClock]      = useState('')
+  const router = useRouter()
 
-  const filtered = fans.filter(f =>
+  useEffect(() => {
+    const tick = () => setClock(new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }))
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [])
+
+  const handleAddFan = async () => {
+    if (!newFan.email.trim()) { setAddingErr('Email is required'); return }
+    setAddingSaving(true); setAddingErr(null)
+    const res  = await fetch('/api/admin/fans', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(newFan),
+    })
+    const data = await res.json()
+    setAddingSaving(false)
+    if (!res.ok) { setAddingErr(data.error); return }
+    setFansList(f => [data.fan, ...f])
+    setAddingFan(false)
+    setNewFan({ email: '', display_name: '', phone: '' })
+  }
+
+  const filtered = fansList.filter(f =>
     f.email?.toLowerCase().includes(search.toLowerCase()) ||
     f.phone?.includes(search)
   )
 
   const smsRate = stats.total > 0
-    ? Math.round((stats.withPhone / stats.total) * 100)
-    : 0
+    ? Math.round((stats.withPhone / stats.total) * 100) : 0
+
+  const handleSignOut = async () => {
+    setSigningOut(true)
+    const supabase = createClient()
+    await supabase.auth.signOut()
+    router.push('/')
+    router.refresh()
+  }
+
+  const handleNav = (id) => { setTab(id); setMenuOpen(false) }
+
+  const currentNav = NAV.find(n => n.id === tab)
 
   return (
-    <div className="adm-page">
-      <div className="adm-inner">
+    <div className="adm2-shell">
 
-        {/* Header */}
-        <div className="adm-header">
-          <div>
-            <div className="adm-eyebrow">Admin</div>
-            <h1 className="adm-headline">Dashboard</h1>
+      {/* ── Sidebar (desktop) ── */}
+      <aside className={`adm2-sidebar${menuOpen ? ' adm2-sidebar-open' : ''}`}>
+        <div className="adm2-sidebar-top">
+          <div className="adm2-logo">
+            <span className="adm2-logo-dot" />
+            <span className="adm2-logo-text">Algee Smith</span>
           </div>
-          <a href="/" className="adm-back">← Back to site</a>
+          <div className="adm2-sidebar-label">
+            <span className="adm2-live-dot" /> Live
+          </div>
         </div>
 
-        {/* Tabs */}
-        <div className="adm-tabs">
-          {TABS.map(t => (
+        <nav className="adm2-nav">
+          {NAV.map(item => (
             <button
-              key={t}
-              className={`adm-tab${tab === t ? ' adm-tab-active' : ''}`}
-              onClick={() => setTab(t)}
+              key={item.id}
+              className={`adm2-nav-item${tab === item.id ? ' adm2-nav-active' : ''}`}
+              onClick={() => handleNav(item.id)}
             >
-              {t}
+              <span className="adm2-nav-icon">{item.icon}</span>
+              <span className="adm2-nav-label">{item.label}</span>
             </button>
           ))}
+        </nav>
+
+        <div className="adm2-sidebar-bottom">
+          <a href="/" className="adm2-sidebar-link">← Back to site</a>
+          <button
+            className="adm2-sidebar-link adm2-signout"
+            onClick={handleSignOut}
+            disabled={signingOut}
+          >
+            {signingOut ? 'Signing out...' : 'Sign out'}
+          </button>
+        </div>
+      </aside>
+
+      {/* Mobile overlay */}
+      {menuOpen && <div className="adm2-overlay" onClick={() => setMenuOpen(false)} />}
+
+      {/* ── Main content ── */}
+      <main className="adm2-main">
+
+        {/* Page header */}
+        <div className="adm2-topbar">
+          <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+            <button className="adm2-hamburger" onClick={() => setMenuOpen(m => !m)}>
+              <span /><span /><span />
+            </button>
+            <div className="adm2-page-title">
+              {currentNav?.icon} {currentNav?.label ?? tab}
+            </div>
+          </div>
+          <div className="adm2-topbar-right">
+            <span className="adm2-topbar-clock">{clock}</span>
+            <span className="adm2-topbar-date">
+              {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+            </span>
+          </div>
         </div>
 
-        {/* ── OVERVIEW TAB ── */}
-        {tab === 'Overview' && (
-          <div className="adm-tab-content">
-            {/* Top stats */}
-            <div className="adm-stats-row">
-              <StatCard label="Total Fans"    value={stats.total}    />
-              <StatCard label="Today"         value={stats.today}    color={stats.today > 0 ? '#4caf50' : undefined} />
-              <StatCard label="This Week"     value={stats.thisWeek} />
-              <StatCard label="This Month"    value={stats.thisMonth}/>
-              <StatCard label="SMS Opted In"  value={stats.withPhone} sub={`${smsRate}% rate`} />
-              <StatCard label="Points Awarded" value={engagement.totalPointsAwarded.toLocaleString()} />
-            </div>
+        <div className="adm2-content">
 
-            {/* Signup chart */}
-            <SectionLabel>Fan Signups — Last 30 Days</SectionLabel>
-            <div className="adm-card">
-              <BarChart data={signupChart} />
-              <div className="adm-chart-footer">
-                <span>{signupChart[0]?.date}</span>
-                <span>Today</span>
+          {/* ── OVERVIEW ── */}
+          {tab === 'Overview' && (
+            <OverviewTab
+              stats={stats}
+              smsRate={smsRate}
+              engagement={engagement}
+              signupChart={signupChart}
+              recentFans={recentFans}
+              setTab={setTab}
+            />
+          )}
+
+          {/* ── ENGAGEMENT ── */}
+          {tab === 'Engagement' && (
+            <>
+              <div className="adm2-stats-grid">
+                <StatCard label="Points Awarded"   value={engagement.totalPointsAwarded.toLocaleString()} />
+                <StatCard label="Missions Done"    value={engagement.missionCount} />
+                <StatCard label="Fans on Missions" value={engagement.uniqueMissionFans} />
+                <StatCard label="Fan Wall Posts"   value={engagement.wallTotal} />
               </div>
-            </div>
 
-            {/* Recent signups */}
-            <SectionLabel>Recent Signups</SectionLabel>
-            <div className="adm-card adm-recent-list">
-              {recentFans.length === 0 ? (
-                <div className="adm-empty">No fans yet.</div>
-              ) : recentFans.map((fan, i) => (
-                <div key={fan.id} className="adm-recent-row">
-                  <div className="adm-recent-num">{i + 1}</div>
-                  <div className="adm-recent-email">{fan.email}</div>
-                  <div className="adm-recent-meta">
-                    {fan.phone && <span className="adm-sms-badge">SMS</span>}
-                    <span className="adm-recent-time">{timeAgo(fan.created_at)}</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {/* Link analytics inline */}
-            <SectionLabel>Link Analytics</SectionLabel>
-            <LinkAnalytics />
-          </div>
-        )}
-
-        {/* ── ENGAGEMENT TAB ── */}
-        {tab === 'Engagement' && (
-          <div className="adm-tab-content">
-            {/* Engagement stats */}
-            <div className="adm-stats-row">
-              <StatCard label="Total Points Awarded" value={engagement.totalPointsAwarded.toLocaleString()} />
-              <StatCard label="Missions Completed"   value={engagement.missionCount} />
-              <StatCard label="Fans on Missions"      value={engagement.uniqueMissionFans} />
-              <StatCard label="Fan Wall Posts"        value={engagement.wallTotal} />
-            </div>
-
-            {/* Tier breakdown */}
-            <SectionLabel>Fan Tier Breakdown</SectionLabel>
-            <div className="adm-card">
-              <div className="adm-tier-rows">
+              <SectionLabel>Tier Breakdown</SectionLabel>
+              <div className="adm2-card">
                 {tiers.map(tier => {
                   const count = tierCounts[tier.name] ?? 0
                   const pct   = stats.total > 0 ? Math.round((count / stats.total) * 100) : 0
                   return (
                     <div key={tier.name} className="adm-tier-row">
-                      <div className="adm-tier-name" style={{ color: tier.color }}>
-                        {tier.icon} {tier.name}
-                      </div>
+                      <div className="adm-tier-name" style={{ color: tier.color }}>{tier.icon} {tier.name}</div>
                       <div className="adm-tier-bar-wrap">
                         <div className="adm-tier-bar-track">
-                          <div
-                            className="adm-tier-bar-fill"
-                            style={{ width: `${pct}%`, background: tier.color }}
-                          />
+                          <div className="adm-tier-bar-fill" style={{ width: `${pct}%`, background: tier.color }} />
                         </div>
                       </div>
                       <div className="adm-tier-count">{count} fans</div>
@@ -244,135 +454,157 @@ export default function AdminDashboard({
                   )
                 })}
               </div>
-            </div>
 
-            {/* Top fans */}
-            <SectionLabel>Top 5 Fans by Points</SectionLabel>
-            <div className="adm-card adm-top-fans">
-              {top5.length === 0 ? (
-                <div className="adm-empty">No points data yet.</div>
-              ) : top5.map((fan, i) => (
-                <div key={i} className="adm-top-fan-row">
-                  <div className="adm-top-rank">#{i + 1}</div>
-                  <div className="adm-top-email">{fan.email}</div>
-                  <div className="adm-top-tier" style={{ color: fan.tier.color }}>{fan.tier.name}</div>
-                  <div className="adm-top-pts">{fan.points.toLocaleString()} pts</div>
-                </div>
-              ))}
-            </div>
-
-            {/* Points by action */}
-            <SectionLabel>Points by Action</SectionLabel>
-            <div className="adm-card">
-              <div className="adm-action-rows">
-                {topActions.length === 0 ? (
-                  <div className="adm-empty">No activity yet.</div>
-                ) : topActions.map(({ action, points }) => (
-                  <div key={action} className="adm-action-row">
-                    <div className="adm-action-name">{action}</div>
-                    <div className="adm-action-pts">{points.toLocaleString()} pts</div>
+              <SectionLabel>Top 5 Fans by Points</SectionLabel>
+              <div className="adm2-card">
+                {top5.length === 0 ? (
+                  <div className="adm2-empty">No points data yet.</div>
+                ) : top5.map((fan, i) => (
+                  <div key={i} className="adm2-row">
+                    <span className="adm2-row-num">#{i + 1}</span>
+                    <span className="adm2-row-main">{fan.email}</span>
+                    <span className="adm2-row-tag" style={{ color: fan.tier.color }}>{fan.tier.name}</span>
+                    <span className="adm2-row-pts">{fan.points.toLocaleString()} pts</span>
                   </div>
                 ))}
               </div>
-            </div>
 
-            {/* Recent fan wall posts */}
-            <SectionLabel>Recent Fan Wall Posts</SectionLabel>
-            <div className="adm-card">
-              {recentPosts.length === 0 ? (
-                <div className="adm-empty">No posts yet.</div>
-              ) : recentPosts.map(post => (
-                <div key={post.id} className="adm-wall-row">
-                  <div className="adm-wall-msg">"{post.message}"</div>
-                  <div className="adm-wall-meta">
-                    <span>{post.display_name || 'Anonymous'}</span>
-                    {post.city && <span> · {post.city}</span>}
-                    <span className="adm-wall-time"> · {timeAgo(post.created_at)}</span>
-                    {!post.approved && <span className="adm-wall-unapproved"> · Pending</span>}
+              <SectionLabel>Points by Action</SectionLabel>
+              <div className="adm2-card">
+                {topActions.length === 0 ? (
+                  <div className="adm2-empty">No activity yet.</div>
+                ) : topActions.map(({ action, points }) => (
+                  <div key={action} className="adm2-row">
+                    <span className="adm2-row-main">{action}</span>
+                    <span className="adm2-row-pts">{points.toLocaleString()} pts</span>
+                  </div>
+                ))}
+              </div>
+
+              <SectionLabel>Recent Fan Wall Posts</SectionLabel>
+              <div className="adm2-card">
+                {recentPosts.length === 0 ? (
+                  <div className="adm2-empty">No posts yet.</div>
+                ) : recentPosts.map(post => (
+                  <div key={post.id} className="adm-wall-row">
+                    <div className="adm-wall-msg">"{post.message}"</div>
+                    <div className="adm-wall-meta">
+                      <span>{post.display_name || 'Anonymous'}</span>
+                      {post.city && <span> · {post.city}</span>}
+                      <span className="adm-wall-time"> · {timeAgo(post.created_at)}</span>
+                      {!post.approved && <span className="adm-wall-unapproved"> · Pending</span>}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {/* ── FANS ── */}
+          {tab === 'Fans' && (
+            <>
+              <div className="adm2-search-row">
+                <input
+                  className="adm2-search"
+                  type="text"
+                  placeholder="Search by email or phone..."
+                  value={search}
+                  onChange={e => setSearch(e.target.value)}
+                />
+                <span className="adm2-count">{filtered.length} of {fansList.length} fans</span>
+                <button className="adm2-btn-add" onClick={() => { setAddingFan(f => !f); setAddingErr(null) }}>
+                  {addingFan ? 'Cancel' : '+ Add Fan'}
+                </button>
+              </div>
+
+              {addingFan && (
+                <div className="adm2-add-fan-form">
+                  <div className="adm2-add-fan-title">Add Fan Manually</div>
+                  <div className="adm2-add-fan-fields">
+                    <input
+                      className="adm2-search"
+                      type="email"
+                      placeholder="Email address *"
+                      value={newFan.email}
+                      onChange={e => setNewFan(f => ({ ...f, email: e.target.value }))}
+                    />
+                    <input
+                      className="adm2-search"
+                      type="text"
+                      placeholder="Display name (optional)"
+                      value={newFan.display_name}
+                      onChange={e => setNewFan(f => ({ ...f, display_name: e.target.value }))}
+                    />
+                    <input
+                      className="adm2-search"
+                      type="tel"
+                      placeholder="Phone (optional)"
+                      value={newFan.phone}
+                      onChange={e => setNewFan(f => ({ ...f, phone: e.target.value }))}
+                    />
+                  </div>
+                  {addingErr && <div className="lm-error" style={{ marginTop: 8 }}>{addingErr}</div>}
+                  <div className="adm2-add-fan-actions">
+                    <button className="lm-btn-cancel" onClick={() => setAddingFan(false)}>Cancel</button>
+                    <button className="lm-btn-save" onClick={handleAddFan} disabled={addingSaving}>
+                      {addingSaving ? 'Adding...' : 'Add Fan'}
+                    </button>
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
-        )}
+              )}
+              <div className="adm2-card adm2-table-wrap">
+                <table className="adm-table">
+                  <thead>
+                    <tr><th>#</th><th>Email</th><th>Phone</th><th>SMS</th><th>Joined</th></tr>
+                  </thead>
+                  <tbody>
+                    {filtered.length === 0 ? (
+                      <tr><td colSpan={5} className="adm2-empty">{fansList.length === 0 ? 'No fans yet.' : 'No results.'}</td></tr>
+                    ) : filtered.map((fan, i) => (
+                      <tr key={fan.id}>
+                        <td className="adm-td-num">{fansList.indexOf(fan) + 1}</td>
+                        <td className="adm-td-email">{fan.email}</td>
+                        <td className="adm-td-phone">{fan.phone || <span className="adm-none">—</span>}</td>
+                        <td>{fan.phone ? <span className="adm-badge sms-yes">Yes</span> : <span className="adm-badge sms-no">No</span>}</td>
+                        <td className="adm-td-date">{new Date(fan.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div className="adm2-footer-note">Export → Supabase → Table Editor → profiles → Export CSV</div>
+            </>
+          )}
 
-        {/* ── PLATFORM TAB ── */}
-        {tab === 'Platform' && (
-          <div className="adm-tab-content">
-            <PlatformTab />
-          </div>
-        )}
+          {/* ── OTHER TABS ── */}
+          {tab === 'Spend'     && <SpendingManager />}
+          {tab === 'Platform'  && <PlatformTab />}
+          {tab === 'Playlists' && <PlaylistTracker />}
+          {tab === 'Links'     && (
+            <>
+              <LinksManager />
+              <div style={{ marginTop: 32 }}>
+                <LinkAnalytics />
+              </div>
+            </>
+          )}
+          {tab === 'Announce'  && <AnnouncementManager />}
+          {tab === 'Campaigns' && <CampaignManager />}
+          {tab === 'Push'      && <PushManager />}
+          {tab === 'Releases'   && <ReleasesManager />}
+          {tab === 'FanOfMonth' && <FanOfMonthManager />}
+          {tab === 'Exclusive' && <ExclusiveContentManager />}
 
-        {/* ── PLAYLISTS TAB ── */}
-        {tab === 'Playlists' && (
-          <div className="adm-tab-content">
-            <PlaylistTracker />
-          </div>
-        )}
-
-        {/* ── LINKS TAB ── */}
-        {tab === 'Links' && (
-          <div className="adm-tab-content">
-            <LinksManager />
-          </div>
-
-        )}
-
-        {/* ── FANS TAB ── */}
-        {tab === 'Fans' && (
-          <div className="adm-tab-content">
-            <div className="adm-search-wrap">
-              <input
-                className="adm-search"
-                type="text"
-                placeholder="Search by email or phone..."
-                value={search}
-                onChange={e => setSearch(e.target.value)}
-              />
-              <span className="adm-count">{filtered.length} of {fans.length} fans</span>
-            </div>
-
-            <div className="adm-table-wrap">
-              <table className="adm-table">
-                <thead>
-                  <tr>
-                    <th>#</th>
-                    <th>Email</th>
-                    <th>Phone</th>
-                    <th>SMS</th>
-                    <th>Joined</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.length === 0 ? (
-                    <tr><td colSpan={5} className="adm-empty">{fans.length === 0 ? 'No fans yet.' : 'No results.'}</td></tr>
-                  ) : filtered.map((fan, i) => (
-                    <tr key={fan.id}>
-                      <td className="adm-td-num">{fans.indexOf(fan) + 1}</td>
-                      <td className="adm-td-email">{fan.email}</td>
-                      <td className="adm-td-phone">{fan.phone || <span className="adm-none">—</span>}</td>
-                      <td>
-                        {fan.phone
-                          ? <span className="adm-badge sms-yes">Yes</span>
-                          : <span className="adm-badge sms-no">No</span>}
-                      </td>
-                      <td className="adm-td-date">
-                        {new Date(fan.created_at).toLocaleDateString('en-US', {
-                          month: 'short', day: 'numeric', year: 'numeric'
-                        })}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <div className="adm-footer-note">
-              Export → Supabase → Table Editor → profiles → Export CSV
-            </div>
-          </div>
-        )}
-
-      </div>
+        </div>
+      </main>
     </div>
+  )
+}
+
+export default function AdminDashboard(props) {
+  return (
+    <AdminErrorBoundary>
+      <AdminDashboardInner {...props} />
+    </AdminErrorBoundary>
   )
 }

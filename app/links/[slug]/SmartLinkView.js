@@ -1,6 +1,63 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
+
+function PresaveForm({ link, dark, text, subColor, cardBg, border }) {
+  const [email,     setEmail]     = useState('')
+  const [name,      setName]      = useState('')
+  const [submitted, setSubmitted] = useState(false)
+  const [loading,   setLoading]   = useState(false)
+  const [error,     setError]     = useState(null)
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    if (!email.trim()) return
+    setLoading(true); setError(null)
+    const res = await fetch('/api/links/presave', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ slug: link.slug, email: email.trim(), name: name.trim() }),
+    })
+    const data = await res.json()
+    setLoading(false)
+    if (!res.ok) { setError(data.error ?? 'Something went wrong'); return }
+    setSubmitted(true)
+  }
+
+  if (submitted) {
+    return (
+      <div style={{ background: cardBg, border: `1px solid ${border}`, borderRadius: 16, padding: '32px 24px', textAlign: 'center', maxWidth: 480, width: '100%', margin: '0 20px' }}>
+        <div style={{ fontSize: 32, marginBottom: 12 }}>🔴</div>
+        <div style={{ fontSize: 20, fontWeight: 800, color: text, marginBottom: 8 }}>You're in.</div>
+        <div style={{ fontSize: 14, color: subColor }}>We'll hit you when it drops.</div>
+      </div>
+    )
+  }
+
+  return (
+    <div style={{ width: '100%', maxWidth: 480, padding: '0 20px' }}>
+      <div style={{ background: cardBg, border: `1px solid ${border}`, borderRadius: 16, padding: '28px 24px' }}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: text, marginBottom: 4 }}>Get notified when it drops</div>
+        <div style={{ fontSize: 12, color: subColor, marginBottom: 20 }}>Drop your email and we'll hit you the moment it's live.</div>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+          <input
+            type="text" placeholder="Your name (optional)" value={name} onChange={e => setName(e.target.value)}
+            style={{ padding: '12px 14px', borderRadius: 10, border: `1px solid ${border}`, background: dark ? '#0a0a0a' : '#f0ede8', color: text, fontSize: 14, outline: 'none' }}
+          />
+          <input
+            type="email" placeholder="Your email *" value={email} onChange={e => setEmail(e.target.value)} required
+            style={{ padding: '12px 14px', borderRadius: 10, border: `1px solid ${border}`, background: dark ? '#0a0a0a' : '#f0ede8', color: text, fontSize: 14, outline: 'none' }}
+          />
+          {error && <div style={{ fontSize: 12, color: '#c4222e' }}>{error}</div>}
+          <button type="submit" disabled={loading}
+            style={{ padding: '14px', background: '#c4222e', border: 'none', borderRadius: 10, color: '#fff', fontSize: 13, fontWeight: 700, letterSpacing: 1, cursor: 'pointer', opacity: loading ? 0.6 : 1 }}>
+            {loading ? 'Saving...' : 'Pre-Save →'}
+          </button>
+        </form>
+      </div>
+    </div>
+  )
+}
 
 export default function SmartLinkView({ link, destinations }) {
   const dark = link.theme !== 'light'

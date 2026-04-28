@@ -17,7 +17,9 @@ function anonymize(email) {
   return local.slice(0, 3) + '•'.repeat(Math.min(local.length - 3, 5))
 }
 
-export default function LeaderboardView({ board, currentUserId, myPoints, myRank, myTier }) {
+const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
+
+export default function LeaderboardView({ board, currentUserId, myPoints, myRank, myTier, fanOfMonth }) {
 
   return (
     <div className="lb-page">
@@ -29,6 +31,18 @@ export default function LeaderboardView({ board, currentUserId, myPoints, myRank
           <h1>Fan <span className="italic">Leaderboard.</span></h1>
           <p className="page-hero-sub">The real ones. Ranked by points.</p>
         </div>
+
+        {/* Fan of the Month */}
+        {fanOfMonth && (
+          <div className="fotm-public-card">
+            <div className="fotm-public-crown">👑</div>
+            <div className="fotm-public-label">{MONTHS[fanOfMonth.month - 1]} {fanOfMonth.year} Fan of the Month</div>
+            <div className="fotm-public-name">{fanOfMonth.display_name || anonymize(fanOfMonth.email)}</div>
+            {fanOfMonth.reason && (
+              <div className="fotm-public-reason">"{fanOfMonth.reason}"</div>
+            )}
+          </div>
+        )}
 
         {/* Your rank card — only if logged in */}
         {currentUserId && myRank && (

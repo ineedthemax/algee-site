@@ -249,6 +249,32 @@ function SmartLinkForm({ initial, onSave, onCancel }) {
   )
 }
 
+// ─── QR Modal ────────────────────────────────────────────────────────────────
+
+function QRModal({ slug, onClose }) {
+  const url = `${typeof window !== 'undefined' ? window.location.origin : 'https://algee-site.vercel.app'}/links/${slug}`
+  const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(url)}&bgcolor=0f0f0f&color=f5f0eb&format=png`
+
+  return (
+    <div style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.8)', zIndex: 1000, display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+      onClick={onClose}>
+      <div style={{ background: '#0f0f0f', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 16, padding: 28, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 16 }}
+        onClick={e => e.stopPropagation()}>
+        <div style={{ fontSize: 13, fontWeight: 700, color: '#fff', letterSpacing: -0.2 }}>/links/{slug}</div>
+        <img src={qrSrc} alt="QR Code" style={{ width: 200, height: 200, borderRadius: 8 }} />
+        <div style={{ display: 'flex', gap: 10 }}>
+          <a href={qrSrc} download={`${slug}-qr.png`} style={{ padding: '8px 18px', background: '#c4222e', border: 'none', borderRadius: 8, color: '#fff', fontSize: 12, fontWeight: 700, textDecoration: 'none', cursor: 'pointer' }}>
+            ↓ Download
+          </a>
+          <button onClick={onClose} style={{ padding: '8px 18px', background: 'none', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, color: '#888', fontSize: 12, cursor: 'pointer' }}>
+            Close
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 // ─── Main LinksManager ───────────────────────────────────────────────────────
 
 export default function LinksManager() {
@@ -257,6 +283,7 @@ export default function LinksManager() {
   const [creating, setCreating] = useState(false)
   const [editing,  setEditing]  = useState(null)
   const [error,    setError]    = useState(null)
+  const [qrSlug,   setQrSlug]   = useState(null)
 
   const fetchLinks = async () => {
     setLoading(true)
@@ -311,6 +338,7 @@ export default function LinksManager() {
 
   return (
     <div className="lm-wrap">
+      {qrSlug && <QRModal slug={qrSlug} onClose={() => setQrSlug(null)} />}
 
       <div className="lm-header">
         <div>
@@ -392,6 +420,7 @@ export default function LinksManager() {
                       {link.active ? 'Live' : 'Off'}
                     </button>
                     <button className="lm-action-btn" onClick={() => copyLink(link.slug)} title="Copy link">⎘</button>
+                    <button className="lm-action-btn" onClick={() => setQrSlug(link.slug)} title="QR Code">▣</button>
                     <button className="lm-action-btn" onClick={() => window.open(`/links/${link.slug}`, '_blank')} title="Preview">↗</button>
                     <button className="lm-action-btn" onClick={() => { setEditing(link.id); setCreating(false) }} title="Edit">✎</button>
                     <button className="lm-action-btn lm-action-delete" onClick={() => handleDelete(link.id)} title="Delete">✕</button>
