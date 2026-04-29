@@ -95,21 +95,41 @@ function SectionLabel({ children }) {
 function BarChart({ data }) {
   const [ready, setReady] = useState(false)
   useEffect(() => { const t = setTimeout(() => setReady(true), 80); return () => clearTimeout(t) }, [])
-  const max = Math.max(...data.map(d => d.count), 1)
+  const max   = Math.max(...data.map(d => d.count), 1)
+  const W     = 600
+  const H     = 120
+  const pad   = 12
+  const pts   = data.map((d, i) => {
+    const x = pad + (i / (data.length - 1)) * (W - pad * 2)
+    const y = H - pad - (d.count / max) * (H - pad * 2)
+    return { x, y, ...d }
+  })
+  const pathD = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
+  const areaD = `${pathD} L ${pts[pts.length-1].x} ${H} L ${pts[0].x} ${H} Z`
+
   return (
-    <div className="adm-chart">
-      {data.map((d, i) => (
-        <div key={i} className="adm-chart-col">
-          <div
-            className="adm-chart-bar"
-            style={{
-              height: ready ? `${Math.max(3, (d.count / max) * 100)}%` : '3px',
-              transitionDelay: `${i * 12}ms`,
-            }}
-            title={`${d.date}: ${d.count} signups`}
-          />
-        </div>
-      ))}
+    <div className="adm-linechart-wrap">
+      <svg viewBox={`0 0 ${W} ${H}`} className="adm-linechart" preserveAspectRatio="none">
+        <defs>
+          <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor="rgba(196,34,46,0.3)" />
+            <stop offset="100%" stopColor="rgba(196,34,46,0)" />
+          </linearGradient>
+        </defs>
+        {ready && <>
+          <path d={areaD} fill="url(#lineGrad)" />
+          <path d={pathD} fill="none" stroke="#C4222E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          {pts.map((p, i) => p.count > 0 && (
+            <circle key={i} cx={p.x} cy={p.y} r="3" fill="#C4222E">
+              <title>{p.date}: {p.count} signups</title>
+            </circle>
+          ))}
+        </>}
+      </svg>
+      <div className="adm-chart-footer">
+        <span>{data[0]?.date}</span>
+        <span>Today</span>
+      </div>
     </div>
   )
 }
@@ -161,18 +181,68 @@ function OverviewTab({ stats, smsRate, engagement, signupChart, recentFans, setT
 
   return (
     <>
-      {/* Fan stats row */}
-      <div className="adm2-stats-grid" style={{ marginBottom: 28 }}>
-        <StatCard label="Total Fans"     value={stats.total}    accent />
-        <StatCard label="Today"          value={stats.today}    color={stats.today > 0 ? '#4caf50' : undefined} pulse={stats.today > 0} />
-        <StatCard label="This Week"      value={stats.thisWeek} />
-        <StatCard label="This Month"     value={stats.thisMonth} />
-        <StatCard label="SMS Opted In"   value={stats.withPhone} sub={`${smsRate}% rate`} />
-        <StatCard label="Points Awarded" value={engagement.totalPointsAwarded} />
+      {/* Welcome greeting */}
+      <div className="ov-greeting">
+        <div className="ov-greeting-title">Dashboard Overview</div>
+        <div className="ov-greeting-sub">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</div>
       </div>
 
-      {/* Section mirrors */}
-      <SectionLabel>Platform Overview</SectionLabel>
+      {/* Top grid — chart + key stats side by side */}
+      <div className="ov-top-grid">
+
+        {/* Chart card */}
+        <div className="ov-chart-card">
+          <div className="ov-chart-header">
+            <div className="ov-chart-title">Fan Growth</div>
+            <div className="ov-chart-sub">Last 30 days</div>
+          </div>
+          <BarChart data={signupChart} />
+          <div className="ov-chart-stats">
+            <div className="ov-chart-stat">
+              <span className="ov-chart-stat-val" style={stats.today > 0 ? { color: '#4caf50' } : {}}>+{stats.today}</span>
+              <span className="ov-chart-stat-label">Today</span>
+            </div>
+            <div className="ov-chart-stat">
+              <span className="ov-chart-stat-val">+{stats.thisWeek}</span>
+              <span className="ov-chart-stat-label">This week</span>
+            </div>
+            <div className="ov-chart-stat">
+              <span className="ov-chart-stat-val">+{stats.thisMonth}</span>
+              <span className="ov-chart-stat-label">This month</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Right stat stack */}
+        <div className="ov-stat-stack">
+          <div className="ov-big-stat">
+            <div className="ov-big-stat-label">Total Fans</div>
+            <div className="ov-big-stat-value">{stats.total.toLocaleString()}</div>
+            <div className="ov-big-stat-bar">
+              <div className="ov-big-stat-bar-fill" style={{ width: `${Math.min(100, (stats.total / 10000) * 100)}%` }} />
+            </div>
+            <div className="ov-big-stat-hint">Goal: 10,000</div>
+          </div>
+          <div className="ov-mini-stats">
+            <div className="ov-mini-stat">
+              <span className="ov-mini-val">{stats.withPhone}</span>
+              <span className="ov-mini-label">SMS · {smsRate}%</span>
+            </div>
+            <div className="ov-mini-stat">
+              <span className="ov-mini-val">{engagement.totalPointsAwarded.toLocaleString()}</span>
+              <span className="ov-mini-label">Points</span>
+            </div>
+            <div className="ov-mini-stat">
+              <span className="ov-mini-val">{engagement.missionCount}</span>
+              <span className="ov-mini-label">Missions</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      {/* Section tiles */}
+      <SectionLabel>Platform</SectionLabel>
       <div className="ov-mirror-grid">
         <MirrorCard icon="↗" label="Smart Links" tabId="Links" setTab={setTab} lines={[
           { value: ov?.links.count ?? '—',  desc: 'links' },
@@ -181,30 +251,20 @@ function OverviewTab({ stats, smsRate, engagement, signupChart, recentFans, setT
         ]} />
         <MirrorCard icon="✉" label="Campaigns" tabId="Campaigns" setTab={setTab} lines={[
           { value: ov?.campaigns.sent ?? '—',       desc: 'sent' },
-          { value: ov?.campaigns.recipients ?? '—', desc: 'total recipients' },
+          { value: ov?.campaigns.recipients ?? '—', desc: 'recipients' },
         ]} />
-        <MirrorCard icon="$" label="Spending" tabId="Spend" setTab={setTab} lines={[
-          { value: ov ? `$${ov.spending.revenue.toFixed(2)}` : '—', desc: 'total revenue', color: '#4caf50' },
+        <MirrorCard icon="$" label="Revenue" tabId="Spend" setTab={setTab} lines={[
+          { value: ov ? `$${ov.spending.revenue.toFixed(2)}` : '—', desc: 'total', color: '#4caf50' },
           { value: ov?.spending.purchases ?? '—', desc: 'purchases' },
         ]} />
         <MirrorCard icon="♫" label="Playlists" tabId="Playlists" setTab={setTab} lines={[
-          { value: ov?.playlists.active ?? '—', desc: 'active placements' },
+          { value: ov?.playlists.active ?? '—', desc: 'active' },
           { value: ov?.playlists.total  ?? '—', desc: 'tracked' },
         ]} />
         <MirrorCard icon="★" label="Engagement" tabId="Engagement" setTab={setTab} lines={[
-          { value: engagement.totalPointsAwarded.toLocaleString(), desc: 'points awarded' },
-          { value: engagement.missionCount, desc: 'missions done' },
+          { value: engagement.totalPointsAwarded.toLocaleString(), desc: 'points' },
+          { value: engagement.missionCount, desc: 'missions' },
         ]} />
-      </div>
-
-      {/* Signup chart */}
-      <SectionLabel>Fan Signups — Last 30 Days</SectionLabel>
-      <div className="adm2-card">
-        <BarChart data={signupChart} />
-        <div className="adm-chart-footer">
-          <span>{signupChart[0]?.date}</span>
-          <span>Today</span>
-        </div>
       </div>
 
       {/* Recent signups */}
