@@ -4896,6 +4896,34 @@ footer::before {
 .adm2-sidebar-link:hover { color: var(--white); background: rgba(245,240,235,0.04); }
 .adm2-signout:hover { color: var(--red) !important; }
 
+/* Presence indicator */
+.adm2-presence {
+  padding: 12px 10px 8px;
+  border-top: 1px solid rgba(245,240,235,0.06);
+  margin: 0 0 4px;
+}
+.adm2-presence-label {
+  font-family: var(--font-label, sans-serif);
+  font-size: 8px; font-weight: 700; letter-spacing: 2.5px;
+  text-transform: uppercase; color: var(--muted);
+  padding: 0 4px; margin-bottom: 8px;
+}
+.adm2-presence-row {
+  display: flex; align-items: center; gap: 8px;
+  padding: 5px 4px; border-radius: 6px;
+}
+.adm2-presence-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: #4caf50; flex-shrink: 0;
+  box-shadow: 0 0 6px rgba(76,175,80,0.7);
+  animation: adm-live-pulse 2s ease-in-out infinite;
+}
+.adm2-presence-email {
+  font-size: 12px; color: rgba(245,240,235,0.6);
+  font-family: var(--font-label, sans-serif);
+  letter-spacing: 0.3px;
+}
+
 /* ── Main ── */
 .adm2-main {
   flex: 1;

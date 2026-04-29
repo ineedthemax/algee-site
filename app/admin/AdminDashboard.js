@@ -302,12 +302,26 @@ function AdminDashboardInner({
   const [addingErr,  setAddingErr]  = useState(null)
   const [addingSaving, setAddingSaving] = useState(false)
   const [clock,      setClock]      = useState('')
+  const [activeAdmins, setActiveAdmins] = useState([])
   const router = useRouter()
 
   useEffect(() => {
     const tick = () => setClock(new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }))
     tick()
     const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [])
+
+  // Presence — ping every 30s, fetch active admins every 30s
+  useEffect(() => {
+    const ping = async () => {
+      await fetch('/api/admin/presence', { method: 'POST' })
+      const res = await fetch('/api/admin/presence')
+      const data = await res.json()
+      setActiveAdmins(data.active ?? [])
+    }
+    ping()
+    const id = setInterval(ping, 30000)
     return () => clearInterval(id)
   }, [])
 
@@ -374,6 +388,19 @@ function AdminDashboardInner({
             </button>
           ))}
         </nav>
+
+        {/* Active admins */}
+        {activeAdmins.length > 0 && (
+          <div className="adm2-presence">
+            <div className="adm2-presence-label">Online now</div>
+            {activeAdmins.map(a => (
+              <div key={a.email} className="adm2-presence-row">
+                <span className="adm2-presence-dot" />
+                <span className="adm2-presence-email">{a.email.split('@')[0]}</span>
+              </div>
+            ))}
+          </div>
+        )}
 
         <div className="adm2-sidebar-bottom">
           <a href="/" className="adm2-sidebar-link">← Back to site</a>
