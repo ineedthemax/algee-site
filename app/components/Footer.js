@@ -35,6 +35,8 @@ export default function Footer() {
             </a>
           ))}
           <a href="/faq">FAQ</a>
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
         </nav>
       </div>
     </footer>
