@@ -33,13 +33,13 @@ export async function POST(request) {
 
   if (!signups?.length) return NextResponse.json({ success: true, sent: 0 })
 
-  const linkUrl = `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://algee-site.vercel.app'}/links/${slug}`
+  const linkUrl = `${process.env.NEXT_PUBLIC_SITE_URL ?? 'https://www.thealgeesmith.com'}/links/${slug}`
 
   let sent = 0
   for (const signup of signups) {
     try {
       await resend.emails.send({
-        from:    'Algee Smith <onboarding@resend.dev>',
+        from:    'Algee Smith <hello@thealgeesmith.com>',
         to:      signup.email,
         subject: `${link.title} is out now 🔴`,
         html:    notifyHtml(link.title, linkUrl, signup.name),

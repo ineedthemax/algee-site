@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '../../lib/supabase/server'
+import { isAdmin } from '../../lib/isAdmin'
 import AnalyticsMetrics from '../components/AnalyticsMetrics'
 
 export const metadata = {
@@ -11,8 +12,8 @@ export default async function AnalyticsPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Lock to admin email only
-  if (!user || user.email !== process.env.ADMIN_EMAIL) {
+  // Lock to admin only
+  if (!user || !isAdmin(user.email)) {
     redirect('/')
   }
 

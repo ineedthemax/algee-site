@@ -37,7 +37,7 @@ export async function POST(request) {
       : 'soon'
 
     await resend.emails.send({
-      from:    'Algee Smith <onboarding@resend.dev>',
+      from:    'Algee Smith <hello@thealgeesmith.com>',
       to:      email,
       subject: `You're saved — ${link.title} drops ${releaseDate}`,
       html:    presaveConfirmHtml(link.title, releaseDate, name),

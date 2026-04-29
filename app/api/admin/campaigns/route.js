@@ -53,7 +53,7 @@ export async function POST(request) {
     try {
       await resend.batch.send(
         batch.map(email => ({
-          from:    'Algee Smith <onboarding@resend.dev>',
+          from:    'Algee Smith <hello@thealgeesmith.com>',
           to:      email,
           subject: subject.trim(),
           html:    campaignHtml(subject.trim(), body.trim()),

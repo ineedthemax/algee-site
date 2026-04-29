@@ -7,7 +7,7 @@ export async function POST(request) {
     if (!email) return Response.json({ error: 'Email required' }, { status: 400 })
 
     const { data, error } = await resend.emails.send({
-      from:    'Algee Smith <onboarding@resend.dev>',
+      from:    'Algee Smith <hello@thealgeesmith.com>',
       to:      email,
       subject: 'Welcome to the World.',
       html:    welcomeEmail(email),
@@ -81,7 +81,7 @@ function welcomeEmail(email) {
           <!-- CTA -->
           <tr>
             <td style="padding:0 0 48px 0;text-align:center;">
-              <a href="https://algee-site.vercel.app"
+              <a href="https://www.thealgeesmith.com"
                  style="display:inline-block;padding:16px 40px;background:#C4222E;border-radius:100px;font-size:12px;font-weight:700;letter-spacing:2.5px;text-transform:uppercase;color:#F5F0EB;text-decoration:none;">
                 Enter the World →
               </a>
@@ -101,17 +101,17 @@ function welcomeEmail(email) {
               <table cellpadding="0" cellspacing="0" style="margin:0 auto;">
                 <tr>
                   <td style="padding:0 16px;">
-                    <a href="https://algee-site.vercel.app/music"
+                    <a href="https://www.thealgeesmith.com/music"
                        style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#8A8078;text-decoration:none;">Music</a>
                   </td>
                   <td style="padding:0 16px;color:rgba(245,240,235,0.12);font-size:11px;">|</td>
                   <td style="padding:0 16px;">
-                    <a href="https://algee-site.vercel.app/film"
+                    <a href="https://www.thealgeesmith.com/film"
                        style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#8A8078;text-decoration:none;">Film</a>
                   </td>
                   <td style="padding:0 16px;color:rgba(245,240,235,0.12);font-size:11px;">|</td>
                   <td style="padding:0 16px;">
-                    <a href="https://algee-site.vercel.app/merch"
+                    <a href="https://www.thealgeesmith.com/merch"
                        style="font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:#8A8078;text-decoration:none;">Merch</a>
                   </td>
                 </tr>
@@ -126,7 +126,7 @@ function welcomeEmail(email) {
                 Algee Smith · Direct to Fan
               </p>
               <p style="margin:0;font-size:11px;color:#5A554F;line-height:1.6;">
-                You're receiving this because you signed up at algee-site.vercel.app<br/>
+                You're receiving this because you signed up at thealgeesmith.com<br/>
                 <span style="color:#3A3530;">${email}</span>
               </p>
             </td>
