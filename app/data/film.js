@@ -57,7 +57,7 @@ export const PROJECTS = [
     id:       'detroit',
     title:    'Detroit',
     slug:     'detroit',
-    cover:    '/images/film/detroit.jpg',
+    cover:    '/images/film/detriot.jpg',
     role:     'Larry Reed',
     type:     'Film',
     year:     '2017',
