@@ -2493,6 +2493,26 @@ footer::before {
   margin-bottom: 16px;
 }
 
+.merch-shop-btn {
+  display: inline-block;
+  background: #C4222E;
+  color: #F5F0EB;
+  font-family: var(--font-label, sans-serif);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-decoration: none;
+  padding: 16px 40px;
+  border-radius: 2px;
+  transition: background 0.2s, transform 0.15s;
+  margin-bottom: 16px;
+}
+.merch-shop-btn:hover {
+  background: #a01c26;
+  transform: translateY(-2px);
+}
+
 .merch-soon-note {
   font-family: var(--font-label, sans-serif);
   font-size: 10px;

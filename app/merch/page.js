@@ -1,5 +1,4 @@
 import Image from 'next/image'
-import MerchNotifyForm from './MerchNotifyForm'
 
 export const metadata = {
   title:       'Merch | Algee Smith',
@@ -60,7 +59,7 @@ export default function MerchPage() {
               </div>
               <div className="merch-drop-detail">
                 <span className="merch-detail-label">Status</span>
-                <span className="merch-detail-value merch-status-live">Coming Soon</span>
+                <span className="merch-detail-value merch-status-live">Live Now</span>
               </div>
               <div className="merch-drop-detail">
                 <span className="merch-detail-label">Run</span>
@@ -68,10 +67,17 @@ export default function MerchPage() {
               </div>
             </div>
 
-            <MerchNotifyForm />
+            <a
+              href="https://algeesmith.mpodx.shop/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="merch-shop-btn"
+            >
+              Shop Now →
+            </a>
 
             <div className="merch-soon-note">
-              Be first when the drop goes live. No spam, ever.
+              Ships directly to you. Limited run — grab yours before it's gone.
             </div>
           </div>
 
