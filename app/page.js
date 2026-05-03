@@ -1,6 +1,7 @@
 import HeroSection from './components/HeroSection'
 import FanWorldSection from './components/FanWorldSection'
 import DynamicTextSlider from './components/DynamicTextSlider'
+import TwoWorldsSection from './components/TwoWorldsSection'
 import SchemaMarkup from './components/SchemaMarkup'
 
 export const metadata = {
@@ -82,6 +83,9 @@ export default function Home() {
           ))}
         </div>
       </div>
+
+      {/* ─── Two Worlds ─── */}
+      <TwoWorldsSection />
 
       {/* ─── Dynamic Text Slider ─── */}
       <DynamicTextSlider />

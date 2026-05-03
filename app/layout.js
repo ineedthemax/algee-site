@@ -4,6 +4,7 @@ import Nav from './components/Nav'
 import Footer from './components/Footer'
 import CustomCursor from './components/CustomCursor'
 import ScrollReveal from './components/ScrollReveal'
+import ScrollProgress from './components/ScrollProgress'
 
 // ─── Brand Fonts ───────────────────────────────────────────────
 const playfair = Playfair_Display({
@@ -61,6 +62,9 @@ export default function RootLayout({ children }) {
       className={`${playfair.variable} ${barlow.variable} ${barlowCondensed.variable}`}
     >
       <body>
+        {/* Scroll progress bar */}
+        <ScrollProgress />
+
         {/* Custom cursor + spotlight */}
         <CustomCursor />
 

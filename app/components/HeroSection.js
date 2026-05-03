@@ -2,6 +2,19 @@
 
 import { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
+import { motion } from 'framer-motion'
+
+const HEADLINE_WORDS = ['Step Into', 'the', 'World.']
+
+const wordVariants = {
+  hidden: { y: '110%', opacity: 0 },
+  show:   { y: '0%',   opacity: 1 },
+}
+
+const containerVariants = {
+  hidden: {},
+  show:   { transition: { staggerChildren: 0.12, delayChildren: 0.3 } },
+}
 
 const CREDITS = [
   { label: 'The Hate U Give', type: 'Film' },
@@ -75,19 +88,43 @@ export default function HeroSection() {
             <span className="hero-marker-text">Two Stages · One Soul</span>
           </div>
 
-          <h1 className="hero-headline">
-            <span className="line"><span>Step Into</span></span>
-            <span className="line"><span className="italic">the</span></span>
-            <span className="line"><span>World.</span></span>
-          </h1>
+          <motion.h1
+            className="hero-headline"
+            variants={containerVariants}
+            initial="hidden"
+            animate="show"
+          >
+            {HEADLINE_WORDS.map((word, i) => (
+              <span key={i} className="line" style={{ overflow: 'hidden', display: 'block' }}>
+                <motion.span
+                  variants={wordVariants}
+                  transition={{ duration: 0.75, ease: [0.16, 1, 0.3, 1] }}
+                  style={{ display: 'block' }}
+                  className={i === 1 ? 'italic' : ''}
+                >
+                  {word}
+                </motion.span>
+              </span>
+            ))}
+          </motion.h1>
 
-          <p className="hero-sub">
+          <motion.p
+            className="hero-sub"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, ease: 'easeOut', delay: 0.75 }}
+          >
             Actor. R&amp;B artist. From Saginaw to Atlanta to Los Angeles.
             Direct from the artist to you.
-          </p>
+          </motion.p>
 
           {/* CTAs */}
-          <div className="hero-cta">
+          <motion.div
+            className="hero-cta"
+            initial={{ opacity: 0, y: 16 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, ease: 'easeOut', delay: 0.95 }}
+          >
             <Link href="/music" className="btn btn-primary">
               <span>Listen Now</span>
               <span className="btn-arrow" aria-hidden="true">→</span>
@@ -95,7 +132,7 @@ export default function HeroSection() {
             <Link href="/film" className="btn">
               <span>See the Films</span>
             </Link>
-          </div>
+          </motion.div>
         </div>
       </div>
 
