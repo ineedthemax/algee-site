@@ -1,8 +1,10 @@
 'use client'
 
-import { useState, useEffect, Component } from 'react'
+import { useState, useEffect, Component, lazy, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '../../lib/supabase/client'
+
+const FanMap = lazy(() => import('../components/FanMap'))
 import LinksManager from './LinksManager'
 import PlaylistTracker from './PlaylistTracker'
 import LinkAnalytics from './LinkAnalytics'
@@ -173,10 +175,12 @@ function MirrorCard({ icon, label, tabId, lines, setTab }) {
 }
 
 function OverviewTab({ stats, smsRate, engagement, signupChart, recentFans, setTab }) {
-  const [ov, setOv] = useState(null)
+  const [ov, setOv]             = useState(null)
+  const [mapData, setMapData]   = useState([])
 
   useEffect(() => {
     fetch('/api/admin/overview').then(r => r.json()).then(setOv).catch(() => {})
+    fetch('/api/admin/fan-map').then(r => r.json()).then(d => setMapData(d.countries ?? [])).catch(() => {})
   }, [])
 
   return (
@@ -282,6 +286,34 @@ function OverviewTab({ stats, smsRate, engagement, signupChart, recentFans, setT
             </div>
           </div>
         ))}
+      </div>
+
+      {/* Fan World Map */}
+      <SectionLabel>Fans Around the World</SectionLabel>
+      <div className="adm2-card ov-map-card">
+        {mapData.length === 0 ? (
+          <div className="adm2-empty">
+            Fan locations will appear here as fans sign in.
+          </div>
+        ) : (
+          <>
+            <Suspense fallback={<div className="adm2-empty">Loading map…</div>}>
+              <FanMap countries={mapData} />
+            </Suspense>
+            <div className="ov-map-legend">
+              {mapData
+                .sort((a, b) => b.count - a.count)
+                .slice(0, 8)
+                .map(c => (
+                  <div key={c.country_code} className="ov-map-legend-item">
+                    <span className="ov-map-dot" />
+                    <span className="ov-map-country">{c.country}</span>
+                    <span className="ov-map-count">{c.count}</span>
+                  </div>
+                ))}
+            </div>
+          </>
+        )}
       </div>
     </>
   )

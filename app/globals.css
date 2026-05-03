@@ -8534,6 +8534,52 @@ footer::before {
   margin-bottom: 28px;
 }
 
+/* ── Fan Map ─────────────────────────────────────────────────────── */
+.fan-map-wrap {
+  width: 100%;
+  height: 340px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #0d0d0d;
+}
+.ov-map-card {
+  padding: 0 !important;
+  overflow: hidden;
+}
+.ov-map-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  padding: 14px 18px;
+  border-top: 1px solid rgba(255,255,255,0.06);
+  background: #111;
+}
+.ov-map-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.ov-map-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #C4222E;
+  flex-shrink: 0;
+}
+.ov-map-country {
+  font-family: var(--font-label, sans-serif);
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: var(--fg, #F5F0EB);
+  text-transform: uppercase;
+}
+.ov-map-count {
+  font-family: var(--font-label, sans-serif);
+  font-size: 11px;
+  color: #C4222E;
+  font-weight: 700;
+}
+
 .ov-mirror {
   background: #0f0f0f;
   border: 1px solid rgba(255,255,255,0.06);

@@ -69,6 +69,17 @@ export async function GET(request) {
         }
       }
 
+      // Geolocate fan (fire-and-forget — don't block login)
+      try {
+        fetch(`${origin}/api/fan/locate`, {
+          method:  'POST',
+          headers: {
+            'x-forwarded-for': request.headers.get('x-forwarded-for') ?? '',
+            'x-real-ip':       request.headers.get('x-real-ip') ?? '',
+          },
+        }).catch(() => {})
+      } catch {}
+
       // Send admin straight to the admin dashboard
       const destination = isAdmin(user.email) ? '/admin' : next
 
