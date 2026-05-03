@@ -4,6 +4,9 @@ import { useEffect } from 'react'
 
 export default function CustomCursor() {
   useEffect(() => {
+    // Don't run on touch devices
+    if (window.matchMedia('(hover: none)').matches) return
+
     const dot      = document.getElementById('cursor-dot')
     const ring     = document.getElementById('cursor-ring')
     const spotlight = document.getElementById('spotlight')

@@ -1778,7 +1778,7 @@ footer::before {
 /* Hide cursor on touch devices */
 @media (hover: none) {
   html, body, a, button { cursor: auto !important; }
-  .cursor-dot, .cursor-ring { display: none !important; }
+  .cursor-dot, .cursor-ring, .spotlight { display: none !important; }
 }
 
 /* ═══════════ VIDEOS PAGE ═══════════ */
@@ -9355,3 +9355,155 @@ footer::before {
 .faq-footer { margin-top: 48px; text-align: center; font-size: 15px; color: var(--muted); }
 .faq-link   { color: #c4222e; text-decoration: none; font-weight: 700; }
 .faq-link:hover { text-decoration: underline; }
+
+
+/* ═══════════════════════════════════════════════════════════════════
+   MOBILE AUDIT — Comprehensive fixes for all new + existing components
+   Target: 375px (iPhone SE) → 600px (small tablet)
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* ── Hero: stats strip & credit ticker ── */
+@media (max-width: 600px) {
+  .hero-credit-ticker { display: none; }
+
+  .hero-stats-strip {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    gap: 0;
+  }
+  .hero-stats-strip::-webkit-scrollbar { display: none; }
+
+  .hero-stat {
+    min-width: 90px;
+    padding: 14px 10px;
+  }
+  .hero-stat-value { font-size: 16px; }
+  .hero-stat-label { font-size: 8px; letter-spacing: 1px; }
+}
+
+@media (max-width: 420px) {
+  .hero-stat { min-width: 80px; padding: 12px 8px; }
+  .hero-stat-value { font-size: 15px; }
+}
+
+/* ── Releases: featured card stacks vertically ── */
+@media (max-width: 700px) {
+  .releases-featured {
+    flex-direction: column;
+    min-height: unset;
+  }
+  .releases-featured-art {
+    width: 100%;
+    min-height: 220px;
+  }
+  .releases-featured-overlay {
+    background: linear-gradient(to top, rgba(5,5,5,0.8) 0%, transparent 60%);
+  }
+  .releases-featured-body {
+    padding: 24px 24px 28px;
+    gap: 8px;
+  }
+  .releases-featured-title { font-size: 26px; }
+}
+
+@media (max-width: 480px) {
+  .releases-inner { padding: 0 20px; }
+  .releases-grid  { grid-template-columns: 1fr; }
+  .releases-featured-art { min-height: 180px; }
+  .releases-featured-title { font-size: 22px; }
+}
+
+/* ── Fan ID card ── */
+@media (max-width: 500px) {
+  .fan-id-card { padding: 20px 20px 16px; border-radius: 16px; }
+  .fan-id-body { gap: 14px; }
+  .fan-id-emblem { width: 52px; height: 52px; }
+  .fan-id-emblem-icon { font-size: 20px; }
+  .fan-id-name { font-size: 18px; }
+  .fan-id-email { font-size: 12px; }
+  .fan-id-stat-val { font-size: 18px; }
+  .fan-id-stat-label { font-size: 8px; letter-spacing: 1px; }
+  .fan-id-stats { padding: 10px 0; }
+}
+
+/* ── Fan Dashboard ── */
+@media (max-width: 500px) {
+  .dashboard-inner { padding: 24px 16px 80px; }
+  .dashboard-links-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .dashboard-link-card { padding: 16px; }
+  .points-earn-grid { grid-template-columns: 1fr 1fr; }
+}
+
+/* ── Fan world map (admin) ── */
+@media (max-width: 600px) {
+  .fan-map-wrap { height: 220px; }
+  .ov-map-legend { gap: 8px 16px; padding: 12px 16px; }
+  .ov-map-country { font-size: 10px; }
+}
+
+/* ── Admin dashboard ── */
+@media (max-width: 520px) {
+  .adm2-stats-grid    { grid-template-columns: 1fr 1fr; gap: 10px; }
+  .adm2-content       { padding: 16px; }
+  .ov-greeting-title  { font-size: 20px; }
+  .ov-big-stat-value  { font-size: 40px; }
+  .ov-chart-card      { padding: 16px; }
+  .ov-mirror-grid     { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .adm2-topbar        { padding: 12px 16px; }
+}
+
+/* ── Film stack ── */
+@media (max-width: 600px) {
+  .film-stack-section { padding: 0 16px 60px; }
+  .film-stack-info    { padding: 20px 0 0; }
+  .film-stack-title   { font-size: 28px; }
+  .film-stack-arrows  { gap: 12px; }
+}
+
+/* ── Merch page ── */
+@media (max-width: 500px) {
+  .merch-drop-section { padding: 32px 16px 60px; }
+  .merch-shop-btn     { width: 100%; text-align: center; padding: 16px 20px; }
+  .merch-drop-details { grid-template-columns: repeat(3,1fr); gap: 8px; }
+  .merch-drop-title   { font-size: 36px; }
+}
+
+/* ── About page ── */
+@media (max-width: 500px) {
+  .about-section { padding: 40px 16px 60px; }
+  .about-photo-wrap { max-width: 100%; }
+}
+
+/* ── Page hero (shared across pages) ── */
+@media (max-width: 500px) {
+  .page-hero { padding: 100px 20px 40px; }
+  .page-hero h1 { font-size: clamp(40px, 12vw, 72px); }
+  .page-hero-sub { font-size: 14px; }
+}
+
+/* ── Legal pages ── */
+@media (max-width: 600px) {
+  .legal-inner { padding: 100px 20px 60px; }
+  .legal-body h2 { font-size: 18px; }
+}
+
+/* ── FAQ ── */
+@media (max-width: 600px) {
+  .faq-q { font-size: 16px; }
+  .faq-a { font-size: 14px; }
+}
+
+/* ── Prevent horizontal overflow globally ── */
+@media (max-width: 600px) {
+  .hero-bg-text,
+  .merch-bg-text,
+  .dashboard-bg-text { font-size: clamp(80px, 40vw, 180px); }
+}
+
+/* ── Buttons / CTAs on small screens ── */
+@media (max-width: 420px) {
+  .hero-cta { flex-direction: column; gap: 12px; }
+  .btn      { width: 100%; justify-content: center; }
+}
+
