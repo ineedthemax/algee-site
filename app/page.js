@@ -2,7 +2,6 @@ import HeroSection from './components/HeroSection'
 import FanWorldSection from './components/FanWorldSection'
 import DynamicTextSlider from './components/DynamicTextSlider'
 import TwoWorldsSection from './components/TwoWorldsSection'
-import MicCord from './components/MicCord'
 import SchemaMarkup from './components/SchemaMarkup'
 
 export const metadata = {
@@ -65,9 +64,6 @@ export default function Home() {
   return (
     <>
       <SchemaMarkup schema={personSchema} />
-
-      {/* Mic cord — weaves down the full page */}
-      <MicCord />
 
       <HeroSection />
 
