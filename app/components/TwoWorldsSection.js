@@ -2,6 +2,7 @@
 
 import { useRef } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion, useInView, useScroll, useTransform } from 'framer-motion'
 
 const FILM_CREDITS = [
@@ -55,13 +56,30 @@ export default function TwoWorldsSection() {
     offset:  ['start end', 'end start'],
   })
 
-  const leftX  = useTransform(scrollYProgress, [0, 0.5], [-60, 0])
-  const rightX = useTransform(scrollYProgress, [0, 0.5], [60, 0])
+  const leftX   = useTransform(scrollYProgress, [0, 0.5], [-60, 0])
+  const rightX  = useTransform(scrollYProgress, [0, 0.5], [60, 0])
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0])
   const centerY = useTransform(scrollYProgress, [0, 0.4], [40, 0])
+  // Photo parallax — moves up slightly slower than scroll
+  const photoY  = useTransform(scrollYProgress, [0, 1], ['8%', '-8%'])
 
   return (
     <section className="tw-section" ref={sectionRef}>
+
+      {/* ── Photo column ── */}
+      <motion.div className="tw-photo-col" style={{ opacity }}>
+        <motion.div className="tw-photo-wrap" style={{ y: photoY }}>
+          <Image
+            src="/images/algee-tw.webp"
+            alt="Algee Smith"
+            fill
+            sizes="(max-width: 900px) 0px, 260px"
+            className="tw-photo-img"
+            priority
+          />
+          <div className="tw-photo-overlay" />
+        </motion.div>
+      </motion.div>
 
       {/* Center divider label */}
       <motion.div

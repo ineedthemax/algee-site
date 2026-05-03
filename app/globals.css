@@ -9515,13 +9515,40 @@ footer::before {
 .tw-section {
   position: relative;
   display: grid;
-  grid-template-columns: 1fr auto 1fr;
+  grid-template-columns: 260px 1fr auto 1fr;
   gap: 0;
   padding: 120px 0;
   border-top: 1px solid rgba(245,240,235,0.06);
   border-bottom: 1px solid rgba(245,240,235,0.06);
   overflow: hidden;
   background: #080808;
+  min-height: 600px;
+}
+
+/* Photo column */
+.tw-photo-col {
+  position: relative;
+  overflow: hidden;
+  min-height: 520px;
+}
+.tw-photo-wrap {
+  position: absolute;
+  inset: -10% 0;
+  will-change: transform;
+}
+.tw-photo-img {
+  object-fit: cover;
+  object-position: center top;
+}
+.tw-photo-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to right,
+    rgba(8,8,8,0) 0%,
+    rgba(8,8,8,0.5) 85%,
+    rgba(8,8,8,0.95) 100%
+  );
 }
 
 /* Center divider */
@@ -9649,6 +9676,7 @@ footer::before {
     padding: 60px 0;
     gap: 40px;
   }
+  .tw-photo-col { display: none; }
   .tw-center {
     flex-direction: row;
     padding: 0 24px;
