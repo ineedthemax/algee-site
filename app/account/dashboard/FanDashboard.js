@@ -153,80 +153,74 @@ export default function FanDashboard({
           </div>
         )}
 
-        {/* Header */}
-        <div className="dashboard-header">
-          <div className="dashboard-header-left">
-            <div className="dashboard-eyebrow">Fan Account</div>
-            <h1 className="dashboard-headline">
-              Welcome back,<br />
-              <span className="italic">{displayName}.</span>
-            </h1>
-          </div>
-          <button
-            className="dashboard-signout"
-            onClick={handleSignOut}
-            disabled={signingOut}
-          >
-            {signingOut ? 'Signing out...' : 'Sign Out'}
-          </button>
-        </div>
+        {/* ── Fan ID Card ── */}
+        <div className="fan-id-card" style={{ '--tier-color': tier?.color ?? '#888' }}>
+          {/* Scorpion watermark */}
+          <div className="fan-id-watermark" aria-hidden="true">✦</div>
 
-        {/* Member card */}
-        <div className="dashboard-card member-card">
-          <div className="member-card-left">
-            <div className="member-badge" style={{ color: tier?.color }}>
-              {tier?.name ?? 'Free'} Fan
-            </div>
-            <div className="member-email">{user.email}</div>
-            {user.user_metadata?.phone && (
-              <div className="member-email" style={{ marginTop: 2 }}>
-                {user.user_metadata.phone} · SMS alerts on
-              </div>
-            )}
-            <div className="member-since">Member since {joinedDate}</div>
+          {/* Top row */}
+          <div className="fan-id-top">
+            <div className="fan-id-eyebrow">Algee Smith · Fan Club</div>
+            <button
+              className="dashboard-signout"
+              onClick={handleSignOut}
+              disabled={signingOut}
+            >
+              {signingOut ? '...' : 'Sign Out'}
+            </button>
           </div>
-          <div className="member-card-right">
-            <div className="member-tier-label">Points</div>
-            <div className="member-tier-value">{points.toLocaleString()}</div>
-            <div className="member-tier-label" style={{ marginTop: 6 }}>Tier</div>
-            <div className="member-tier-value" style={{ color: tier?.color }}>
-              {tier?.name ?? 'Free'}
+
+          {/* Emblem + identity */}
+          <div className="fan-id-body">
+            <div className="fan-id-emblem">
+              <div className="fan-id-emblem-icon">{tier?.icon ?? '◻'}</div>
+            </div>
+            <div className="fan-id-identity">
+              <div className="fan-id-name">{displayName}</div>
+              <div className="fan-id-email">{user.email}</div>
+              <div className="fan-id-since">Member since {joinedDate}</div>
             </div>
           </div>
-        </div>
 
-        {/* Points progress bar */}
-        <div className="dashboard-card points-card">
-          <div className="points-card-header">
-            <span className="points-card-label">Fan Points</span>
-            <span className="points-card-total">{points.toLocaleString()} pts</span>
+          {/* Stats row */}
+          <div className="fan-id-stats">
+            <div className="fan-id-stat">
+              <span className="fan-id-stat-val">{points.toLocaleString()}</span>
+              <span className="fan-id-stat-label">Points</span>
+            </div>
+            <div className="fan-id-divider" />
+            <div className="fan-id-stat">
+              <span className="fan-id-stat-val" style={{ color: tier?.color }}>{tier?.name ?? 'Free'}</span>
+              <span className="fan-id-stat-label">Tier</span>
+            </div>
+            <div className="fan-id-divider" />
+            <div className="fan-id-stat">
+              <span className="fan-id-stat-val">{progressPct}%</span>
+              <span className="fan-id-stat-label">To Next</span>
+            </div>
           </div>
 
-          <div className="points-bar-track">
-            <div
-              className="points-bar-fill"
-              style={{ width: `${progressPct}%`, background: tier?.color ?? '#c4222e' }}
-            />
+          {/* Progress bar */}
+          <div className="fan-id-bar-track">
+            <div className="fan-id-bar-fill" style={{ width: `${progressPct}%` }} />
           </div>
-
           {nextTier ? (
-            <div className="points-card-sub">
-              {pointsToNext} more points to unlock{' '}
-              <span style={{ color: nextTier.color, fontWeight: 600 }}>{nextTier.name}</span>
+            <div className="fan-id-bar-hint">
+              {pointsToNext} pts to <span style={{ color: nextTier.color }}>{nextTier.name}</span>
             </div>
           ) : (
-            <div className="points-card-sub" style={{ color: tier?.color }}>
-              You&apos;ve reached the highest tier. Legend status.
-            </div>
+            <div className="fan-id-bar-hint" style={{ color: tier?.color }}>Legend status. Max tier reached.</div>
           )}
+        </div>
 
-          {/* How to earn */}
+        {/* How to earn points */}
+        <div className="dashboard-card points-earn-card">
           <div className="points-earn-label">How to earn points</div>
           <div className="points-earn-grid">
             <div className="points-earn-item"><span className="points-earn-pts">+100</span> Join the fan club</div>
+            <div className="points-earn-item"><span className="points-earn-pts">+50</span> Buy merch or music</div>
             <div className="points-earn-item"><span className="points-earn-pts">+20</span> Share content</div>
             <div className="points-earn-item"><span className="points-earn-pts">+10</span> Stream music</div>
-            <div className="points-earn-item"><span className="points-earn-pts">+50</span> Buy merch</div>
           </div>
         </div>
 
