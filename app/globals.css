@@ -9515,39 +9515,71 @@ footer::before {
 .tw-section {
   position: relative;
   display: grid;
-  grid-template-columns: 260px 1fr auto 1fr;
+  grid-template-columns: 340px 1fr auto 1fr;
   gap: 0;
   padding: 120px 0;
   border-top: 1px solid rgba(245,240,235,0.06);
   border-bottom: 1px solid rgba(245,240,235,0.06);
   overflow: hidden;
   background: #080808;
-  min-height: 600px;
+  min-height: 640px;
 }
 
 /* Photo column */
 .tw-photo-col {
   position: relative;
   overflow: hidden;
-  min-height: 520px;
+  min-height: 640px;
 }
 .tw-photo-wrap {
   position: absolute;
-  inset: -10% 0;
+  inset: -8% 0 -8%;
   will-change: transform;
 }
 .tw-photo-img {
   object-fit: cover;
-  object-position: center top;
+  object-position: center 15%;
+  /* CSS mask: fade into dark bg on right, top, bottom */
+  -webkit-mask-image: linear-gradient(
+    to right,
+    rgba(0,0,0,1) 0%,
+    rgba(0,0,0,1) 55%,
+    rgba(0,0,0,0) 100%
+  ),
+  linear-gradient(
+    to bottom,
+    rgba(0,0,0,0) 0%,
+    rgba(0,0,0,1) 8%,
+    rgba(0,0,0,1) 92%,
+    rgba(0,0,0,0) 100%
+  );
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(
+    to right,
+    rgba(0,0,0,1) 0%,
+    rgba(0,0,0,1) 55%,
+    rgba(0,0,0,0) 100%
+  ),
+  linear-gradient(
+    to bottom,
+    rgba(0,0,0,0) 0%,
+    rgba(0,0,0,1) 8%,
+    rgba(0,0,0,1) 92%,
+    rgba(0,0,0,0) 100%
+  );
+  mask-composite: intersect;
+  /* Boost contrast so dark bg merges with site bg */
+  filter: contrast(1.05) brightness(0.95);
 }
 .tw-photo-overlay {
   position: absolute;
   inset: 0;
+  /* Extra right-side fade for seamless blend */
   background: linear-gradient(
     to right,
-    rgba(8,8,8,0) 0%,
-    rgba(8,8,8,0.5) 85%,
-    rgba(8,8,8,0.95) 100%
+    transparent 40%,
+    rgba(8,8,8,0.6) 75%,
+    rgba(8,8,8,1) 100%
   );
 }
 
