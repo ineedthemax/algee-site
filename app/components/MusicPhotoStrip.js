@@ -3,10 +3,10 @@
 import Image from 'next/image'
 
 const PHOTOS = [
-  { src: '/images/music/music-1.jpg', alt: 'Algee Smith in the studio'       },
-  { src: '/images/music/music-2.jpg', alt: 'Algee Smith performing live'     },
-  { src: '/images/music/music-3.jpg', alt: 'Algee Smith live with full band' },
-  { src: '/images/music/music-4.jpg', alt: 'Algee Smith on stage'            },
+  { src: '/images/music/music-1.webp', alt: 'Algee Smith in the studio'       },
+  { src: '/images/music/music-2.webp', alt: 'Algee Smith performing live'     },
+  { src: '/images/music/music-3.webp', alt: 'Algee Smith live with full band' },
+  { src: '/images/music/music-4.webp', alt: 'Algee Smith on stage'            },
 ]
 
 // Duplicate for seamless infinite loop

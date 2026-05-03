@@ -116,10 +116,10 @@ export function PhotoGallery({ animationDelay = 0.5 }) {
 
   const photos = [
     { id: 1, order: 0, x: '-320px', y: '15px',  zIndex: 50, direction: 'left',  src: '/images/fashion/MarkPeaced-1446.jpg' },
-    { id: 2, order: 1, x: '-160px', y: '32px',  zIndex: 40, direction: 'left',  src: '/images/fashion/algee-4-watermarked-1759246510955.png' },
-    { id: 3, order: 2, x: '0px',    y: '8px',   zIndex: 30, direction: 'right', src: '/images/fashion/algee-9-watermarked-1759246529326.png' },
-    { id: 4, order: 3, x: '160px',  y: '22px',  zIndex: 20, direction: 'right', src: '/images/fashion/algee-15-watermarked-1759246578195.png' },
-    { id: 5, order: 4, x: '320px',  y: '44px',  zIndex: 10, direction: 'left',  src: '/images/fashion/algee-16-watermarked-1759246586448.png' },
+    { id: 2, order: 1, x: '-160px', y: '32px',  zIndex: 40, direction: 'left',  src: '/images/fashion/algee-4-watermarked-1759246510955.webp' },
+    { id: 3, order: 2, x: '0px',    y: '8px',   zIndex: 30, direction: 'right', src: '/images/fashion/algee-9-watermarked-1759246529326.webp' },
+    { id: 4, order: 3, x: '160px',  y: '22px',  zIndex: 20, direction: 'right', src: '/images/fashion/algee-15-watermarked-1759246578195.webp' },
+    { id: 5, order: 4, x: '320px',  y: '44px',  zIndex: 10, direction: 'left',  src: '/images/fashion/algee-16-watermarked-1759246586448.webp' },
   ]
 
   return (

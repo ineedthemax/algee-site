@@ -10,7 +10,7 @@ export const metadata = {
   openGraph: {
     title: 'Algee Smith — Love Lost (Debut Album)',
     description: 'Stream Love Lost — available everywhere now.',
-    images: ['/images/music/love-lost-cover.png'],
+    images: ['/images/music/love-lost-cover.webp'],
   },
 }
 
@@ -26,7 +26,7 @@ const albumSchema = {
   datePublished: '2025',
   genre: ['R&B', 'Soul'],
   url: 'https://algeesmith.com/music',
-  image: 'https://algeesmith.com/images/music/love-lost-cover.png',
+  image: 'https://algeesmith.com/images/music/love-lost-cover.webp',
   offers: [
     { '@type': 'Offer', name: 'Spotify',     url: 'https://open.spotify.com/artist/10gHoEHUPNcTFsyVR2YyeA' },
     { '@type': 'Offer', name: 'Apple Music', url: 'https://music.apple.com/us/album/love-lost/1826959437' },

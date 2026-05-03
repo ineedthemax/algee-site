@@ -47,7 +47,7 @@ export default function HeroSection() {
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           ref={bgImgRef}
-          src="/images/hero/algee-hero.jpg"
+          src="/images/hero/algee-hero.webp"
           alt="Algee Smith"
           fetchPriority="high"
         />

@@ -28,7 +28,7 @@ export default function MerchPage() {
           <div className="merch-drop-visual">
             <div className="merch-drop-img-wrap">
               <Image
-                src="/images/merch/love-lost-shirt.png"
+                src="/images/merch/love-lost-shirt.webp"
                 alt="Love Lost Collection Shirt"
                 width={560}
                 height={560}

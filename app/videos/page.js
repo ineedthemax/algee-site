@@ -113,7 +113,7 @@ export default function VideosPage() {
       <ScrollExpandMedia
         mediaType="video"
         mediaSrc="https://www.youtube.com/watch?v=TjOHVPo5iwM"
-        bgImageSrc="/images/hero/algee-hero.jpg"
+        bgImageSrc="/images/hero/algee-hero.webp"
         title="Algee Smith"
         date="Out Now · 2025"
         scrollToExpand="Scroll to watch"

@@ -19,7 +19,7 @@ const MILESTONES = [
     title: 'First Camera. First Take.',
     story: 'Let It Shine on Disney Channel. The first screen credit and the first proof that the instinct for storytelling was already fully formed.',
     side:  'left',
-    image: '/images/timeline/Let it shine 2.jpg',
+    image: '/images/timeline/Let it shine 2.webp',
     imagePosition: 'center 20%',
   },
   {
@@ -29,7 +29,7 @@ const MILESTONES = [
     title: 'He Became Ralph Tresvant.',
     story: 'BET\'s The New Edition Story didn\'t just introduce Algee to the country. It announced him. The performance felt lived-in. Millions felt it.',
     side:  'right',
-    image: '/images/timeline/New-Edition1.jpg',
+    image: '/images/timeline/New-Edition1.webp',
   },
   {
     id:    4,
@@ -47,7 +47,7 @@ const MILESTONES = [
     title: 'His Voice. His Terms.',
     story: 'The Listen EP. While the world was watching him act, the music never stopped. His voice, unfiltered.',
     side:  'right',
-    image: '/images/timeline/Listen-Cover.jpeg',
+    image: '/images/timeline/Listen-Cover.webp',
   },
   {
     id:    6,
@@ -56,7 +56,7 @@ const MILESTONES = [
     title: 'The Role That Shifted Everything.',
     story: 'Khalil Harris in The Hate U Give. Brief on screen, permanent in memory. The kind of performance that reframes a career.',
     side:  'right',
-    image: '/images/timeline/The hate you give 1.jpg',
+    image: '/images/timeline/The hate you give 1.webp',
   },
   {
     id:    7,
@@ -74,7 +74,7 @@ const MILESTONES = [
     title: 'History. On Screen.',
     story: 'Judas and the Black Messiah. Warner Bros. The Black Panther Party. A story that demanded to be told exactly right.',
     side:  'right',
-    image: '/images/timeline/Judas.jpg',
+    image: '/images/timeline/Judas.webp',
   },
   {
     id:    9,
@@ -83,7 +83,7 @@ const MILESTONES = [
     title: 'LeBron\'s Origin. His Chapter.',
     story: 'Shooting Stars on Peacock. The untold story of where greatness is born, before the world is watching.',
     side:  'left',
-    image: '/images/timeline/SHOOTING-STARS.jpg',
+    image: '/images/timeline/SHOOTING-STARS.webp',
   },
   {
     id:    10,
@@ -101,7 +101,7 @@ const MILESTONES = [
     title: 'The Voice Behind the Character.',
     story: 'Solar Opposites on Hulu. Two episodes, two characters, one voice. Skunt and Harrison brought to life.',
     side:  'left',
-    image: '/images/film/Solar-Opposites.jpg',
+    image: '/images/film/Solar-Opposites.webp',
   },
   {
     id:    12,
@@ -110,7 +110,7 @@ const MILESTONES = [
     title: 'The Music Never Stopped.',
     story: 'Love Lost. His debut album. Direct to the fans who built him. No middleman. No filter. Just the music.',
     side:  'left',
-    image: '/images/timeline/Love-Lost.jpg',
+    image: '/images/timeline/Love-Lost.webp',
   },
   {
     id:      13,
@@ -119,7 +119,7 @@ const MILESTONES = [
     title:   'The Story Continues.',
     story:   'The Gates. Now streaming on Apple TV, YouTube, Google Play and Fandango at Home. The journey keeps going.',
     side:    'right',
-    image:   '/images/timeline/the-gates.jpg',
+    image:   '/images/timeline/the-gates.webp',
     current: true,
   },
 ]

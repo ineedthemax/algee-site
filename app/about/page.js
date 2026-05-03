@@ -74,7 +74,7 @@ export default function AboutPage() {
           {/* Photo */}
           <div className="about-photo-wrap">
             <Image
-              src="/images/algee-1.jpg"
+              src="/images/algee-1.webp"
               alt="Algee Smith"
               width={520}
               height={680}
