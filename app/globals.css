@@ -9667,3 +9667,47 @@ footer::before {
   .tw-credit-meta   { justify-content: flex-start !important; }
   .tw-panel-headline { font-size: 32px; }
 }
+
+/* ═══════════════════════════════════════════════════════════════════
+   MIC CORD + FLOATING ACTING ELEMENTS
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Mic cord — fixed left side, full page height */
+.mic-cord-wrap {
+  position: fixed;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 200px;
+  height: 100vh;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.55;
+}
+.mic-cord-svg {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3200px;
+}
+
+/* Floating acting elements — fixed over entire page */
+.floating-elements {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2;
+}
+.floating-el {
+  position: absolute;
+  will-change: transform;
+  filter: drop-shadow(0 4px 20px rgba(196,34,46,0.15));
+}
+
+/* Hide on mobile — too cluttered */
+@media (max-width: 768px) {
+  .mic-cord-wrap     { display: none; }
+  .floating-elements { display: none; }
+}
+
