@@ -3,7 +3,6 @@ import FanWorldSection from './components/FanWorldSection'
 import DynamicTextSlider from './components/DynamicTextSlider'
 import TwoWorldsSection from './components/TwoWorldsSection'
 import MicCord from './components/MicCord'
-import FloatingActingElements from './components/FloatingActingElements'
 import SchemaMarkup from './components/SchemaMarkup'
 
 export const metadata = {
@@ -66,9 +65,6 @@ export default function Home() {
   return (
     <>
       <SchemaMarkup schema={personSchema} />
-
-      {/* Floating acting symbols — positioned over entire page */}
-      <FloatingActingElements />
 
       {/* Mic cord — weaves down the full page */}
       <MicCord />
