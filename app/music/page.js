@@ -1,6 +1,6 @@
 import Image from 'next/image'
 import Link from 'next/link'
-import { ALBUM, TRACKS } from '../data/music'
+import { ALBUM, TRACKS, STREAMING } from '../data/music'
 import MusicPhotoStrip from '../components/MusicPhotoStrip'
 import SchemaMarkup from '../components/SchemaMarkup'
 
@@ -34,59 +34,92 @@ const albumSchema = {
   ],
 }
 
+// First lyric line per track for hover preview
+function getPreview(track) {
+  const first = track.lyrics?.[0]?.lines?.[0]
+  return first ?? null
+}
+
 export default function MusicPage() {
   return (
-    <div className="track-page">
+    <div className="music-page">
       <SchemaMarkup schema={albumSchema} />
 
-      {/* ─── Page Hero ─── */}
-      <div className="page-hero">
-        <div className="page-hero-label">Discography</div>
-        <h1>
-          Love <span className="italic">Lost</span>
-        </h1>
-        <p className="page-hero-sub">{ALBUM.description}</p>
-      </div>
+      {/* ─── Cinematic Hero ─── */}
+      <div className="music-hero">
 
-      {/* ─── Album Card ─── */}
-      <div className="album-section">
-        <div className="album-card reveal">
+        {/* Blurred bg */}
+        <div className="music-hero-bg" aria-hidden="true">
+          <Image
+            src="/images/music/love-lost-cover.webp"
+            alt=""
+            fill
+            sizes="100vw"
+            className="music-hero-bg-img"
+            priority
+          />
+          <div className="music-hero-bg-overlay" />
+        </div>
 
-          {/* Cover */}
-          <div className="album-cover-wrap">
+        <div className="music-hero-inner">
+
+          {/* Album cover */}
+          <div className="music-hero-cover">
             <Image
-              src={ALBUM.cover}
-              alt={`${ALBUM.title} album cover`}
-              width={340}
-              height={340}
+              src="/images/music/love-lost-cover.webp"
+              alt="Love Lost — Algee Smith"
+              fill
+              sizes="(max-width: 900px) 60vw, 340px"
+              className="music-hero-cover-img"
               priority
             />
           </div>
 
           {/* Info */}
-          <div className="album-info">
-            <div className="album-tag">Album</div>
-            <div className="album-title">{ALBUM.title}</div>
-            <div className="album-artist">{ALBUM.artist}</div>
+          <div className="music-hero-info">
+            <div className="music-hero-eyebrow">Debut Album · 2025 · R&amp;B / Soul</div>
+            <h1 className="music-hero-title">
+              Love <em>Lost</em>
+            </h1>
+            <p className="music-hero-artist">Algee Smith</p>
+            <p className="music-hero-about">
+              Eight tracks about love, loss, and everything in between.
+              Written from real life — raw, unfiltered, and direct from the artist.
+              <em> No features. Just Algee.</em>
+            </p>
 
-            <div className="album-meta">
-              <span className="album-meta-item">{ALBUM.year}</span>
-              <span className="album-meta-item">{ALBUM.trackCount} Tracks</span>
-              <span className="album-meta-item">R&amp;B / Soul</span>
+            {/* All streaming platforms */}
+            <div className="music-platforms">
+              {STREAMING.map((s) => (
+                <a
+                  key={s.id}
+                  href={s.href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="music-platform-btn"
+                  aria-label={`Stream on ${s.label}`}
+                >
+                  {s.label}
+                </a>
+              ))}
             </div>
-
-            <p className="album-desc">{ALBUM.description}</p>
-
-            <a
-              href={TRACKS[0].streaming[0].href}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="stream-now-btn"
-            >
-              <span>Stream Now</span>
-              <span>→</span>
-            </a>
           </div>
+        </div>
+      </div>
+
+      {/* ─── Spotify Embed ─── */}
+      <div className="music-embed-section">
+        <div className="music-embed-label">Listen Now</div>
+        <div className="music-embed-wrap">
+          <iframe
+            src="https://open.spotify.com/embed/artist/10gHoEHUPNcTFsyVR2YyeA?utm_source=generator&theme=0"
+            width="100%"
+            height="352"
+            frameBorder="0"
+            allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+            loading="lazy"
+            className="music-embed"
+          />
         </div>
       </div>
 
@@ -94,46 +127,53 @@ export default function MusicPage() {
       <MusicPhotoStrip />
 
       {/* ─── Track Listing ─── */}
-      <div className="tracklist-section">
-        <div className="tracklist-header">
-          <span className="tracklist-header-label">#</span>
-          <span className="tracklist-header-label">Title</span>
-          <span className="tracklist-header-label">Lyrics</span>
+      <div className="music-tracklist-section">
+
+        <div className="music-tracklist-header">
+          <div className="music-tracklist-title">Tracklist</div>
+          <div className="music-tracklist-meta">{TRACKS.length} Tracks · Love Lost · 2025</div>
         </div>
 
-        <div className="reveal-stagger">
-          {TRACKS.map((track) => (
-            <Link
-              key={track.slug}
-              href={`/music/${track.slug}`}
-              className="track-row"
-            >
-              {/* Number / play icon */}
-              <div className="track-num-wrap">
-                <span className="track-num">
-                  {String(track.number).padStart(2, '0')}
-                </span>
-                <span className="track-play">▶</span>
-              </div>
+        <div className="music-tracklist">
+          {TRACKS.map((track, i) => {
+            const preview = getPreview(track)
+            const isFeatured = i === 0
 
-              {/* Info */}
-              <div className="track-info">
-                <div className="track-name">{track.title}</div>
-                <div className="track-sub">
-                  {track.album} · {track.year}
+            return (
+              <Link
+                key={track.slug}
+                href={`/music/${track.slug}`}
+                className={`music-track-row${isFeatured ? ' music-track-featured' : ''}${track.isInterlude ? ' music-track-interlude' : ''}`}
+              >
+                {/* Number */}
+                <div className="music-track-num-wrap">
+                  <span className="music-track-num">
+                    {String(track.number).padStart(2, '0')}
+                  </span>
+                  <span className="music-track-play" aria-hidden="true">▶</span>
                 </div>
-              </div>
 
-              {/* Badge */}
-              <div>
-                {track.isInterlude ? (
-                  <span className="track-badge">Interlude</span>
-                ) : (
-                  <span className="track-badge">Lyrics →</span>
-                )}
-              </div>
-            </Link>
-          ))}
+                {/* Info */}
+                <div className="music-track-info">
+                  <div className="music-track-name">{track.title}</div>
+                  {preview && (
+                    <div className="music-track-preview">"{preview}"</div>
+                  )}
+                </div>
+
+                {/* Right side */}
+                <div className="music-track-right">
+                  {isFeatured && (
+                    <span className="music-track-badge music-track-badge-opener">Opener</span>
+                  )}
+                  {track.isInterlude && (
+                    <span className="music-track-badge music-track-badge-interlude">Interlude</span>
+                  )}
+                  <span className="music-track-lyrics-link">Lyrics →</span>
+                </div>
+              </Link>
+            )
+          })}
         </div>
       </div>
 
