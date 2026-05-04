@@ -1,7 +1,6 @@
 import Image from 'next/image'
-import Link from 'next/link'
 import { PROJECTS } from '../data/film'
-import FilmCardStack from '../components/FilmCardStack'
+import FilmGrid from '../components/FilmGrid'
 import SchemaMarkup from '../components/SchemaMarkup'
 
 export const metadata = {
@@ -10,7 +9,7 @@ export const metadata = {
   openGraph: {
     title: 'Algee Smith — Film & TV Credits',
     description: 'Acting credits from The Hate U Give, Euphoria, Detroit, Judas and the Black Messiah, and more.',
-    images: ['/images/film/hate-u-give.jpg'],
+    images: ['/images/film/hate-u-give.webp'],
   },
 }
 
@@ -33,9 +32,15 @@ const filmographySchema = {
   })),
 }
 
+const STATS = [
+  { value: `${PROJECTS.length}+`, label: 'Credits' },
+  { value: '5',                   label: 'Major Studios' },
+  { value: '6+',                  label: 'Streaming Platforms' },
+  { value: '2017',                label: 'Debut Year' },
+]
+
 export default function FilmPage() {
-  const featured   = PROJECTS[0]
-  const rest       = PROJECTS.slice(1)
+  const featured = PROJECTS[0]
 
   return (
     <div className="film-page">
@@ -44,40 +49,64 @@ export default function FilmPage() {
       {/* ─── Page Hero ─── */}
       <div className="page-hero">
         <div className="page-hero-label">Filmography</div>
-        <h1>
-          On <span className="italic">Screen.</span>
-        </h1>
+        <h1>On <span className="italic">Screen.</span></h1>
         <p className="page-hero-sub">
           Actor. Storyteller. Two stages, one soul.
           From BET to HBO to the big screen.
         </p>
       </div>
 
-      {/* ─── Featured / Upcoming ─── */}
+      {/* ─── Stats Strip ─── */}
+      <div className="film-stats-strip">
+        {STATS.map((s) => (
+          <div key={s.label} className="film-stat">
+            <div className="film-stat-value">{s.value}</div>
+            <div className="film-stat-label">{s.label}</div>
+          </div>
+        ))}
+      </div>
+
+      {/* ─── Featured Film ─── */}
       <div className="film-featured-section">
-        <div className="film-featured reveal">
-          <div className="film-featured-cover">
+
+        {/* Full-bleed bg from cover */}
+        <div className="film-featured-bg" aria-hidden="true">
+          <Image
+            src={featured.cover}
+            alt=""
+            fill
+            sizes="100vw"
+            className="film-featured-bg-img"
+            priority
+          />
+          <div className="film-featured-bg-overlay" />
+        </div>
+
+        <div className="film-featured-inner">
+          {/* Poster */}
+          <div className="film-featured-poster">
             <Image
               src={featured.cover}
               alt={featured.title}
-              width={600}
-              height={800}
+              fill
+              sizes="(max-width: 900px) 60vw, 320px"
+              className="film-featured-poster-img"
               priority
             />
-            {featured.status === 'upcoming' && (
-              <div className="film-status-badge">Upcoming</div>
-            )}
           </div>
+
+          {/* Info */}
           <div className="film-featured-info">
+            <div className="film-featured-badge">Now Streaming</div>
             <div className="film-meta-row">
               <span className="film-tag">{featured.type}</span>
               <span className="film-year">{featured.year}</span>
             </div>
             <div className="film-featured-title">{featured.title}</div>
-            <div className="film-featured-role">as {featured.role}</div>
+            <div className="film-featured-role">as <em>{featured.role}</em></div>
             <p className="film-featured-logline">{featured.logline}</p>
 
-            {featured.watchLinks ? (
+            {featured.watchLinks?.length > 0 && (
               <div className="film-watch-links">
                 <div className="film-watch-label">Stream Now</div>
                 <div className="film-watch-grid">
@@ -94,31 +123,19 @@ export default function FilmPage() {
                   ))}
                 </div>
               </div>
-            ) : (
-              <div className="film-studio">{featured.studio}</div>
             )}
           </div>
         </div>
       </div>
 
-      {/* ─── Credits Stack ─── */}
-      <div className="film-stack-section">
+      {/* ─── All Credits Grid ─── */}
+      <div className="film-grid-section">
         <div className="film-grid-header">
           <span className="film-grid-label">All Credits</span>
           <div className="film-grid-line" />
         </div>
 
-        <FilmCardStack
-          items={PROJECTS.map((p) => ({ ...p, imageSrc: p.cover }))}
-          cardWidth={220}
-          cardHeight={330}
-          maxVisible={5}
-          spreadDeg={30}
-          overlap={0.42}
-          autoAdvance={false}
-          loop
-          showDots
-        />
+        <FilmGrid projects={PROJECTS} />
       </div>
 
     </div>
