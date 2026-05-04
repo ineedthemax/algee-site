@@ -2,6 +2,11 @@ import HeroSection from './components/HeroSection'
 import FanWorldSection from './components/FanWorldSection'
 import DynamicTextSlider from './components/DynamicTextSlider'
 import TwoWorldsSection from './components/TwoWorldsSection'
+import AlbumSpotlight from './components/AlbumSpotlight'
+import QuoteSection from './components/QuoteSection'
+import PressStrip from './components/PressStrip'
+import OriginSection from './components/OriginSection'
+import PhotoMoments from './components/PhotoMoments'
 import SchemaMarkup from './components/SchemaMarkup'
 
 export const metadata = {
@@ -67,6 +72,9 @@ export default function Home() {
 
       <HeroSection />
 
+      {/* ─── Press Strip ─── */}
+      <PressStrip />
+
       {/* ─── Marquee ─── */}
       <div className="marquee" aria-hidden="true">
         <div className="marquee-track">
@@ -86,6 +94,18 @@ export default function Home() {
 
       {/* ─── Two Worlds ─── */}
       <TwoWorldsSection />
+
+      {/* ─── Album Spotlight ─── */}
+      <AlbumSpotlight />
+
+      {/* ─── Quote ─── */}
+      <QuoteSection />
+
+      {/* ─── Origin Story ─── */}
+      <OriginSection />
+
+      {/* ─── Photo Moments ─── */}
+      <PhotoMoments />
 
       {/* ─── Dynamic Text Slider ─── */}
       <DynamicTextSlider />
