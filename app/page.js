@@ -75,6 +75,9 @@ export default function Home() {
       {/* ─── Press Strip ─── */}
       <PressStrip />
 
+      {/* ─── Two Worlds ─── */}
+      <TwoWorldsSection />
+
       {/* ─── Marquee ─── */}
       <div className="marquee" aria-hidden="true">
         <div className="marquee-track">
@@ -91,9 +94,6 @@ export default function Home() {
           ))}
         </div>
       </div>
-
-      {/* ─── Two Worlds ─── */}
-      <TwoWorldsSection />
 
       {/* ─── Album Spotlight ─── */}
       <AlbumSpotlight />
