@@ -7,6 +7,7 @@ import QuoteSection from './components/QuoteSection'
 import PressStrip from './components/PressStrip'
 import OriginSection from './components/OriginSection'
 import PhotoMoments from './components/PhotoMoments'
+import JoinCTASection from './components/JoinCTASection'
 import SchemaMarkup from './components/SchemaMarkup'
 
 export const metadata = {
@@ -70,48 +71,47 @@ export default function Home() {
     <>
       <SchemaMarkup schema={personSchema} />
 
+      {/* ══ HERO ZONE ══ */}
       <HeroSection />
-
-      {/* ─── Press Strip ─── */}
       <PressStrip />
 
-      {/* ─── Two Worlds ─── */}
-      <TwoWorldsSection />
+      {/* ══ STORY ZONE ══ */}
+      <div className="page-zone">
+        <TwoWorldsSection />
 
-      {/* ─── Marquee ─── */}
-      <div className="marquee" aria-hidden="true">
-        <div className="marquee-track">
-          {allItems.map((item, i) => (
-            <span
-              key={i}
-              className={`marquee-item${item.italic ? ' italic' : ''}`}
-            >
-              {item.text}
-              {item.star && (
-                <span className="marquee-star">✦</span>
-              )}
-            </span>
-          ))}
+        {/* Marquee divider */}
+        <div className="marquee" aria-hidden="true">
+          <div className="marquee-track">
+            {allItems.map((item, i) => (
+              <span
+                key={i}
+                className={`marquee-item${item.italic ? ' italic' : ''}`}
+              >
+                {item.text}
+                {item.star && (
+                  <span className="marquee-star">✦</span>
+                )}
+              </span>
+            ))}
+          </div>
         </div>
+
+        <QuoteSection />
+        <OriginSection />
       </div>
 
-      {/* ─── Album Spotlight ─── */}
-      <AlbumSpotlight />
+      {/* ══ MUSIC ZONE ══ */}
+      <div className="page-zone">
+        <AlbumSpotlight />
+        <PhotoMoments />
+      </div>
 
-      {/* ─── Quote ─── */}
-      <QuoteSection />
-
-      {/* ─── Origin Story ─── */}
-      <OriginSection />
-
-      {/* ─── Photo Moments ─── */}
-      <PhotoMoments />
-
-      {/* ─── Dynamic Text Slider ─── */}
-      <DynamicTextSlider />
-
-      {/* ─── Fan World ─── */}
-      <FanWorldSection />
+      {/* ══ COMMUNITY ZONE ══ */}
+      <div className="page-zone">
+        <JoinCTASection />
+        <DynamicTextSlider />
+        <FanWorldSection />
+      </div>
     </>
   )
 }

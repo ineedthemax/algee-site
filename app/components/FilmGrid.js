@@ -36,6 +36,9 @@ export default function FilmGrid({ projects }) {
                   <div className="filmgrid-overlay-type">{film.type} · {film.year}</div>
                   <div className="filmgrid-overlay-title">{film.title}</div>
                   <div className="filmgrid-overlay-role">as {film.role}</div>
+                  {film.quote && (
+                    <div className="filmgrid-overlay-quote">"{film.quote}"</div>
+                  )}
                   <div className="filmgrid-overlay-actions">
                     {film.trailerYT && (
                       <button
