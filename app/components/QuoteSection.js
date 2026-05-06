@@ -37,7 +37,7 @@ export default function QuoteSection() {
         >
           I&apos;m not trying to be the greatest actor or the greatest singer.
           I&apos;m trying to be the most&nbsp;
-          <em>honest</em> version of myself — and let that be enough.
+          <em>honest</em> version of myself and let that be enough.
         </motion.blockquote>
 
         <motion.div
@@ -46,7 +46,7 @@ export default function QuoteSection() {
           animate={inView ? { opacity: 1 } : {}}
           transition={{ duration: 0.6, delay: 0.5 }}
         >
-          — Algee Smith
+          Algee Smith
         </motion.div>
       </div>
 
