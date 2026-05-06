@@ -5,6 +5,7 @@ import Footer from './components/Footer'
 import CustomCursor from './components/CustomCursor'
 import ScrollReveal from './components/ScrollReveal'
 import ScrollProgress from './components/ScrollProgress'
+import ScrollToTop from './components/ScrollToTop'
 
 // ─── Brand Fonts ───────────────────────────────────────────────
 const playfair = Playfair_Display({
@@ -79,6 +80,7 @@ export default function RootLayout({ children }) {
 
         {/* Persistent footer */}
         <Footer />
+        <ScrollToTop />
       </body>
     </html>
   )
