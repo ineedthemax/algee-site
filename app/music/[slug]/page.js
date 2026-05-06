@@ -126,7 +126,7 @@ export default async function TrackPage({ params }) {
                 <blockquote className="track-story-text">
                   {track.story}
                 </blockquote>
-                <div className="track-story-sig">— Algee</div>
+                <div className="track-story-sig">Algee</div>
               </div>
             )}
 

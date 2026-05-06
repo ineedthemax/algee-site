@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { ContainerScroll } from './ContainerScroll'
 
@@ -10,7 +10,7 @@ const MILESTONES = [
     tag:   'The Beginning',
     title: 'Music Was Always the Language',
     story: 'Before any camera, before any script, there was a voice. Raised in Saginaw, Michigan, music came first. Everything else followed.',
-    side:  'right',
+    above: true,
   },
   {
     id:    2,
@@ -18,7 +18,7 @@ const MILESTONES = [
     tag:   'Film',
     title: 'First Camera. First Take.',
     story: 'Let It Shine on Disney Channel. The first screen credit and the first proof that the instinct for storytelling was already fully formed.',
-    side:  'left',
+    above: false,
     image: '/images/timeline/Let it shine 2.webp',
     imagePosition: 'center 20%',
   },
@@ -27,8 +27,8 @@ const MILESTONES = [
     year:  '2017',
     tag:   'Breakthrough',
     title: 'He Became Ralph Tresvant.',
-    story: 'BET\'s The New Edition Story didn\'t just introduce Algee to the country. It announced him. The performance felt lived-in. Millions felt it.',
-    side:  'right',
+    story: 'BET\'s The New Edition Story didn\'t just introduce Algee to the country. It announced him. Millions felt it.',
+    above: true,
     image: '/images/timeline/New-Edition1.webp',
   },
   {
@@ -37,7 +37,7 @@ const MILESTONES = [
     tag:   'Film',
     title: 'Kathryn Bigelow Called.',
     story: 'Detroit. A harrowing true story. A director who doesn\'t cast twice without reason. He answered.',
-    side:  'left',
+    above: false,
     image: '/images/timeline/Detroit.webp',
   },
   {
@@ -46,7 +46,7 @@ const MILESTONES = [
     tag:   'Music',
     title: 'His Voice. His Terms.',
     story: 'The Listen EP. While the world was watching him act, the music never stopped. His voice, unfiltered.',
-    side:  'right',
+    above: true,
     image: '/images/timeline/Listen-Cover.webp',
   },
   {
@@ -55,7 +55,7 @@ const MILESTONES = [
     tag:   'Film',
     title: 'The Role That Shifted Everything.',
     story: 'Khalil Harris in The Hate U Give. Brief on screen, permanent in memory. The kind of performance that reframes a career.',
-    side:  'right',
+    above: false,
     image: '/images/timeline/The hate you give 1.webp',
   },
   {
@@ -64,7 +64,7 @@ const MILESTONES = [
     tag:   'Series',
     title: 'A Generation Claimed Him.',
     story: 'Euphoria on HBO. McKay. A new generation found him and didn\'t let go.',
-    side:  'left',
+    above: true,
     image: '/images/timeline/Euphoria.webp',
   },
   {
@@ -73,7 +73,7 @@ const MILESTONES = [
     tag:   'Film',
     title: 'History. On Screen.',
     story: 'Judas and the Black Messiah. Warner Bros. The Black Panther Party. A story that demanded to be told exactly right.',
-    side:  'right',
+    above: false,
     image: '/images/timeline/Judas.webp',
   },
   {
@@ -82,7 +82,7 @@ const MILESTONES = [
     tag:   'Film',
     title: 'LeBron\'s Origin. His Chapter.',
     story: 'Shooting Stars on Peacock. The untold story of where greatness is born, before the world is watching.',
-    side:  'left',
+    above: true,
     image: '/images/timeline/SHOOTING-STARS.webp',
   },
   {
@@ -91,7 +91,7 @@ const MILESTONES = [
     tag:   'Film',
     title: 'Sundance. His Story.',
     story: 'Young Wild Free. An independent film that premiered at Sundance. Raw, personal, and entirely his own.',
-    side:  'right',
+    above: false,
     image: '/images/timeline/Young-wild-free.webp',
   },
   {
@@ -100,7 +100,7 @@ const MILESTONES = [
     tag:   'Animation',
     title: 'The Voice Behind the Character.',
     story: 'Solar Opposites on Hulu. Two episodes, two characters, one voice. Skunt and Harrison brought to life.',
-    side:  'left',
+    above: true,
     image: '/images/film/Solar-Opposites.webp',
   },
   {
@@ -109,7 +109,7 @@ const MILESTONES = [
     tag:   'Music',
     title: 'The Music Never Stopped.',
     story: 'Love Lost. His debut album. Direct to the fans who built him. No middleman. No filter. Just the music.',
-    side:  'left',
+    above: false,
     image: '/images/timeline/Love-Lost.webp',
   },
   {
@@ -118,142 +118,101 @@ const MILESTONES = [
     tag:     'Now',
     title:   'The Story Continues.',
     story:   'The Gates. Now streaming on Apple TV, YouTube, Google Play and Fandango at Home. The journey keeps going.',
-    side:    'right',
+    above:   true,
     image:   '/images/timeline/the-gates.webp',
     current: true,
   },
 ]
 
-function CurvedLine() {
-  const svgRef  = useRef(null)
-  const pathRef = useRef(null)
-
-  useEffect(() => {
-    const path = pathRef.current
-    const svg  = svgRef.current
-    if (!path || !svg) return
-
-    const length = path.getTotalLength()
-    path.style.strokeDasharray  = length
-    path.style.strokeDashoffset = length
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          path.style.transition      = 'stroke-dashoffset 2.5s cubic-bezier(0.16, 1, 0.3, 1)'
-          path.style.strokeDashoffset = 0
-          observer.unobserve(svg)
-        }
-      },
-      { threshold: 0.02 }
-    )
-    observer.observe(svg)
-    return () => observer.disconnect()
-  }, [])
-
+function TimelineCard({ milestone }) {
   return (
-    <svg
-      ref={svgRef}
-      className="tl-svg-line"
-      viewBox="0 0 80 3200"
-      preserveAspectRatio="none"
-      xmlns="http://www.w3.org/2000/svg"
-    >
-      <defs>
-        <linearGradient id="tlLineGrad" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0%"   stopColor="transparent" />
-          <stop offset="4%"   stopColor="rgba(196, 34, 46, 1)" />
-          <stop offset="20%"  stopColor="rgba(245, 240, 235, 0.4)" />
-          <stop offset="80%"  stopColor="rgba(245, 240, 235, 0.2)" />
-          <stop offset="100%" stopColor="transparent" />
-        </linearGradient>
-      </defs>
-      {/* Organic winding road — irregular rhythm, wide swings ±30px from center */}
-      <path
-        ref={pathRef}
-        d="M 40 0
-           C 8  220,  72  480,  38  700
-           C 6  920,  70 1180,  42 1400
-           C 10 1600,  74 1850,  36 2100
-           C 5  2300,  75 2550,  40 2750
-           C 8  2950,  70 3100,  40 3200"
-        fill="none"
-        stroke="url(#tlLineGrad)"
-        strokeWidth="1.8"
-        strokeLinecap="round"
-      />
-    </svg>
-  )
-}
-
-function TimelineItem({ milestone, index }) {
-  const ref = useRef(null)
-
-  useEffect(() => {
-    const el = ref.current
-    if (!el) return
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          el.classList.add('tl-visible')
-          observer.unobserve(el)
-        }
-      },
-      { threshold: 0.25 }
-    )
-    observer.observe(el)
-    return () => observer.disconnect()
-  }, [])
-
-  return (
-    <div
-      ref={ref}
-      className={`tl-item tl-${milestone.side}`}
-      style={{ '--delay': `${index * 0.08}s` }}
-    >
-      {/* Dot on the line */}
-      <div className="tl-dot">
-        <div className="tl-dot-inner" />
+    <div className="tl-card">
+      <div className="tl-card-top">
+        <span className="tl-tag">{milestone.tag}</span>
+        <span className="tl-year">{milestone.year}</span>
       </div>
+      <h3 className="tl-title">{milestone.title}</h3>
+      <p className="tl-story">{milestone.story}</p>
 
-      {/* Card */}
-      <div className="tl-card">
-        <div className="tl-card-top">
-          <span className="tl-tag">{milestone.tag}</span>
-          <span className="tl-year">{milestone.year}</span>
+      {milestone.image ? (
+        <div className="tl-img-wrap">
+          <Image
+            src={milestone.image}
+            alt={milestone.title}
+            fill
+            sizes="240px"
+            style={{ objectFit: 'cover', objectPosition: milestone.imagePosition || 'center' }}
+          />
         </div>
-        <h3 className="tl-title">{milestone.title}</h3>
-        <p className="tl-story">{milestone.story}</p>
-
-        {/* Photo */}
-        {milestone.image ? (
-          <div className="tl-img-wrap" style={{ aspectRatio: milestone.imageAspect || '16 / 9' }}>
-            <Image
-              src={milestone.image}
-              alt={milestone.title}
-              fill
-              sizes="(max-width: 640px) 90vw, 380px"
-              style={{ objectFit: 'cover', objectPosition: milestone.imagePosition || 'center' }}
-            />
+      ) : (
+        <div className="tl-img-placeholder">
+          <div className="tl-img-placeholder-inner">
+            <span className="tl-img-icon">◻</span>
+            <span className="tl-img-label">Photo coming soon</span>
           </div>
-        ) : (
-          <div className="tl-img-placeholder">
-            <div className="tl-img-placeholder-inner">
-              <span className="tl-img-icon">◻</span>
-              <span className="tl-img-label">Photo coming soon</span>
-            </div>
-          </div>
-        )}
+        </div>
+      )}
 
-        {milestone.current && (
-          <div className="tl-current-badge">● Now</div>
-        )}
-      </div>
+      {milestone.current && (
+        <div className="tl-current-badge">● Now</div>
+      )}
     </div>
   )
 }
 
 export default function CareerTimeline() {
+  const scrollRef = useRef(null)
+  const [canLeft,  setCanLeft]  = useState(false)
+  const [canRight, setCanRight] = useState(true)
+
+  const updateArrows = () => {
+    const el = scrollRef.current
+    if (!el) return
+    setCanLeft(el.scrollLeft > 20)
+    setCanRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 20)
+  }
+
+  const nudge = (dir) => {
+    scrollRef.current?.scrollBy({ left: dir * 280, behavior: 'smooth' })
+  }
+
+  /* Drag to scroll */
+  useEffect(() => {
+    const el = scrollRef.current
+    if (!el) return
+
+    let down = false, startX = 0, initScroll = 0
+
+    const onDown  = e => {
+      down = true
+      startX = e.pageX - el.offsetLeft
+      initScroll = el.scrollLeft
+      el.classList.add('dragging')
+    }
+    const onUp    = () => { down = false; el.classList.remove('dragging') }
+    const onLeave = () => { down = false; el.classList.remove('dragging') }
+    const onMove  = e => {
+      if (!down) return
+      e.preventDefault()
+      const dx = e.pageX - el.offsetLeft - startX
+      el.scrollLeft = initScroll - dx * 1.2
+    }
+
+    el.addEventListener('mousedown',  onDown)
+    el.addEventListener('mouseup',    onUp)
+    el.addEventListener('mouseleave', onLeave)
+    el.addEventListener('mousemove',  onMove, { passive: false })
+    el.addEventListener('scroll',     updateArrows)
+    updateArrows()
+
+    return () => {
+      el.removeEventListener('mousedown',  onDown)
+      el.removeEventListener('mouseup',    onUp)
+      el.removeEventListener('mouseleave', onLeave)
+      el.removeEventListener('mousemove',  onMove)
+      el.removeEventListener('scroll',     updateArrows)
+    }
+  }, [])
 
   return (
     <section className="career-timeline-section">
@@ -270,7 +229,6 @@ export default function CareerTimeline() {
           </div>
         }
       >
-        {/* Cinematic chapter card inside the scroll container */}
         <div className="tl-chapter-card">
           <div className="tl-chapter-card-bg" />
           <div className="tl-chapter-video-wrap">
@@ -285,21 +243,74 @@ export default function CareerTimeline() {
         </div>
       </ContainerScroll>
 
-      {/* ── Timeline track ── */}
-      <div className="tl-track">
+      {/* ── Horizontal timeline ── */}
+      <div className="tl-h-wrap">
 
-        {/* Animated curved SVG line */}
-        <CurvedLine />
+        {/* Controls */}
+        <div className="tl-h-controls">
+          <div className="tl-h-hint">
+            <span className="tl-h-hint-desktop">Drag to explore the journey</span>
+            <span className="tl-h-hint-mobile">Swipe to explore</span>
+          </div>
+          <div className="tl-h-arrows">
+            <button
+              className="tl-h-arrow"
+              onClick={() => nudge(-1)}
+              disabled={!canLeft}
+              aria-label="Scroll left"
+            >←</button>
+            <button
+              className="tl-h-arrow"
+              onClick={() => nudge(1)}
+              disabled={!canRight}
+              aria-label="Scroll right"
+            >→</button>
+          </div>
+        </div>
 
-        {/* Milestones */}
-        {MILESTONES.map((m, i) => (
-          <TimelineItem key={m.id} milestone={m} index={i} />
-        ))}
+        {/* Scrollable track */}
+        <div className="tl-h-scroll" ref={scrollRef}>
+          <div className="tl-h-inner">
 
-        {/* End cap */}
-        <div className="tl-end">
-          <div className="tl-end-dot" />
-          <span className="tl-end-label">Story in progress</span>
+            {/* The horizontal line */}
+            <div className="tl-h-line" />
+
+            {/* Milestones */}
+            {MILESTONES.map((m, i) => (
+              <div
+                key={m.id}
+                className={`tl-h-item ${m.above ? 'tl-h-above' : 'tl-h-below'}`}
+                style={{ '--i': i }}
+              >
+                {/* Top slot — card if above */}
+                <div className="tl-h-top">
+                  {m.above && <TimelineCard milestone={m} />}
+                </div>
+
+                {/* Dot on the line */}
+                <div className="tl-h-mid">
+                  <div className="tl-dot-inner" />
+                </div>
+
+                {/* Bottom slot — card if below */}
+                <div className="tl-h-bot">
+                  {!m.above && <TimelineCard milestone={m} />}
+                </div>
+              </div>
+            ))}
+
+            {/* End cap */}
+            <div className="tl-h-endcap">
+              <div className="tl-h-endcap-top" />
+              <div className="tl-h-mid">
+                <div className="tl-end-dot" />
+              </div>
+              <div className="tl-h-endcap-bot">
+                <span className="tl-end-label">Story<br />in progress</span>
+              </div>
+            </div>
+
+          </div>
         </div>
       </div>
 

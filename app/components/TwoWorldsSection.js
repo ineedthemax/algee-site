@@ -39,7 +39,6 @@ function CreditRow({ item, index, side }) {
       </div>
       <div className="tw-credit-meta">
         <span className="tw-credit-year">{item.year}</span>
-        <span className="tw-credit-dot">·</span>
         <span className="tw-credit-role">{'role' in item ? item.role : item.desc}</span>
       </div>
     </motion.div>
