@@ -140,6 +140,8 @@ export default function AccountPage() {
         <Suspense fallback={null}>
           <AccountForm />
         </Suspense>
+
+        <a href="/admin/login" className="account-admin-link">Admin sign-in →</a>
       </div>
 
       <div className="account-bg-text" aria-hidden="true">ACCESS</div>

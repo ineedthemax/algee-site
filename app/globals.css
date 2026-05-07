@@ -3070,6 +3070,187 @@ footer::before {
   z-index: 1;
 }
 
+/* Fan page — small admin link at bottom */
+.account-admin-link {
+  display: block;
+  margin-top: 28px;
+  font-family: var(--font-label, sans-serif);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(245, 240, 235, 0.2);
+  text-decoration: none;
+  text-align: center;
+  transition: color 0.2s;
+  position: relative;
+  z-index: 2;
+}
+.account-admin-link:hover { color: rgba(245, 240, 235, 0.5); }
+
+/* ═══════════ ADMIN LOGIN PAGE ═══════════ */
+
+.adm-login-page {
+  min-height: 100vh;
+  background: var(--deep, #050505);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  padding: 40px 20px;
+}
+
+.adm-login-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(196,34,46,0.08) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.adm-login-box {
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  max-width: 380px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  text-align: center;
+}
+
+.adm-login-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-label, sans-serif);
+  font-size: 11px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(245, 240, 235, 0.4);
+  margin-bottom: 8px;
+}
+
+.adm-login-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--red, #c4222e);
+}
+
+.adm-login-badge {
+  font-family: var(--font-label, sans-serif);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--red, #c4222e);
+  background: rgba(196, 34, 46, 0.1);
+  border: 1px solid rgba(196, 34, 46, 0.3);
+  border-radius: 100px;
+  padding: 4px 12px;
+}
+
+.adm-login-heading {
+  font-family: var(--font-display, serif);
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--white, #f5f0eb);
+  margin: 0;
+  line-height: 1.1;
+}
+
+.adm-login-sub {
+  font-family: var(--font-body, sans-serif);
+  font-size: 14px;
+  color: rgba(245, 240, 235, 0.45);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.adm-login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.adm-login-input {
+  width: 100%;
+  padding: 14px 16px;
+  background: rgba(255,255,255,0.04);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 8px;
+  color: var(--white, #f5f0eb);
+  font-family: var(--font-body, sans-serif);
+  font-size: 15px;
+  outline: none;
+  transition: border-color 0.2s;
+  box-sizing: border-box;
+}
+.adm-login-input:focus { border-color: rgba(196, 34, 46, 0.5); }
+.adm-login-input::placeholder { color: rgba(245, 240, 235, 0.25); }
+
+.adm-login-error {
+  font-size: 13px;
+  color: #f87171;
+  text-align: left;
+  padding: 8px 12px;
+  background: rgba(248, 113, 113, 0.08);
+  border: 1px solid rgba(248, 113, 113, 0.2);
+  border-radius: 6px;
+}
+
+.adm-login-btn {
+  width: 100%;
+  padding: 14px;
+  background: var(--red, #c4222e);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-family: var(--font-label, sans-serif);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.15s;
+}
+.adm-login-btn:hover:not(:disabled) { opacity: 0.88; transform: translateY(-1px); }
+.adm-login-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+.adm-login-sent-icon {
+  font-size: 36px;
+  color: #4ade80;
+  line-height: 1;
+}
+
+.adm-login-ghost {
+  background: none;
+  border: none;
+  color: rgba(245, 240, 235, 0.35);
+  font-family: var(--font-body, sans-serif);
+  font-size: 13px;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  transition: color 0.2s;
+}
+.adm-login-ghost:hover { color: rgba(245, 240, 235, 0.7); }
+
+.adm-login-fan-link {
+  margin-top: 8px;
+  font-family: var(--font-label, sans-serif);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(245, 240, 235, 0.2);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+.adm-login-fan-link:hover { color: rgba(245, 240, 235, 0.5); }
+
 /* ═══════════ DASHBOARD ═══════════ */
 
 .dashboard-page {
