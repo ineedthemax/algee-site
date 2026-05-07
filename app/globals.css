@@ -8687,6 +8687,12 @@ footer::before {
   padding: 2px 6px;
 }
 
+.live-signal-yt {
+  display: flex;
+  align-items: center;
+  opacity: 0.9;
+}
+
 .live-signal-cta {
   font-family: var(--font-label, sans-serif);
   font-size: 11px;
