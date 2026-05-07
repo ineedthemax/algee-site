@@ -1,4 +1,5 @@
 import ScrollExpandMedia from '../components/ScrollExpandMedia'
+import LiveStreamSection from '../components/LiveStreamSection'
 import Link from 'next/link'
 import Image from 'next/image'
 
@@ -142,6 +143,9 @@ export default function VideosPage() {
           </div>
         </div>
       </ScrollExpandMedia>
+
+      {/* ── Live Stream ── */}
+      <LiveStreamSection />
 
       {/* ── More videos grid ── */}
       <section className="vid-grid-section">
