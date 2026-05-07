@@ -6,12 +6,12 @@ import { isAdmin } from '../../../lib/isAdmin'
 import { TIERS } from '../../../lib/tiers'
 import FanDashboard from './FanDashboard'
 
-export const dynamic = 'force-dynamic'
-
 export const metadata = {
   title: 'My Account | Algee Smith',
   description: 'Your Algee Smith fan account.',
 }
+
+export const dynamic = 'force-dynamic'
 
 export default async function DashboardPage() {
   const supabase = await createClient()
@@ -19,7 +19,8 @@ export default async function DashboardPage() {
 
   if (!user) redirect('/account')
 
-  if (isAdmin(user.email)) redirect('/admin')
+  const isAdminUser = isAdmin(user.email)
+  // Admins can view the fan dashboard — don't redirect, just flag it
 
   const points   = await getUserPoints(user.id)
   const tier     = getTier(points)
@@ -80,6 +81,7 @@ export default async function DashboardPage() {
       exclusive={exclusive}
       purchases={purchases ?? []}
       isBirthday={isBirthday}
+      isAdminUser={isAdminUser}
     />
   )
 }

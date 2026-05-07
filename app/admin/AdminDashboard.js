@@ -495,6 +495,10 @@ function AdminDashboardInner({
         )}
 
         <div className="adm2-sidebar-bottom">
+          <a href="/account/dashboard" className="adm2-fan-view-btn">
+            <span className="adm2-fan-view-icon">👁</span>
+            Fan View
+          </a>
           <a href="/" className="adm2-sidebar-link">← Back to site</a>
           <button
             className="adm2-sidebar-link adm2-signout"
@@ -523,6 +527,9 @@ function AdminDashboardInner({
             </div>
           </div>
           <div className="adm2-topbar-right">
+            <a href="/account/dashboard" className="adm2-topbar-fanview">
+              <span>👁</span> Fan View
+            </a>
             <span className="adm2-topbar-clock">{clock}</span>
             <span className="adm2-topbar-date">
               {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}

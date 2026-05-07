@@ -5366,6 +5366,31 @@ footer::before {
 .adm2-sidebar-link:hover { color: var(--white); background: rgba(245,240,235,0.04); }
 .adm2-signout:hover { color: var(--red) !important; }
 
+/* Fan View button in sidebar */
+.adm2-fan-view-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: 8px;
+  font-family: var(--font-label, sans-serif);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--white);
+  text-decoration: none;
+  background: rgba(196, 34, 46, 0.12);
+  border: 1px solid rgba(196, 34, 46, 0.25);
+  transition: background 0.15s, border-color 0.15s;
+  margin-bottom: 4px;
+}
+.adm2-fan-view-btn:hover {
+  background: rgba(196, 34, 46, 0.22);
+  border-color: rgba(196, 34, 46, 0.5);
+}
+.adm2-fan-view-icon { font-size: 13px; }
+
 /* Presence indicator */
 .adm2-presence {
   padding: 12px 10px 8px;
@@ -5442,6 +5467,29 @@ footer::before {
   display: flex;
   align-items: center;
   gap: 16px;
+}
+
+/* Fan View button in topbar */
+.adm2-topbar-fanview {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-label, sans-serif);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(196, 34, 46, 0.8);
+  text-decoration: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  background: rgba(196, 34, 46, 0.08);
+  border: 1px solid rgba(196, 34, 46, 0.2);
+  transition: background 0.15s, color 0.15s;
+}
+.adm2-topbar-fanview:hover {
+  background: rgba(196, 34, 46, 0.16);
+  color: #ff6b6b;
 }
 .adm2-topbar-clock {
   font-family: var(--font-label, monospace);
@@ -12438,6 +12486,60 @@ footer::before {
   min-height: 100vh;
   background: #000;
   padding-top: 0;
+}
+
+/* ── Admin preview bar ── */
+.fd-admin-bar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 20px;
+  background: rgba(196, 34, 46, 0.12);
+  border-bottom: 1px solid rgba(196, 34, 46, 0.3);
+  backdrop-filter: blur(8px);
+}
+.fd-admin-bar-badge {
+  font-family: var(--font-label, sans-serif);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #ff6b6b;
+  background: rgba(196, 34, 46, 0.15);
+  border: 1px solid rgba(196, 34, 46, 0.35);
+  border-radius: 100px;
+  padding: 3px 10px;
+  white-space: nowrap;
+}
+.fd-admin-bar-label {
+  font-family: var(--font-body, sans-serif);
+  font-size: 12px;
+  color: rgba(245, 240, 235, 0.5);
+  flex: 1;
+}
+.fd-admin-bar-back {
+  font-family: var(--font-label, sans-serif);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: #ff6b6b;
+  text-decoration: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  background: rgba(196, 34, 46, 0.12);
+  border: 1px solid rgba(196, 34, 46, 0.3);
+  transition: background 0.15s;
+  white-space: nowrap;
+}
+.fd-admin-bar-back:hover { background: rgba(196, 34, 46, 0.22); }
+
+@media (max-width: 480px) {
+  .fd-admin-bar-label { display: none; }
+  .fd-admin-bar { gap: 8px; padding: 8px 16px; }
 }
 
 /* ── Top bar ── */

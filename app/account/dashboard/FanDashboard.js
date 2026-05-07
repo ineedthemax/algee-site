@@ -74,7 +74,8 @@ function ExclusiveCard({ item }) {
 export default function FanDashboard({
   user, points = 0, tier, nextTier,
   announcements = [], exclusive = [],
-  purchases = [], isBirthday = false
+  purchases = [], isBirthday = false,
+  isAdminUser = false,
 }) {
   const [signingOut, setSigningOut] = useState(false)
   const [dismissed,  setDismissed]  = useState([])
@@ -99,6 +100,15 @@ export default function FanDashboard({
 
   return (
     <div className="fd-page">
+
+      {/* ── Admin preview bar ── */}
+      {isAdminUser && (
+        <div className="fd-admin-bar">
+          <span className="fd-admin-bar-badge">👁 Admin Preview</span>
+          <span className="fd-admin-bar-label">You&apos;re viewing the fan experience</span>
+          <a href="/admin" className="fd-admin-bar-back">← Back to Admin</a>
+        </div>
+      )}
 
       {/* ── Top bar ── */}
       <div className="fd-topbar">
