@@ -1,13 +1,7 @@
 'use client'
 
 import Image from 'next/image'
-
-// ─── CONFIG ────────────────────────────────────────────────────────
-// To go live: set IS_LIVE = true and drop the YouTube Live video ID in LIVE_ID
-const IS_LIVE    = false
-const LIVE_ID    = ''          // e.g. 'dQw4w9WgXcQ'
-const LIVE_TITLE = 'Live with Algee'
-// ────────────────────────────────────────────────────────────────────
+import { IS_LIVE, LIVE_ID, LIVE_TITLE } from '../lib/liveConfig'
 
 export default function LiveStreamSection() {
   return (

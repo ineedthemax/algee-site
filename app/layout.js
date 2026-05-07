@@ -6,6 +6,7 @@ import CustomCursor from './components/CustomCursor'
 import ScrollReveal from './components/ScrollReveal'
 import ScrollProgress from './components/ScrollProgress'
 import ScrollToTop from './components/ScrollToTop'
+import LiveSignal from './components/LiveSignal'
 
 // ─── Brand Fonts ───────────────────────────────────────────────
 const playfair = Playfair_Display({
@@ -63,6 +64,9 @@ export default function RootLayout({ children }) {
       className={`${playfair.variable} ${barlow.variable} ${barlowCondensed.variable}`}
     >
       <body>
+        {/* Live stream alert banner — only renders when IS_LIVE = true */}
+        <LiveSignal />
+
         {/* Scroll progress bar */}
         <ScrollProgress />
 

@@ -8618,6 +8618,96 @@ footer::before {
   .scroll-top { bottom: 20px; right: 20px; width: 40px; height: 40px; }
 }
 
+/* ── Live Signal Banner ──────────────────────────────────── */
+.live-signal {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 20px;
+  background: linear-gradient(90deg, #1a0000 0%, #200505 40%, #1a0000 100%);
+  border-bottom: 1px solid rgba(196, 34, 46, 0.35);
+  text-decoration: none;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+  animation: ls-signal-slide-in 0.5s ease both;
+}
+
+@keyframes ls-signal-slide-in {
+  from { transform: translateY(-100%); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+/* Subtle sweep shimmer */
+.live-signal::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(105deg, transparent 40%, rgba(196,34,46,0.07) 50%, transparent 60%);
+  animation: live-shimmer 3s linear infinite;
+}
+
+@keyframes live-shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+.live-signal-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--red, #C4222E);
+  flex-shrink: 0;
+  animation: ls-pulse 1.4s ease-in-out infinite;
+  box-shadow: 0 0 0 0 rgba(196, 34, 46, 0.6);
+}
+
+.live-signal-text {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-body, sans-serif);
+  font-size: 13px;
+  font-weight: 500;
+  color: rgba(245, 240, 235, 0.85);
+  letter-spacing: 0.2px;
+}
+
+.live-signal-badge {
+  font-family: var(--font-label, sans-serif);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  color: var(--red, #C4222E);
+  background: rgba(196, 34, 46, 0.12);
+  border: 1px solid rgba(196, 34, 46, 0.4);
+  border-radius: 3px;
+  padding: 2px 6px;
+}
+
+.live-signal-cta {
+  font-family: var(--font-label, sans-serif);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--red, #C4222E);
+  margin-left: 4px;
+  transition: letter-spacing 0.2s ease;
+}
+
+.live-signal:hover .live-signal-cta {
+  letter-spacing: 2.5px;
+}
+
+@media (max-width: 480px) {
+  .live-signal { gap: 8px; padding: 9px 16px; }
+  .live-signal-text { font-size: 12px; }
+  .live-signal-cta { display: none; }
+}
+
 /* ── Smart Link Builder ──────────────────────────────────── */
 .sl-form { display: flex; flex-direction: column; gap: 16px; }
 
