@@ -5,6 +5,7 @@ import { TIERS, getTier } from '../../lib/tiers'
 import { isAdmin } from '../../lib/isAdmin'
 import AdminDashboard from './AdminDashboard'
 
+export const dynamic = 'force-dynamic'
 export const metadata = { title: 'Admin Dashboard | Algee Smith' }
 
 export default async function AdminPage() {

@@ -9459,29 +9459,7 @@ footer::before {
   font-weight: 600;
 }
 
-/* Sidebar bottom */
-.adm2-sidebar-bottom {
-  padding: 16px 20px;
-  border-top: 1px solid rgba(255,255,255,0.05);
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.adm2-sidebar-link {
-  font-size: 12px;
-  color: rgba(255,255,255,0.3);
-  text-decoration: none;
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0;
-  text-align: left;
-  transition: color 0.12s;
-}
-
-.adm2-sidebar-link:hover { color: rgba(255,255,255,0.7); }
-
+/* (adm2-sidebar-bottom / adm2-sidebar-link defined above) */
 .adm2-signout { color: rgba(196,34,46,0.5); }
 .adm2-signout:hover { color: #c4222e; }
 
@@ -13325,7 +13303,8 @@ footer::before {
   flex-direction: column;
   gap: 8px;
 }
-.fd-exc-locked { opacity: 0.6; }
+.fd-exc-locked  { opacity: 0.6; }
+.fd-exc-unlocked { border-color: rgba(255,255,255,0.12); background: rgba(255,255,255,0.06); }
 .fd-exc-lock { font-size: 24px; margin-bottom: 4px; }
 .fd-exc-badge {
   display: inline-block;
