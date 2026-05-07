@@ -63,15 +63,18 @@ export default function LiveStreamSection() {
                 {/* Scanlines */}
                 <div className="ls-scanlines" aria-hidden="true" />
 
-                {/* Off-air content */}
+                {/* Coming soon content */}
                 <div className="ls-offline-content">
-                  <div className="ls-signal-icon" aria-hidden="true">
-                    <span /><span /><span /><span /><span />
+                  <div className="ls-coming-tag">
+                    <span className="ls-coming-dot" />
+                    Next Live
                   </div>
-                  <div className="ls-offline-label">NOT LIVE RIGHT NOW</div>
-                  <div className="ls-offline-sub">
-                    Algee&apos;ll be here when he&apos;s ready.
+                  <div className="ls-coming-headline">Coming Soon</div>
+                  <div className="ls-coming-sub">
+                    Tune in. Algee&apos;s going live.
                   </div>
+                  <div className="ls-coming-divider" />
+                  <div className="ls-coming-hint">Subscribe below to get notified</div>
                 </div>
               </div>
             )}

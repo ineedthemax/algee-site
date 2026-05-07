@@ -8230,6 +8230,65 @@ footer::before {
   padding: 24px;
 }
 
+/* ── Coming Soon overlay content ── */
+.ls-coming-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: rgba(196, 98, 42, 0.18);
+  border: 1px solid rgba(196, 98, 42, 0.4);
+  border-radius: 100px;
+  padding: 5px 14px;
+  font-family: var(--font-label, sans-serif);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--orange, #C4622A);
+  margin-bottom: 4px;
+}
+
+.ls-coming-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--orange, #C4622A);
+  animation: ls-pulse 2s ease-in-out infinite;
+  flex-shrink: 0;
+}
+
+.ls-coming-headline {
+  font-family: var(--font-display, serif);
+  font-size: clamp(28px, 5vw, 44px);
+  font-weight: 900;
+  color: var(--white, #F5F0EB);
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+
+.ls-coming-sub {
+  font-family: var(--font-body, sans-serif);
+  font-size: 14px;
+  color: rgba(245, 240, 235, 0.55);
+  font-style: italic;
+  letter-spacing: 0.3px;
+}
+
+.ls-coming-divider {
+  width: 40px;
+  height: 1px;
+  background: rgba(245, 240, 235, 0.15);
+  margin: 4px 0;
+}
+
+.ls-coming-hint {
+  font-family: var(--font-label, sans-serif);
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(245, 240, 235, 0.3);
+}
+
 /* Signal bars — decorative */
 .ls-signal-icon {
   display: flex;
