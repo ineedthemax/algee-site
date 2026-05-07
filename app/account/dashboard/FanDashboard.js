@@ -2,33 +2,32 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { createClient } from '../../../lib/supabase/client'
 import { useRouter } from 'next/navigation'
 
-const QUICK_LINKS = [
-  { label: 'Music',      href: '/music',       icon: '♫', desc: 'Love Lost — streaming now'     },
-  { label: 'Fan Wall',   href: '/fan-wall',    icon: '◎', desc: 'Leave your mark'               },
-  { label: 'Missions',   href: '/missions',    icon: '★', desc: 'Earn points & rewards'         },
-  { label: 'Merch',      href: '/merch',       icon: '◈', desc: 'Official store'                },
+/* ── Tier config ─────────────────────────────────────────────── */
+const TIER_COLORS = { 'Day One': '#c4222e', 'Rider': '#e8a020', 'Legend': '#9b59b6', 'Free': '#666' }
+
+// What fans unlock at each tier — used in the upgrade preview
+const TIER_PREVIEWS = [
+  { tier: 'Day One', color: '#c4222e', icon: '✦', perks: ['Early access notifications', 'Exclusive content previews', 'Day One badge on leaderboard'] },
+  { tier: 'Rider',   color: '#e8a020', icon: '◈', perks: ['Behind-the-scenes content', 'Priority merch drop access', 'Rider badge on leaderboard'] },
+  { tier: 'Legend',  color: '#9b59b6', icon: '★', perks: ['Exclusive downloads & extras', 'Direct community access', 'Permanent Legend status'] },
 ]
 
+const ANNOUNCE_COLORS = { info: '#3b82f6', music: '#c4222e', tour: '#e8a020', merch: '#9b59b6' }
+const ANNOUNCE_ICONS  = { info: '📢', music: '🎵', tour: '🎤', merch: '👕' }
+
+/* ── Earn action rows — clickable ────────────────────────────── */
 const EARN_ACTIONS = [
-  { pts: '+100', label: 'Join the fan club' },
-  { pts: '+50',  label: 'Buy merch or music' },
-  { pts: '+20',  label: 'Share content'      },
-  { pts: '+10',  label: 'Stream music'       },
+  { pts: '+100', label: 'Join the fan club',   href: '/tiers',    done: true  },
+  { pts: '+50',  label: 'Buy merch or music',  href: '/merch',    done: false },
+  { pts: '+20',  label: 'Share with a friend', href: null,        done: false, share: true },
+  { pts: '+10',  label: 'Stream the album',    href: '/music',    done: false },
 ]
 
-const ANNOUNCE_COLORS = {
-  info:  '#3b82f6',
-  music: '#c4222e',
-  tour:  '#e8a020',
-  merch: '#9b59b6',
-}
-const ANNOUNCE_ICONS = { info: '📢', music: '🎵', tour: '🎤', merch: '👕' }
-const TIER_COLORS    = { 'Day One': '#c4222e', 'Rider': '#e8a020', 'Legend': '#9b59b6', 'Free': '#888' }
-
-/* ── Exclusive content card ─────────────────────────────────── */
+/* ── Exclusive content card ──────────────────────────────────── */
 function ExclusiveCard({ item }) {
   const [open, setOpen] = useState(false)
   const color = TIER_COLORS[item.min_tier] ?? '#888'
@@ -70,15 +69,44 @@ function ExclusiveCard({ item }) {
   )
 }
 
-/* ── Main dashboard ─────────────────────────────────────────── */
+/* ── Tier upgrade preview (locked cards) ─────────────────────── */
+function TierPreview({ currentTierName }) {
+  const lockedTiers = TIER_PREVIEWS.filter(t => {
+    const order = ['Free', 'Day One', 'Rider', 'Legend']
+    return order.indexOf(t.tier) > order.indexOf(currentTierName)
+  })
+  if (!lockedTiers.length) return null
+
+  return (
+    <div className="fd-tier-preview-grid">
+      {lockedTiers.map(t => (
+        <div key={t.tier} className="fd-tier-preview-card" style={{ '--tc': t.color }}>
+          <div className="fd-tier-preview-lock">🔒</div>
+          <div className="fd-tier-preview-icon" style={{ color: t.color }}>{t.icon}</div>
+          <div className="fd-tier-preview-name" style={{ color: t.color }}>{t.tier}</div>
+          <ul className="fd-tier-preview-perks">
+            {t.perks.map(p => <li key={p}>{p}</li>)}
+          </ul>
+          <Link href="/tiers" className="fd-tier-preview-cta" style={{ borderColor: t.color, color: t.color }}>
+            How to unlock →
+          </Link>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+/* ── Main dashboard ──────────────────────────────────────────── */
 export default function FanDashboard({
   user, points = 0, tier, nextTier,
   announcements = [], exclusive = [],
   purchases = [], isBirthday = false,
   isAdminUser = false,
+  rank = null, totalFans = 0,
 }) {
   const [signingOut, setSigningOut] = useState(false)
   const [dismissed,  setDismissed]  = useState([])
+  const [copied,     setCopied]     = useState(false)
   const router = useRouter()
 
   const handleSignOut = async () => {
@@ -89,13 +117,27 @@ export default function FanDashboard({
     router.refresh()
   }
 
-  const displayName    = user.user_metadata?.full_name || user.email.split('@')[0]
-  const joinedDate     = new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-  const tierColor      = tier?.color ?? '#888'
-  const progressPct    = nextTier
+  const handleShare = async () => {
+    const text = `I'm a ${tier?.name ?? 'fan'} of Algee Smith. Join the fan club →`
+    const url  = 'https://thealgeesmith.com/account'
+    try {
+      if (navigator.share) {
+        await navigator.share({ title: 'Algee Smith Fan Club', text, url })
+      } else {
+        await navigator.clipboard.writeText(`${text} ${url}`)
+        setCopied(true)
+        setTimeout(() => setCopied(false), 2500)
+      }
+    } catch {}
+  }
+
+  const displayName  = user.user_metadata?.full_name || user.email.split('@')[0]
+  const joinedDate   = new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
+  const tierColor    = tier?.color ?? '#666'
+  const progressPct  = nextTier
     ? Math.min(100, Math.round(((points - tier.min) / (nextTier.min - tier.min)) * 100))
     : 100
-  const pointsToNext   = nextTier ? nextTier.min - points : 0
+  const pointsToNext = nextTier ? nextTier.min - points : 0
   const visibleAnnouncements = announcements.filter(a => !dismissed.includes(a.id))
 
   return (
@@ -153,14 +195,57 @@ export default function FanDashboard({
           </div>
         )}
 
+        {/* ── Latest drop hero ── */}
+        <div className="fd-drop-hero">
+          <div className="fd-drop-hero-img">
+            <Image
+              src="https://img.youtube.com/vi/TjOHVPo5iwM/maxresdefault.jpg"
+              alt="Spiraling"
+              fill
+              sizes="600px"
+              style={{ objectFit: 'cover', objectPosition: 'center top' }}
+            />
+            <div className="fd-drop-hero-overlay" />
+          </div>
+          <div className="fd-drop-hero-content">
+            <div className="fd-drop-hero-eyebrow">Latest Drop</div>
+            <div className="fd-drop-hero-title">Spiraling</div>
+            <div className="fd-drop-hero-sub">Official Visual · Out Now</div>
+            <div className="fd-drop-hero-actions">
+              <a
+                href="https://www.youtube.com/watch?v=TjOHVPo5iwM"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="fd-drop-hero-btn"
+              >
+                ▶ Watch Now
+              </a>
+              <Link href="/music" className="fd-drop-hero-ghost">Stream →</Link>
+            </div>
+          </div>
+        </div>
+
         {/* ── Bento grid ── */}
         <div className="fd-bento">
 
-          {/* Identity card — tall left */}
+          {/* Identity card */}
           <div className="fd-card fd-card-identity" style={{ '--tc': tierColor }}>
+            <div className="fd-identity-photo">
+              <Image
+                src="/images/hero/algee-hero.webp"
+                alt=""
+                fill
+                sizes="160px"
+                style={{ objectFit: 'cover', objectPosition: 'center 15%' }}
+                aria-hidden="true"
+              />
+              <div className="fd-identity-photo-overlay" />
+            </div>
             <div className="fd-identity-glow" aria-hidden="true" />
             <div className="fd-identity-eyebrow">Algee Smith Fan Club</div>
-            <div className="fd-identity-emblem">{tier?.icon ?? '◻'}</div>
+            <div className="fd-identity-emblem" style={{ color: tierColor, borderColor: `${tierColor}40` }}>
+              {tier?.icon ?? '◈'}
+            </div>
             <div className="fd-identity-name">{displayName}</div>
             <div className="fd-identity-email">{user.email}</div>
             <div className="fd-identity-tier" style={{ color: tierColor }}>{tier?.name ?? 'Free'}</div>
@@ -175,18 +260,23 @@ export default function FanDashboard({
             <div className="fd-card-sub">Lifetime earned</div>
           </div>
 
-          {/* Tier card */}
-          <div className="fd-card fd-card-tier" style={{ '--tc': tierColor }}>
-            <div className="fd-card-label">Current Tier</div>
-            <div className="fd-card-big-num" style={{ color: tierColor }}>{tier?.name ?? 'Free'}</div>
-            <div className="fd-card-sub">{tier?.icon} {tier?.description ?? 'Keep earning'}</div>
+          {/* Rank card */}
+          <div className="fd-card fd-card-rank">
+            <div className="fd-card-label">Fan Rank</div>
+            <div className="fd-card-big-num" style={{ color: tierColor }}>
+              {rank ? `#${rank.toLocaleString()}` : '—'}
+            </div>
+            <div className="fd-card-sub">
+              {totalFans > 0 ? `of ${totalFans.toLocaleString()} fans` : 'Keep earning to rank up'}
+            </div>
+            <Link href="/leaderboard" className="fd-rank-link">See leaderboard →</Link>
           </div>
 
-          {/* Progress card — full width */}
+          {/* Progress card */}
           <div className="fd-card fd-card-progress" style={{ '--tc': tierColor }}>
             <div className="fd-progress-top">
               <div>
-                <div className="fd-card-label">Progress to {nextTier?.name ?? 'Max'}</div>
+                <div className="fd-card-label">Progress to {nextTier?.name ?? 'Max Tier'}</div>
                 <div className="fd-progress-pct">{progressPct}%</div>
               </div>
               {nextTier ? (
@@ -212,35 +302,120 @@ export default function FanDashboard({
             )}
           </div>
 
-          {/* Earn card */}
+          {/* Earn actions — clickable */}
           <div className="fd-card fd-card-earn">
-            <div className="fd-card-label">How to Earn Points</div>
+            <div className="fd-card-label">Earn Points</div>
             <div className="fd-earn-list">
-              {EARN_ACTIONS.map(a => (
-                <div key={a.label} className="fd-earn-row">
-                  <span className="fd-earn-pts">{a.pts}</span>
-                  <span className="fd-earn-label">{a.label}</span>
-                </div>
-              ))}
+              {EARN_ACTIONS.map(a => {
+                if (a.share) {
+                  return (
+                    <button key={a.label} className="fd-earn-row fd-earn-row-btn" onClick={handleShare}>
+                      <span className="fd-earn-pts">{a.pts}</span>
+                      <span className="fd-earn-label">{a.label}</span>
+                      <span className="fd-earn-cta">{copied ? '✓ Copied!' : 'Share →'}</span>
+                    </button>
+                  )
+                }
+                if (a.done) {
+                  return (
+                    <div key={a.label} className="fd-earn-row fd-earn-row-done">
+                      <span className="fd-earn-pts fd-earn-pts-done">✓</span>
+                      <span className="fd-earn-label">{a.label}</span>
+                      <span className="fd-earn-cta fd-earn-cta-done">Done</span>
+                    </div>
+                  )
+                }
+                return (
+                  <Link key={a.label} href={a.href} className="fd-earn-row fd-earn-row-link">
+                    <span className="fd-earn-pts">{a.pts}</span>
+                    <span className="fd-earn-label">{a.label}</span>
+                    <span className="fd-earn-cta">Go →</span>
+                  </Link>
+                )
+              })}
             </div>
           </div>
 
         </div>
 
-        {/* ── Quick links ── */}
+        {/* ── Explore ── */}
         <div className="fd-section-label">Explore</div>
         <div className="fd-links-grid">
-          {QUICK_LINKS.map(({ label, href, icon, desc }) => (
-            <Link key={href} href={href} className="fd-link-card">
-              <div className="fd-link-icon">{icon}</div>
-              <div className="fd-link-label">{label}</div>
-              <div className="fd-link-desc">{desc}</div>
-              <div className="fd-link-arrow">→</div>
-            </Link>
-          ))}
+
+          <a
+            href="https://open.spotify.com/artist/1GdbNDHVJMggEpbWCIAulO"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="fd-link-card fd-link-card-music"
+          >
+            <div className="fd-link-album-art">
+              <Image
+                src="https://img.youtube.com/vi/TjOHVPo5iwM/mqdefault.jpg"
+                alt="Love Lost"
+                fill
+                sizes="200px"
+                style={{ objectFit: 'cover' }}
+              />
+              <div className="fd-link-album-overlay" />
+            </div>
+            <div className="fd-link-content">
+              <div className="fd-link-icon">♫</div>
+              <div className="fd-link-label">Music</div>
+              <div className="fd-link-desc">Love Lost — streaming now</div>
+            </div>
+            <div className="fd-link-arrow">→</div>
+          </a>
+
+          <Link href="/fan-wall" className="fd-link-card">
+            <div className="fd-link-icon">◎</div>
+            <div className="fd-link-label">Fan Wall</div>
+            <div className="fd-link-desc">Leave your mark for Algee</div>
+            <div className="fd-link-arrow">→</div>
+          </Link>
+
+          <Link href="/missions" className="fd-link-card fd-link-card-missions">
+            <div className="fd-link-icon">★</div>
+            <div className="fd-link-label">Missions</div>
+            <div className="fd-link-desc">Earn points & unlock rewards</div>
+            <div className="fd-link-pts-badge">+pts</div>
+            <div className="fd-link-arrow">→</div>
+          </Link>
+
+          <Link href="/merch" className="fd-link-card">
+            <div className="fd-link-icon">◈</div>
+            <div className="fd-link-label">Merch</div>
+            <div className="fd-link-desc">Official store</div>
+            <div className="fd-link-arrow">→</div>
+          </Link>
+
         </div>
 
-        {/* ── Purchases ── */}
+        {/* ── Exclusive content ── */}
+        {exclusive.length > 0 && (
+          <>
+            <div className="fd-section-label">Exclusive Content</div>
+            <div className="fd-exc-grid">
+              {exclusive.map(item => <ExclusiveCard key={item.id} item={item} />)}
+            </div>
+          </>
+        )}
+
+        {/* ── Tier upgrade preview ── */}
+        {tier?.name !== 'Legend' && (
+          <>
+            <div className="fd-section-label">
+              {exclusive.length > 0 ? 'More to Unlock' : 'Unlock with Higher Tiers'}
+            </div>
+            <TierPreview currentTierName={tier?.name ?? 'Free'} />
+            <div className="fd-upgrade-cta-wrap">
+              <Link href="/tiers" className="fd-upgrade-cta-btn">
+                See how to level up →
+              </Link>
+            </div>
+          </>
+        )}
+
+        {/* ── Purchase history ── */}
         {purchases.length > 0 && (
           <>
             <div className="fd-section-label">Purchase History</div>
@@ -263,26 +438,6 @@ export default function FanDashboard({
               </div>
             </div>
           </>
-        )}
-
-        {/* ── Exclusive content ── */}
-        {exclusive.length > 0 && (
-          <>
-            <div className="fd-section-label">Exclusive Content</div>
-            <div className="fd-exc-grid">
-              {exclusive.map(item => <ExclusiveCard key={item.id} item={item} />)}
-            </div>
-          </>
-        )}
-
-        {exclusive.length === 0 && (
-          <div className="fd-card fd-card-coming">
-            <div className="fd-coming-icon">✦</div>
-            <div className="fd-coming-title">More coming for fans.</div>
-            <div className="fd-coming-sub">
-              Exclusive content, early drops, leaderboard, and direct messages from Algee — all coming soon.
-            </div>
-          </div>
         )}
 
       </div>

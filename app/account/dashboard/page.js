@@ -1,7 +1,7 @@
 import { redirect } from 'next/navigation'
 import { createClient } from '../../../lib/supabase/server'
 import { createAdminClient } from '../../../lib/supabase/admin'
-import { getUserPoints, getTier, getNextTier } from '../../../lib/points'
+import { getUserPoints, getTier, getNextTier, getUserRank } from '../../../lib/points'
 import { isAdmin } from '../../../lib/isAdmin'
 import { TIERS } from '../../../lib/tiers'
 import FanDashboard from './FanDashboard'
@@ -20,53 +20,43 @@ export default async function DashboardPage() {
   if (!user) redirect('/account')
 
   const isAdminUser = isAdmin(user.email)
-  // Admins can view the fan dashboard — don't redirect, just flag it
-
-  const points   = await getUserPoints(user.id)
-  const tier     = getTier(points)
-  const nextTier = getNextTier(points)
 
   const admin = createAdminClient()
 
-  // Fetch active announcements
-  const { data: announcements = [] } = await admin
-    .from('announcements')
-    .select('id, title, body, type, created_at')
-    .eq('active', true)
-    .order('created_at', { ascending: false })
-    .limit(5)
+  // Run independent queries in parallel
+  const [
+    points,
+    announcementsRes,
+    purchasesRes,
+    profileRes,
+    exclusiveRes,
+    totalFansRes,
+  ] = await Promise.all([
+    getUserPoints(user.id),
+    admin.from('announcements').select('id, title, body, type, created_at').eq('active', true).order('created_at', { ascending: false }).limit(5),
+    admin.from('fan_purchases').select('id, amount, item_name, notes, created_at').eq('user_id', user.id).order('created_at', { ascending: false }).limit(5),
+    admin.from('profiles').select('birthday_month, birthday_day').eq('id', user.id).single(),
+    admin.from('exclusive_content').select('id, title, description, type, content_url, content_body, min_tier, created_at').eq('active', true).order('created_at', { ascending: false }),
+    admin.from('profiles').select('id', { count: 'exact', head: true }),
+  ])
 
-  // Fetch fan purchases (last 5)
-  const { data: purchases = [] } = await admin
-    .from('fan_purchases')
-    .select('id, amount, item_name, notes, created_at')
-    .eq('user_id', user.id)
-    .order('created_at', { ascending: false })
-    .limit(5)
+  const tier      = getTier(points)
+  const nextTier  = getNextTier(points)
+  const totalFans = totalFansRes.count ?? 0
 
-  // Check birthday
-  const { data: profile } = await admin
-    .from('profiles')
-    .select('birthday_month, birthday_day')
-    .eq('id', user.id)
-    .single()
+  // Fetch rank (depends on points, run after)
+  const rank = await getUserRank(user.id).catch(() => null)
 
-  const today = new Date()
+  // Birthday check
+  const profile    = profileRes.data
+  const today      = new Date()
   const isBirthday = profile?.birthday_month === (today.getMonth() + 1) &&
                      profile?.birthday_day   === today.getDate()
 
-  // Fetch exclusive content — only items the user's tier can access
-  const tierOrder = TIERS.map(t => t.name)           // ['Free','Day One','Rider','Legend']
-  const userTierIdx = tierOrder.indexOf(tier.name)   // e.g. 1 for Day One
-
-  const { data: exclusiveItems = [] } = await admin
-    .from('exclusive_content')
-    .select('id, title, description, type, content_url, content_body, min_tier, created_at')
-    .eq('active', true)
-    .order('created_at', { ascending: false })
-
-  // Tag each item with whether it's unlocked for this user
-  const exclusive = (exclusiveItems ?? []).map(item => ({
+  // Tag exclusive content with unlock status
+  const tierOrder    = TIERS.map(t => t.name)
+  const userTierIdx  = tierOrder.indexOf(tier.name)
+  const exclusive    = (exclusiveRes.data ?? []).map(item => ({
     ...item,
     unlocked: userTierIdx >= tierOrder.indexOf(item.min_tier),
   }))
@@ -77,11 +67,13 @@ export default async function DashboardPage() {
       points={points}
       tier={tier}
       nextTier={nextTier}
-      announcements={announcements ?? []}
+      announcements={announcementsRes.data ?? []}
       exclusive={exclusive}
-      purchases={purchases ?? []}
+      purchases={purchasesRes.data ?? []}
       isBirthday={isBirthday}
       isAdminUser={isAdminUser}
+      rank={rank}
+      totalFans={totalFans}
     />
   )
 }
