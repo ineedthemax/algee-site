@@ -5,7 +5,7 @@ import { getMission } from '../../../lib/missions'
 import BirthdayForm from './BirthdayForm'
 
 export const metadata = {
-  title: 'Birthday Mission — Algee Smith',
+  title: 'Birthday Mission - Algee Smith',
 }
 
 export default async function BirthdayPage() {

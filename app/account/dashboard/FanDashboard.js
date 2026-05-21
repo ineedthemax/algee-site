@@ -1,6 +1,7 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import DashboardTour from './DashboardTour'
 import Link from 'next/link'
 import Image from 'next/image'
 import { createClient } from '../../../lib/supabase/client'
@@ -9,7 +10,7 @@ import { useRouter } from 'next/navigation'
 /* ── Tier config ─────────────────────────────────────────────── */
 const TIER_COLORS = { 'Day One': '#c4222e', 'Rider': '#e8a020', 'Legend': '#9b59b6', 'Free': '#666' }
 
-// What fans unlock at each tier — used in the upgrade preview
+// What fans unlock at each tier - used in the upgrade preview
 const TIER_PREVIEWS = [
   { tier: 'Day One', color: '#c4222e', icon: '✦', perks: ['Early access notifications', 'Exclusive content previews', 'Day One badge on leaderboard'] },
   { tier: 'Rider',   color: '#e8a020', icon: '◈', perks: ['Behind-the-scenes content', 'Priority merch drop access', 'Rider badge on leaderboard'] },
@@ -19,7 +20,80 @@ const TIER_PREVIEWS = [
 const ANNOUNCE_COLORS = { info: '#3b82f6', music: '#c4222e', tour: '#e8a020', merch: '#9b59b6' }
 const ANNOUNCE_ICONS  = { info: '📢', music: '🎵', tour: '🎤', merch: '👕' }
 
-/* ── Earn action rows — clickable ────────────────────────────── */
+/* ── Coming Soon items ───────────────────────────────────────── */
+const COMING_SOON = [
+  {
+    id:       'cs-music',
+    category: 'Music',
+    icon:     '♫',
+    hint:     'Something new is on the way.',
+    sub:      'Notifications-only first look - turn them on in Missions.',
+    color:    '#c4222e',
+    redacted: '█████ █████',
+  },
+  {
+    id:       'cs-film',
+    category: 'Film',
+    icon:     '◎',
+    hint:     'A new project is in the works.',
+    sub:      'Day One members get details first. Stay locked in.',
+    color:    '#e8a020',
+    redacted: '████ ███████ ████',
+  },
+  {
+    id:       'cs-merch',
+    category: 'Merch',
+    icon:     '◈',
+    hint:     'Limited run dropping soon.',
+    sub:      'Fan members get early access before the public.',
+    color:    '#9b59b6',
+    redacted: '██████ ████',
+  },
+]
+
+function ComingSoonSection() {
+  return (
+    <div className="fd-cs-section">
+      <div className="fd-cs-header">
+        <div className="fd-section-label" style={{ margin: 0 }}>What&apos;s Next</div>
+        <div className="fd-cs-pulse-wrap">
+          <span className="fd-cs-pulse" />
+          <span className="fd-cs-pulse-label">Dropping Soon</span>
+        </div>
+      </div>
+      <div className="fd-cs-grid">
+        {COMING_SOON.map((item, i) => (
+          <div
+            key={item.id}
+            className="fd-cs-card"
+            style={{ '--cc': item.color, '--ci': i }}
+          >
+            {/* Top row */}
+            <div className="fd-cs-card-top">
+              <div className="fd-cs-cat" style={{ color: item.color }}>
+                <span className="fd-cs-cat-icon">{item.icon}</span>
+                {item.category}
+              </div>
+              <div className="fd-cs-soon-badge">SOON</div>
+            </div>
+
+            {/* Redacted title */}
+            <div className="fd-cs-redacted">{item.redacted}</div>
+
+            {/* Hint text */}
+            <div className="fd-cs-hint">{item.hint}</div>
+            <div className="fd-cs-sub">{item.sub}</div>
+
+            {/* Bottom glow line */}
+            <div className="fd-cs-glow-line" style={{ background: item.color }} />
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+/* ── Earn action rows - clickable ────────────────────────────── */
 const EARN_ACTIONS = [
   { pts: '+100', label: 'Join the fan club',   href: '/tiers',    done: true  },
   { pts: '+50',  label: 'Buy merch or music',  href: '/merch',    done: false },
@@ -96,6 +170,150 @@ function TierPreview({ currentTierName }) {
   )
 }
 
+/* ── Welcome overlay - new fan aha moment ─────────────────────── */
+const FAN_TYPES = [
+  { id: 'music', icon: '♫', label: 'Music Fan',  sub: 'Here for the sound'   },
+  { id: 'film',  icon: '◎', label: 'Film Fan',   sub: 'Here for the stories' },
+  { id: 'both',  icon: '★', label: 'Both',       sub: 'All of it'            },
+]
+
+const FREE_UNLOCKS = [
+  'Fan account & profile',
+  'Full music catalog access',
+  'Film & video access',
+  'Fan leaderboard & missions',
+  'First to see announcements',
+]
+
+function WelcomeOverlay({ displayName, signupPoints, onDone }) {
+  const [step,    setStep]    = useState(1)   // 1 = welcome+question, 2 = unlocked
+  const [fanType, setFanType] = useState(null)
+  const [counted, setCounted] = useState(0)
+
+  // Animate points counter on mount
+  useEffect(() => {
+    if (step !== 1) return
+    let start = null
+    const duration = 1200
+    const target   = signupPoints
+    const tick = (ts) => {
+      if (!start) start = ts
+      const pct = Math.min((ts - start) / duration, 1)
+      setCounted(Math.round(pct * target))
+      if (pct < 1) requestAnimationFrame(tick)
+    }
+    const raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [step, signupPoints])
+
+  const handleNext = () => {
+    if (fanType) {
+      try { localStorage.setItem('algee_fan_type', fanType) } catch {}
+    }
+    setStep(2)
+  }
+
+  return (
+    <div className="wl-overlay">
+      <div className="wl-inner">
+
+        {step === 1 && (
+          <div className="wl-step wl-step-enter">
+            {/* Brand */}
+            <div className="wl-brand">
+              <span className="wl-brand-dot" />
+              Algee Smith
+            </div>
+
+            {/* Hero */}
+            <h1 className="wl-headline">
+              You&rsquo;re<br />
+              <span className="wl-headline-em">in.</span>
+            </h1>
+
+            <p className="wl-sub">
+              Welcome to the world, <strong>{displayName}</strong>.
+            </p>
+
+            {/* Points reveal */}
+            <div className="wl-points-reveal">
+              <div className="wl-points-num">+{counted}</div>
+              <div className="wl-points-label">points just dropped into your account</div>
+            </div>
+
+            <div className="wl-divider" />
+
+            {/* Personalization */}
+            <div className="wl-question">
+              <div className="wl-question-label">What brings you here?</div>
+              <div className="wl-fan-types">
+                {FAN_TYPES.map(ft => (
+                  <button
+                    key={ft.id}
+                    className={`wl-fan-type${fanType === ft.id ? ' wl-fan-type-active' : ''}`}
+                    onClick={() => setFanType(ft.id)}
+                  >
+                    <span className="wl-fan-type-icon">{ft.icon}</span>
+                    <span className="wl-fan-type-name">{ft.label}</span>
+                    <span className="wl-fan-type-sub">{ft.sub}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <button
+              className="wl-btn"
+              onClick={handleNext}
+              disabled={!fanType}
+            >
+              See what you unlocked →
+            </button>
+
+            {!fanType && (
+              <p className="wl-skip" onClick={handleNext}>Skip</p>
+            )}
+          </div>
+        )}
+
+        {step === 2 && (
+          <div className="wl-step wl-step-unlocked">
+            <div className="wl-brand">
+              <span className="wl-brand-dot" />
+              Algee Smith
+            </div>
+
+            <div className="wl-unlocked-badge">✦ Unlocked</div>
+
+            <h2 className="wl-unlocked-headline">
+              Here&rsquo;s what<br />you just got.
+            </h2>
+
+            <ul className="wl-unlocks-list">
+              {FREE_UNLOCKS.map((item, i) => (
+                <li key={i} className="wl-unlock-item" style={{ animationDelay: `${i * 90}ms` }}>
+                  <span className="wl-unlock-check">✓</span>
+                  {item}
+                </li>
+              ))}
+            </ul>
+
+            <div className="wl-divider" />
+
+            <p className="wl-unlocked-hint">
+              Earn more points to unlock <strong>Day One</strong>, <strong>Rider</strong>, and <strong>Legend</strong> tier perks - early drops, exclusives, merch access, and more.
+            </p>
+
+            <button className="wl-btn" onClick={onDone}>
+              Enter the World →
+            </button>
+          </div>
+        )}
+
+      </div>
+    </div>
+  )
+}
+
 /* ── Main dashboard ──────────────────────────────────────────── */
 export default function FanDashboard({
   user, points = 0, tier, nextTier,
@@ -103,11 +321,35 @@ export default function FanDashboard({
   purchases = [], isBirthday = false,
   isAdminUser = false,
   rank = null, totalFans = 0,
+  isNew = false,
 }) {
-  const [signingOut, setSigningOut] = useState(false)
-  const [dismissed,  setDismissed]  = useState([])
-  const [copied,     setCopied]     = useState(false)
+  const [signingOut,    setSigningOut]    = useState(false)
+  const [dismissed,     setDismissed]     = useState([])
+  const [copied,        setCopied]        = useState(false)
+  const [showWelcome,   setShowWelcome]   = useState(isNew)
+  const [tourKey,       setTourKey]       = useState(0)
+  const [displayPoints, setDisplayPoints] = useState(0)
   const router = useRouter()
+
+  // Animate points counter on mount
+  useEffect(() => {
+    let start = null
+    const duration = 1200
+    const target = points
+    const tick = (ts) => {
+      if (!start) start = ts
+      const pct = Math.min((ts - start) / duration, 1)
+      setDisplayPoints(Math.round(pct * target))
+      if (pct < 1) requestAnimationFrame(tick)
+    }
+    const raf = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(raf)
+  }, [points])
+
+  const restartTour = useCallback(() => {
+    try { localStorage.removeItem('algee_tour_done') } catch {}
+    setTourKey(k => k + 1)
+  }, [])
 
   const handleSignOut = async () => {
     setSigningOut(true)
@@ -143,12 +385,29 @@ export default function FanDashboard({
   return (
     <div className="fd-page">
 
+      {/* ── Dashboard tour ── */}
+      <DashboardTour key={tourKey} isNew={showWelcome} />
+
+      {/* ── Welcome overlay (new fans only) ── */}
+      {showWelcome && (
+        <WelcomeOverlay
+          displayName={displayName}
+          signupPoints={100}
+          onDone={() => {
+            setShowWelcome(false)
+            // Clean the URL param without a reload
+            if (typeof window !== 'undefined') {
+              window.history.replaceState({}, '', '/account/dashboard')
+            }
+          }}
+        />
+      )}
+
       {/* ── Admin preview bar ── */}
       {isAdminUser && (
         <div className="fd-admin-bar">
           <span className="fd-admin-bar-badge">👁 Admin Preview</span>
           <span className="fd-admin-bar-label">You&apos;re viewing the fan experience</span>
-          <a href="/admin" className="fd-admin-bar-back">← Back to Admin</a>
         </div>
       )}
 
@@ -159,6 +418,7 @@ export default function FanDashboard({
           <span className="fd-topbar-name">Hey, {displayName} 👋</span>
         </div>
         <div className="fd-topbar-right">
+          <button className="fd-tour-btn" onClick={restartTour} title="Take the dashboard tour">?</button>
           <Link href="/" className="fd-topbar-link">← Back to site</Link>
           <button className="fd-signout" onClick={handleSignOut} disabled={signingOut}>
             {signingOut ? '...' : 'Sign Out'}
@@ -226,10 +486,10 @@ export default function FanDashboard({
         </div>
 
         {/* ── Bento grid ── */}
-        <div className="fd-bento">
+        <div className="fd-bento fd-bento-animate">
 
           {/* Identity card */}
-          <div className="fd-card fd-card-identity" style={{ '--tc': tierColor }}>
+          <div className="fd-card fd-card-identity fd-card-animate" style={{ '--tc': tierColor, '--i': 0 }}>
             <div className="fd-identity-photo">
               <Image
                 src="/images/hero/algee-hero.webp"
@@ -254,17 +514,18 @@ export default function FanDashboard({
           </div>
 
           {/* Points card */}
-          <div className="fd-card fd-card-points">
+          <div className="fd-card fd-card-points fd-card-animate" style={{ '--i': 1 }}>
             <div className="fd-card-label">Total Points</div>
-            <div className="fd-card-big-num">{points.toLocaleString()}</div>
+            <div className="fd-card-big-num">{displayPoints.toLocaleString()}</div>
             <div className="fd-card-sub">Lifetime earned</div>
+            <div className="fd-points-glow" aria-hidden="true" />
           </div>
 
           {/* Rank card */}
-          <div className="fd-card fd-card-rank">
+          <div className="fd-card fd-card-rank fd-card-animate" style={{ '--i': 2 }}>
             <div className="fd-card-label">Fan Rank</div>
             <div className="fd-card-big-num" style={{ color: tierColor }}>
-              {rank ? `#${rank.toLocaleString()}` : '—'}
+              {rank ? `#${rank.toLocaleString()}` : '-'}
             </div>
             <div className="fd-card-sub">
               {totalFans > 0 ? `of ${totalFans.toLocaleString()} fans` : 'Keep earning to rank up'}
@@ -273,7 +534,7 @@ export default function FanDashboard({
           </div>
 
           {/* Progress card */}
-          <div className="fd-card fd-card-progress" style={{ '--tc': tierColor }}>
+          <div className="fd-card fd-card-progress fd-card-animate" style={{ '--tc': tierColor, '--i': 3 }}>
             <div className="fd-progress-top">
               <div>
                 <div className="fd-card-label">Progress to {nextTier?.name ?? 'Max Tier'}</div>
@@ -302,8 +563,8 @@ export default function FanDashboard({
             )}
           </div>
 
-          {/* Earn actions — clickable */}
-          <div className="fd-card fd-card-earn">
+          {/* Earn actions - clickable */}
+          <div className="fd-card fd-card-earn fd-card-animate" style={{ '--i': 4 }}>
             <div className="fd-card-label">Earn Points</div>
             <div className="fd-earn-list">
               {EARN_ACTIONS.map(a => {
@@ -361,7 +622,7 @@ export default function FanDashboard({
             <div className="fd-link-content">
               <div className="fd-link-icon">♫</div>
               <div className="fd-link-label">Music</div>
-              <div className="fd-link-desc">Love Lost — streaming now</div>
+              <div className="fd-link-desc">Love Lost - streaming now</div>
             </div>
             <div className="fd-link-arrow">→</div>
           </a>
@@ -389,6 +650,9 @@ export default function FanDashboard({
           </Link>
 
         </div>
+
+        {/* ── Coming Soon ── */}
+        <ComingSoonSection />
 
         {/* ── Exclusive content ── */}
         {exclusive.length > 0 && (
@@ -438,6 +702,13 @@ export default function FanDashboard({
               </div>
             </div>
           </>
+        )}
+
+        {/* ── Back to admin (bottom, admin only) ── */}
+        {isAdminUser && (
+          <div className="fd-admin-back-wrap">
+            <a href="/admin" className="fd-admin-back-btn">← Back to Admin Dashboard</a>
+          </div>
         )}
 
       </div>

@@ -174,7 +174,7 @@ export default function LinkAnalytics() {
         <div className="la-card">
           <div className="la-card-title">Top Sources</div>
           {topReferrers.length === 0
-            ? <div className="la-empty">No referrer data yet — share your links!</div>
+            ? <div className="la-empty">No referrer data yet - share your links!</div>
             : topReferrers.map(r => (
               <Bar key={r.source} label={r.source} value={r.count} max={maxRef}
                 color="#3b82f6" icon={REFERRER_ICONS[r.source] ?? '🔗'} />
@@ -255,7 +255,7 @@ export default function LinkAnalytics() {
                 </div>
                 <div className="la-link-stat">
                   <div className="la-link-stat-val" style={{ color: '#e8a020' }}>
-                    {l.view_count ? ((l.totalClicks / l.view_count) * 100).toFixed(1) + '%' : '—'}
+                    {l.view_count ? ((l.totalClicks / l.view_count) * 100).toFixed(1) + '%' : '-'}
                   </div>
                   <div className="la-link-stat-label">CTR</div>
                 </div>

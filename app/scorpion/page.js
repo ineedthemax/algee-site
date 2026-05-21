@@ -63,10 +63,10 @@ export default function ScorpionPage() {
 
         {/* Bundle offer */}
         <div className="scorpion-bundle-card reveal">
-          <div className="scorpion-bundle-label">The Bundle — $34.99</div>
+          <div className="scorpion-bundle-label">The Bundle - $34.99</div>
           <h3 className="scorpion-bundle-title">Get everything.</h3>
           <ul className="scorpion-bundle-list">
-            <li><span className="tier-check">✓</span> Scorpion in Me — early digital download</li>
+            <li><span className="tier-check">✓</span> Scorpion in Me - early digital download</li>
             <li><span className="tier-check">✓</span> Love Lost Collection shirt</li>
             <li><span className="tier-check">✓</span> Signed digital poster</li>
             <li><span className="tier-check">✓</span> 3 months Inner Circle membership</li>

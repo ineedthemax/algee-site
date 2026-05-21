@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Terms of Service — Algee Smith',
+  title: 'Terms of Service - Algee Smith',
   description: 'Terms of Service for thealgeesmith.com operated by 7scope Entertainment.',
 }
 
@@ -49,7 +49,7 @@ export default function TermsPage() {
           <p>All purchases made through the Site are processed by Stripe. By making a purchase, you agree to Stripe's terms of service. All sales are final unless otherwise stated. For issues with a purchase, contact us at <a href="mailto:hello@thealgeesmith.com">hello@thealgeesmith.com</a>.</p>
 
           <h2>6. Intellectual Property</h2>
-          <p>All content on the Site — including music, images, video, text, logos, and artwork — is the property of 7scope Entertainment or its licensors and is protected by copyright and other intellectual property laws. You may not reproduce, distribute, or create derivative works without our express written permission.</p>
+          <p>All content on the Site - including music, images, video, text, logos, and artwork - is the property of 7scope Entertainment or its licensors and is protected by copyright and other intellectual property laws. You may not reproduce, distribute, or create derivative works without our express written permission.</p>
 
           <h2>7. User Content</h2>
           <p>By submitting content to the Site (fan wall posts, profile information, etc.), you grant us a non-exclusive, royalty-free license to use, display, and distribute that content in connection with operating the Site. You represent that you have the right to submit such content.</p>

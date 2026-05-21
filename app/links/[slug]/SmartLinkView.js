@@ -97,7 +97,7 @@ export default function SmartLinkView({ link, destinations }) {
       fontFamily: "'Helvetica Neue', Helvetica, Arial, sans-serif",
       padding: '0 0 60px',
     }}>
-      {/* Cover Art — full width blurred header */}
+      {/* Cover Art - full width blurred header */}
       <div style={{
         width: '100%',
         position: 'relative',

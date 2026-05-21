@@ -5,7 +5,7 @@ import { getMission } from '../../../lib/missions'
 import FanProfileForm from './FanProfileForm'
 
 export const metadata = {
-  title: 'Fan Profile Mission — Algee Smith',
+  title: 'Fan Profile Mission - Algee Smith',
 }
 
 export default async function FanProfilePage() {

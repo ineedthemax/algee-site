@@ -52,7 +52,7 @@ export default function MerchNotifyForm() {
         />
         <input
           type="tel"
-          placeholder="Phone — text me when it drops"
+          placeholder="Phone - text me when it drops"
           className="merch-notify-input merch-notify-phone"
           aria-label="Phone number"
           value={phone}

@@ -191,7 +191,7 @@ function OverviewTab({ stats, smsRate, engagement, signupChart, recentFans, setT
         <div className="ov-greeting-sub">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</div>
       </div>
 
-      {/* Top grid — chart + key stats side by side */}
+      {/* Top grid - chart + key stats side by side */}
       <div className="ov-top-grid">
 
         {/* Chart card */}
@@ -249,21 +249,21 @@ function OverviewTab({ stats, smsRate, engagement, signupChart, recentFans, setT
       <SectionLabel>Platform</SectionLabel>
       <div className="ov-mirror-grid">
         <MirrorCard icon="↗" label="Smart Links" tabId="Links" setTab={setTab} lines={[
-          { value: ov?.links.count ?? '—',  desc: 'links' },
-          { value: ov?.links.views ?? '—',  desc: 'views' },
-          { value: ov?.links.clicks ?? '—', desc: 'clicks' },
+          { value: ov?.links.count ?? '-',  desc: 'links' },
+          { value: ov?.links.views ?? '-',  desc: 'views' },
+          { value: ov?.links.clicks ?? '-', desc: 'clicks' },
         ]} />
         <MirrorCard icon="✉" label="Campaigns" tabId="Campaigns" setTab={setTab} lines={[
-          { value: ov?.campaigns.sent ?? '—',       desc: 'sent' },
-          { value: ov?.campaigns.recipients ?? '—', desc: 'recipients' },
+          { value: ov?.campaigns.sent ?? '-',       desc: 'sent' },
+          { value: ov?.campaigns.recipients ?? '-', desc: 'recipients' },
         ]} />
         <MirrorCard icon="$" label="Revenue" tabId="Spend" setTab={setTab} lines={[
-          { value: ov ? `$${ov.spending.revenue.toFixed(2)}` : '—', desc: 'total', color: '#4caf50' },
-          { value: ov?.spending.purchases ?? '—', desc: 'purchases' },
+          { value: ov ? `$${ov.spending.revenue.toFixed(2)}` : '-', desc: 'total', color: '#4caf50' },
+          { value: ov?.spending.purchases ?? '-', desc: 'purchases' },
         ]} />
         <MirrorCard icon="♫" label="Playlists" tabId="Playlists" setTab={setTab} lines={[
-          { value: ov?.playlists.active ?? '—', desc: 'active' },
-          { value: ov?.playlists.total  ?? '—', desc: 'tracked' },
+          { value: ov?.playlists.active ?? '-', desc: 'active' },
+          { value: ov?.playlists.total  ?? '-', desc: 'tracked' },
         ]} />
         <MirrorCard icon="★" label="Engagement" tabId="Engagement" setTab={setTab} lines={[
           { value: engagement.totalPointsAwarded.toLocaleString(), desc: 'points' },
@@ -404,7 +404,7 @@ function AdminDashboardInner({
     return () => clearInterval(id)
   }, [])
 
-  // Presence — ping every 30s, fetch active admins every 30s
+  // Presence - ping every 30s, fetch active admins every 30s
   useEffect(() => {
     const ping = async () => {
       await fetch('/api/admin/presence', { method: 'POST' })
@@ -690,7 +690,7 @@ function AdminDashboardInner({
                       <tr key={fan.id}>
                         <td className="adm-td-num">{fansList.indexOf(fan) + 1}</td>
                         <td className="adm-td-email">{fan.email}</td>
-                        <td className="adm-td-phone">{fan.phone || <span className="adm-none">—</span>}</td>
+                        <td className="adm-td-phone">{fan.phone || <span className="adm-none">-</span>}</td>
                         <td>{fan.phone ? <span className="adm-badge sms-yes">Yes</span> : <span className="adm-badge sms-no">No</span>}</td>
                         <td className="adm-td-date">{new Date(fan.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
                       </tr>

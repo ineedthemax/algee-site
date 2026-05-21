@@ -1,7 +1,7 @@
 import Link from 'next/link'
 
 export const metadata = {
-  title: '404 — Algee Smith',
+  title: '404 - Algee Smith',
   description: 'Page not found.',
 }
 
@@ -14,7 +14,7 @@ export default function NotFound() {
           Lost in<br /><em>the world.</em>
         </h1>
         <p className="nf-sub">
-          This page doesn&apos;t exist — but the music does.
+          This page doesn&apos;t exist - but the music does.
         </p>
         <div className="nf-actions">
           <Link href="/" className="nf-btn-primary">Back to home →</Link>

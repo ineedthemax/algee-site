@@ -35,7 +35,7 @@ const TIERS = [
     features: [
       'Everything in Free',
       'Early access to new music',
-      'Scorpion in Me — digital download',
+      'Scorpion in Me - digital download',
       'Exclusive behind-the-scenes content',
       'Members-only updates from Algee',
       'First access to merch drops',
@@ -57,7 +57,7 @@ const TIERS = [
       'Everything in Inner Circle',
       'Love Lost Collection shirt',
       'Signed digital poster (download)',
-      'Scorpion in Me — digital download',
+      'Scorpion in Me - digital download',
       '3 months Inner Circle included',
       'Your name in the credits',
     ],

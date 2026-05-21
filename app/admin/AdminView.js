@@ -86,7 +86,7 @@ export default function AdminView({ fans, stats }) {
                   <tr key={fan.id}>
                     <td className="admin-td-num">{fans.indexOf(fan) + 1}</td>
                     <td className="admin-td-email">{fan.email}</td>
-                    <td className="admin-td-phone">{fan.phone || <span className="admin-none">—</span>}</td>
+                    <td className="admin-td-phone">{fan.phone || <span className="admin-none">-</span>}</td>
                     <td>
                       {fan.phone
                         ? <span className="admin-badge sms-yes">Yes</span>
@@ -107,7 +107,7 @@ export default function AdminView({ fans, stats }) {
 
         {/* Export hint */}
         <div className="admin-footer-note">
-          To export — go to Supabase → Table Editor → profiles → Export CSV
+          To export - go to Supabase → Table Editor → profiles → Export CSV
         </div>
 
       </div>

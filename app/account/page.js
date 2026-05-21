@@ -120,7 +120,7 @@ function AccountForm() {
       </form>
 
       <p className="account-note">
-        Already a member? Same flow — just enter your email.
+        Already a member? Same flow - just enter your email.
       </p>
     </>
   )

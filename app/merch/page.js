@@ -77,7 +77,7 @@ export default function MerchPage() {
             </a>
 
             <div className="merch-soon-note">
-              Ships directly to you. Limited run — grab yours before it's gone.
+              Ships directly to you. Limited run - grab yours before it's gone.
             </div>
           </div>
 

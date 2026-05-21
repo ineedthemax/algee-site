@@ -1,5 +1,5 @@
 export const metadata = {
-  title: 'Privacy Policy — Algee Smith',
+  title: 'Privacy Policy - Algee Smith',
   description: 'Privacy Policy for thealgeesmith.com operated by 7scope Entertainment.',
 }
 
@@ -21,10 +21,10 @@ export default function PrivacyPage() {
           <h2>1. Information We Collect</h2>
           <p>We collect information you provide directly to us, including:</p>
           <ul>
-            <li><strong>Account information</strong> — email address, display name, phone number, and date of birth when you create an account or join the fan community.</li>
-            <li><strong>Communications</strong> — messages, fan wall posts, and any content you submit through the Site.</li>
-            <li><strong>Payment information</strong> — when you make a purchase, payment is processed securely by Stripe. We do not store your full card details.</li>
-            <li><strong>Push notification preferences</strong> — if you opt in to push notifications, we store your subscription token to send you updates.</li>
+            <li><strong>Account information</strong> - email address, display name, phone number, and date of birth when you create an account or join the fan community.</li>
+            <li><strong>Communications</strong> - messages, fan wall posts, and any content you submit through the Site.</li>
+            <li><strong>Payment information</strong> - when you make a purchase, payment is processed securely by Stripe. We do not store your full card details.</li>
+            <li><strong>Push notification preferences</strong> - if you opt in to push notifications, we store your subscription token to send you updates.</li>
           </ul>
 
           <p>We also collect certain information automatically when you use the Site:</p>
@@ -49,8 +49,8 @@ export default function PrivacyPage() {
           <h2>3. How We Share Your Information</h2>
           <p>We do not sell your personal information. We may share your information with:</p>
           <ul>
-            <li><strong>Service providers</strong> — third-party vendors that help us operate the Site, including Supabase (database), Stripe (payments), Resend (email), and Vercel (hosting). These providers are contractually obligated to protect your data.</li>
-            <li><strong>Legal requirements</strong> — if required by law or to protect our rights and the safety of others.</li>
+            <li><strong>Service providers</strong> - third-party vendors that help us operate the Site, including Supabase (database), Stripe (payments), Resend (email), and Vercel (hosting). These providers are contractually obligated to protect your data.</li>
+            <li><strong>Legal requirements</strong> - if required by law or to protect our rights and the safety of others.</li>
           </ul>
 
           <h2>4. SMS Communications</h2>

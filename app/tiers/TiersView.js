@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-// No server-only imports here — tiers/points data passed as props from server page
+// No server-only imports here - tiers/points data passed as props from server page
 
 export default function TiersView({ tiers, currentUserId, myPoints, myTier, nextTier }) {
   const progressPct = nextTier
@@ -23,7 +23,7 @@ export default function TiersView({ tiers, currentUserId, myPoints, myTier, next
           </p>
         </div>
 
-        {/* Current status bar — logged in only */}
+        {/* Current status bar - logged in only */}
         {currentUserId && (
           <div className="tiers-status-bar">
             <div className="tiers-status-left">
@@ -61,6 +61,9 @@ export default function TiersView({ tiers, currentUserId, myPoints, myTier, next
             const isCurrentTier = currentUserId && myTier.name === tier.name
             const isUnlocked    = currentUserId && myPoints >= tier.min
             const isLocked      = currentUserId && myPoints < tier.min
+            // For logged-out users, only Free tier is truly accessible
+            const isFree        = tier.min === 0
+            const ptsAway       = tier.min - myPoints
 
             return (
               <div
@@ -75,11 +78,18 @@ export default function TiersView({ tiers, currentUserId, myPoints, myTier, next
                   </div>
                 )}
 
+                {/* Locked badge for logged-out users on paid tiers */}
+                {!currentUserId && !isFree && (
+                  <div className="tier-card-badge tier-card-badge-locked">
+                    🔒 Earn to unlock
+                  </div>
+                )}
+
                 {/* Icon + name */}
-                <div className="tier-card-icon" style={{ color: isLocked ? '#444' : tier.color }}>
+                <div className="tier-card-icon" style={{ color: isLocked ? '#444' : (!currentUserId && !isFree ? '#444' : tier.color) }}>
                   {tier.icon}
                 </div>
-                <div className="tier-card-name" style={{ color: isLocked ? '#555' : tier.color }}>
+                <div className="tier-card-name" style={{ color: isLocked ? '#555' : (!currentUserId && !isFree ? '#555' : tier.color) }}>
                   {tier.name}
                 </div>
                 <div className="tier-card-min">
@@ -88,34 +98,47 @@ export default function TiersView({ tiers, currentUserId, myPoints, myTier, next
                 <div className="tier-card-tagline">{tier.tagline}</div>
 
                 {/* Divider */}
-                <div className="tier-card-divider" style={{ background: isLocked ? '#222' : tier.color }} />
+                <div className="tier-card-divider" style={{ background: (isLocked || (!currentUserId && !isFree)) ? '#222' : tier.color }} />
 
                 {/* Perks */}
                 <ul className="tier-card-perks">
-                  {tier.perks.map((perk, j) => (
-                    <li key={j} className={`tier-perk${isLocked ? ' tier-perk-locked' : ''}`}>
-                      <span className="tier-perk-dot" style={{ color: isLocked ? '#444' : tier.color }}>
-                        {isLocked ? '○' : '●'}
-                      </span>
-                      {perk}
-                    </li>
-                  ))}
+                  {tier.perks.map((perk, j) => {
+                    const dimmed = isLocked || (!currentUserId && !isFree)
+                    return (
+                      <li key={j} className={`tier-perk${dimmed ? ' tier-perk-locked' : ''}`}>
+                        <span className="tier-perk-dot" style={{ color: dimmed ? '#444' : tier.color }}>
+                          {dimmed ? '○' : '●'}
+                        </span>
+                        {perk}
+                      </li>
+                    )
+                  })}
                 </ul>
 
-                {/* CTA */}
-                {!currentUserId && (
+                {/* CTA - only Free tier gets a join button for logged-out users */}
+                {!currentUserId && isFree && (
                   <Link href="/account" className="tier-card-cta" style={{ borderColor: tier.color, color: tier.color }}>
                     Join free →
                   </Link>
+                )}
+                {!currentUserId && !isFree && (
+                  <div className="tier-card-locked-label">
+                    Join free → earn {tier.min.toLocaleString()} pts to unlock
+                  </div>
                 )}
                 {isCurrentTier && (
                   <Link href="/account/dashboard" className="tier-card-cta" style={{ borderColor: tier.color, color: tier.color }}>
                     View Dashboard →
                   </Link>
                 )}
+                {isUnlocked && !isCurrentTier && (
+                  <div className="tier-card-unlocked-label" style={{ color: tier.color }}>
+                    ✓ Unlocked
+                  </div>
+                )}
                 {isLocked && (
                   <div className="tier-card-locked-label">
-                    {tier.min - myPoints} pts away
+                    {ptsAway.toLocaleString()} pts away
                   </div>
                 )}
               </div>

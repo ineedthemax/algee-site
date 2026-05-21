@@ -4,7 +4,7 @@ import { createAdminClient } from '../../../lib/supabase/admin'
 import { getMission } from '../../../lib/missions'
 import WatchVideoClient from './WatchVideoClient'
 
-export const metadata = { title: 'Watch a Music Video — Algee Smith' }
+export const metadata = { title: 'Watch a Music Video - Algee Smith' }
 
 export default async function WatchVideoPage() {
   const supabase = await createClient()

@@ -3,7 +3,7 @@ import Link from 'next/link'
 import Image from 'next/image'
 
 export const metadata = {
-  title: 'Releases — Algee Smith',
+  title: 'Releases - Algee Smith',
   description: 'Exclusive access to Algee Smith releases.',
 }
 
@@ -29,7 +29,7 @@ export default async function ReleasesPage() {
           <div className="page-hero-label">Direct Access</div>
           <h1>Releases. <span className="italic">Unlocked.</span></h1>
           <p className="page-hero-sub">
-            Get closer to the music. Every release has tiers — pick yours and unlock what&apos;s inside.
+            Get closer to the music. Every release has tiers - pick yours and unlock what&apos;s inside.
           </p>
         </div>
 

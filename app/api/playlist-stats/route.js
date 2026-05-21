@@ -1,7 +1,7 @@
 import { createAdminClient } from '../../../lib/supabase/admin'
 import { NextResponse } from 'next/server'
 
-// Public endpoint — returns aggregate playlist placement stats
+// Public endpoint - returns aggregate playlist placement stats
 export const dynamic = 'force-dynamic'
 
 const CORS = {

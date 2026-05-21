@@ -4,7 +4,7 @@ import CareerTimeline from '../components/CareerTimeline'
 import SchemaMarkup from '../components/SchemaMarkup'
 
 export const metadata = {
-  title:       'About Algee Smith — Actor, Recording Artist, Entrepreneur & Philanthropist',
+  title:       'About Algee Smith - Actor, Recording Artist, Entrepreneur & Philanthropist',
   description: 'Algee Smith is an actor, recording artist, entrepreneur, and philanthropist from Saginaw, Michigan. Known for The Hate U Give, Euphoria, and his debut album Love Lost.',
   openGraph: {
     title: 'About Algee Smith',

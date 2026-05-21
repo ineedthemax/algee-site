@@ -20,7 +20,7 @@ export async function POST(request) {
 
   const admin = createAdminClient()
 
-  // One post per user — check for existing
+  // One post per user - check for existing
   const { data: existing } = await admin
     .from('fan_wall_posts')
     .select('id')
@@ -45,7 +45,7 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Failed to post. Try again.' }, { status: 500 })
   }
 
-  // Award points (first post only — already guarded by unique check above)
+  // Award points (first post only - already guarded by unique check above)
   try {
     await admin.from('fan_points_events').insert({
       user_id:  user.id,

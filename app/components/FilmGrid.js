@@ -7,6 +7,7 @@ import FilmTrailerModal from './FilmTrailerModal'
 
 export default function FilmGrid({ projects }) {
   const [activeTrailer, setActiveTrailer] = useState(null)
+  const [activeScene,   setActiveScene]   = useState(null)
   const [tappedId,      setTappedId]      = useState(null)
 
   const handleTap = (film) => {
@@ -39,7 +40,7 @@ export default function FilmGrid({ projects }) {
                   className="filmgrid-img"
                 />
 
-                {/* Overlay — hover on desktop, tap on mobile */}
+                {/* Overlay - hover on desktop, tap on mobile */}
                 <div className="filmgrid-overlay">
                   <div className="filmgrid-overlay-content">
                     <div className="filmgrid-overlay-type">{film.type} · {film.year}</div>
@@ -54,7 +55,15 @@ export default function FilmGrid({ projects }) {
                           className="filmgrid-trailer-btn"
                           onClick={(e) => { e.stopPropagation(); setActiveTrailer(film) }}
                         >
-                          ▶ Watch Trailer
+                          ▶ Trailer
+                        </button>
+                      )}
+                      {film.sceneUrl && (
+                        <button
+                          className="filmgrid-scene-btn"
+                          onClick={(e) => { e.stopPropagation(); setActiveScene(film) }}
+                        >
+                          ◈ Watch Scene
                         </button>
                       )}
                       {film.watchLinks?.length > 0 && (
@@ -72,7 +81,7 @@ export default function FilmGrid({ projects }) {
                   </div>
                 </div>
 
-                {/* Mobile tap hint — visible until first tap */}
+                {/* Mobile tap hint - visible until first tap */}
                 <div className="filmgrid-tap-hint" aria-hidden="true">tap</div>
               </div>
 
@@ -90,7 +99,17 @@ export default function FilmGrid({ projects }) {
       {activeTrailer && (
         <FilmTrailerModal
           film={activeTrailer}
+          mode="trailer"
           onClose={() => setActiveTrailer(null)}
+        />
+      )}
+
+      {/* Scene modal */}
+      {activeScene && (
+        <FilmTrailerModal
+          film={activeScene}
+          mode="scene"
+          onClose={() => setActiveScene(null)}
         />
       )}
     </>

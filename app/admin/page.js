@@ -87,7 +87,7 @@ export default async function AdminPage() {
     .sort((a, b) => b[1] - a[1])
     .slice(0, 5)
     .map(([userId, pts]) => ({
-      email: fans.find(f => f.id === userId)?.email ?? '—',
+      email: fans.find(f => f.id === userId)?.email ?? '-',
       points: pts,
       tier: getTier(pts),
     }))

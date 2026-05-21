@@ -7,7 +7,7 @@ export async function OPTIONS() {
   return new Response(null, { status: 204, headers: CORS })
 }
 
-// POST — track a view or click with geo + referrer
+// POST - track a view or click with geo + referrer
 // body: { slug, type: 'view' | 'click', platform?: string, referrer?: string }
 export async function POST(request) {
   try {
@@ -71,7 +71,7 @@ export async function POST(request) {
 
     return NextResponse.json({ ok: true }, { headers: CORS })
   } catch (e) {
-    // Never error — tracking should be silent
+    // Never error - tracking should be silent
     return NextResponse.json({ ok: true }, { headers: CORS })
   }
 }

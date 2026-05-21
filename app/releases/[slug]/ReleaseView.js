@@ -41,7 +41,7 @@ function TierButton({ tier, releaseSlug, purchasedTierIds }) {
       }
 
       if (data.free) {
-        // Free tier granted — reload page
+        // Free tier granted - reload page
         window.location.reload()
         return
       }

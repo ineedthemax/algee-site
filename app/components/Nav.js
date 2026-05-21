@@ -22,7 +22,7 @@ export default function Nav() {
   const pathname = usePathname()
   const router   = useRouter()
 
-  // Hide entirely on admin pages — admin has its own layout
+  // Hide entirely on admin pages - admin has its own layout
   if (pathname?.startsWith('/admin')) return null
 
   // Scroll state
@@ -67,7 +67,7 @@ export default function Nav() {
           Algee Smith
         </Link>
 
-        {/* Center links — desktop only */}
+        {/* Center links - desktop only */}
         <ul className="nav-links">
           {NAV_LINKS.map(({ label, href }) => (
             <li key={href}>
@@ -81,7 +81,7 @@ export default function Nav() {
           ))}
         </ul>
 
-        {/* CTA — desktop only */}
+        {/* CTA - desktop only */}
         <div className="nav-actions nav-actions-desktop">
           {/* Spotify listen pill */}
           <a
@@ -117,7 +117,7 @@ export default function Nav() {
           )}
         </div>
 
-        {/* Hamburger — mobile only */}
+        {/* Hamburger - mobile only */}
         <button
           className={`nav-hamburger${menuOpen ? ' open' : ''}`}
           onClick={() => setMenuOpen((v) => !v)}

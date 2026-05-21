@@ -1,9 +1,12 @@
 'use client'
 
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
-export default function FilmTrailerModal({ film, onClose }) {
+// mode: 'trailer' = YouTube embed  |  'scene' = native MP4
+export default function FilmTrailerModal({ film, mode = 'trailer', onClose }) {
+  const videoRef = useRef(null)
+
   useEffect(() => {
     const onKey = (e) => { if (e.key === 'Escape') onClose() }
     window.addEventListener('keydown', onKey)
@@ -14,7 +17,17 @@ export default function FilmTrailerModal({ film, onClose }) {
     }
   }, [onClose])
 
+  // Pause native video when modal closes
+  useEffect(() => {
+    return () => {
+      if (videoRef.current) videoRef.current.pause()
+    }
+  }, [])
+
   if (!film) return null
+
+  const isScene   = mode === 'scene'
+  const heading   = isScene ? 'Algee\'s Scene' : 'Official Trailer'
 
   return (
     <AnimatePresence>
@@ -34,25 +47,47 @@ export default function FilmTrailerModal({ film, onClose }) {
           transition={{ duration: 0.3, ease: [0.25, 0.46, 0.45, 0.94] }}
           onClick={(e) => e.stopPropagation()}
         >
+          {/* Header */}
           <div className="trailer-header">
             <div>
-              <div className="trailer-label">{film.type} · {film.year}</div>
+              <div className="trailer-label">
+                {film.type} · {film.year}
+                <span className="trailer-mode-badge">{heading}</span>
+              </div>
               <div className="trailer-film-title">{film.title}</div>
               <div className="trailer-role">as {film.role}</div>
             </div>
-            <button className="trailer-close" onClick={onClose} aria-label="Close trailer">✕</button>
+            <button className="trailer-close" onClick={onClose} aria-label="Close">✕</button>
           </div>
 
+          {/* Video area */}
           <div className="trailer-embed-wrap">
-            <iframe
-              src={`https://www.youtube.com/embed/${film.trailerYT}?autoplay=1&rel=0`}
-              title={`${film.title} — Official Trailer`}
-              allow="autoplay; fullscreen; picture-in-picture"
-              allowFullScreen
-              className="trailer-embed"
-            />
+            {isScene ? (
+              /* Native MP4 player */
+              <video
+                ref={videoRef}
+                className="trailer-embed trailer-native-video"
+                src={film.sceneUrl}
+                controls
+                autoPlay
+                playsInline
+                preload="metadata"
+              >
+                Your browser does not support video playback.
+              </video>
+            ) : (
+              /* YouTube embed */
+              <iframe
+                src={`https://www.youtube.com/embed/${film.trailerYT}?autoplay=1&rel=0`}
+                title={`${film.title} - Official Trailer`}
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowFullScreen
+                className="trailer-embed"
+              />
+            )}
           </div>
 
+          {/* Stream links */}
           {film.watchLinks?.length > 0 && (
             <div className="trailer-footer">
               <span className="trailer-stream-label">Stream Now</span>

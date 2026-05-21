@@ -11,10 +11,10 @@ export async function generateMetadata({ params }) {
   const { data } = await admin.from('smart_links').select('title, subtext, cover_art_url').eq('slug', slug).single()
   if (!data) return { title: 'Algee Smith' }
   return {
-    title:       `${data.title} — Algee Smith`,
+    title:       `${data.title} - Algee Smith`,
     description: data.subtext ?? 'Listen now on all platforms.',
     openGraph: {
-      title:       `${data.title} — Algee Smith`,
+      title:       `${data.title} - Algee Smith`,
       description: data.subtext ?? 'Listen now on all platforms.',
       images:      data.cover_art_url ? [data.cover_art_url] : [],
     },

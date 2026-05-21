@@ -9,7 +9,7 @@ async function guard() {
   return user && isAdmin(user.email) ? user : null
 }
 
-// GET — current + past fan of the month
+// GET - current + past fan of the month
 export async function GET() {
   const admin = createAdminClient()
   const { data } = await admin
@@ -20,7 +20,7 @@ export async function GET() {
   return NextResponse.json(data ?? [])
 }
 
-// POST — set new fan of the month
+// POST - set new fan of the month
 export async function POST(request) {
   if (!await guard()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 

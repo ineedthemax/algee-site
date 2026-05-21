@@ -122,7 +122,7 @@ function TierCard({ tier, releaseId, onDelete, onUpdate }) {
       {/* Content items */}
       <div className="rel-content-list">
         {contentList.length === 0 && !addingContent && (
-          <div className="rel-content-empty">No content yet — add what this tier unlocks</div>
+          <div className="rel-content-empty">No content yet - add what this tier unlocks</div>
         )}
         {contentList.map(item => (
           <div key={item.id} className="rel-content-item">

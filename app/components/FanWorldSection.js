@@ -5,7 +5,7 @@ import Link from 'next/link'
 import SphereImageGrid from './SphereImageGrid'
 import SphereActivity from './SphereActivity'
 
-// Curated diverse fan avatars — mix of Black, White, Hispanic, Asian · male & female
+// Curated diverse fan avatars - mix of Black, White, Hispanic, Asian · male & female
 // Source: randomuser.me portrait library
 // Swap for real Supabase fan photos when auth is live
 const FAN_IMAGES = [

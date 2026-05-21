@@ -91,12 +91,12 @@ function Slider() {
         {/* Border ring */}
         <div className="dts-box-border" />
 
-        {/* Dim layer — all three words, faint */}
+        {/* Dim layer - all three words, faint */}
         <div className="dts-words-row dts-words-dim">
           {WORDS.map(w => <span key={w.label} className="dts-word">{w.label}</span>)}
         </div>
 
-        {/* Bright layer — clipped to active word zone */}
+        {/* Bright layer - clipped to active word zone */}
         <div
           className="dts-words-row dts-words-bright"
           style={{ clipPath: `inset(0 ${clipRightPx}px 0 ${clipLeftPx}px round 12px)` }}

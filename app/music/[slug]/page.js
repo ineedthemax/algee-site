@@ -113,10 +113,10 @@ export default async function TrackPage({ params }) {
             )}
           </aside>
 
-          {/* ══════════ RIGHT PANEL — LYRICS ══════════ */}
+          {/* ══════════ RIGHT PANEL - LYRICS ══════════ */}
           <main className="track-right">
 
-            {/* From Algee — artist note */}
+            {/* From Algee - artist note */}
             {track.story && (
               <div className="track-story">
                 <div className="track-story-header">

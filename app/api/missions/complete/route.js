@@ -57,7 +57,7 @@ export async function POST(request) {
     })
   } catch (e) {
     console.error('awardPoints error:', e)
-    // Non-blocking — mission is saved, points failed
+    // Non-blocking - mission is saved, points failed
   }
 
   return NextResponse.json({ success: true, points: mission.points })

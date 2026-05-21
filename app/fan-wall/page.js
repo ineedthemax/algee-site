@@ -3,7 +3,7 @@ import { createAdminClient } from '../../lib/supabase/admin'
 import FanWall from './FanWall'
 
 export const metadata = {
-  title: 'Fan Wall — Algee Smith',
+  title: 'Fan Wall - Algee Smith',
   description: 'Messages from the fans who built this.',
 }
 

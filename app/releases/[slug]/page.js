@@ -10,7 +10,7 @@ export async function generateMetadata({ params }) {
   const admin = createAdminClient()
   const { data } = await admin.from('releases').select('title, description').eq('slug', slug).maybeSingle()
   if (!data) return { title: 'Release Not Found' }
-  return { title: `${data.title} — Algee Smith`, description: data.description }
+  return { title: `${data.title} - Algee Smith`, description: data.description }
 }
 
 export default async function ReleasePage({ params }) {

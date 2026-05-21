@@ -45,7 +45,7 @@ export async function POST(req) {
     const price = Number(tier.price)
     const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.thealgeesmith.com'
 
-    // Free tier — grant access directly
+    // Free tier - grant access directly
     if (price === 0) {
       await admin.from('fan_purchases').insert({
         user_id: user.id,
@@ -57,7 +57,7 @@ export async function POST(req) {
       return NextResponse.json({ free: true })
     }
 
-    // Paid tier — create Stripe Checkout session
+    // Paid tier - create Stripe Checkout session
     const session = await getStripe().checkout.sessions.create({
       mode: 'payment',
       payment_method_types: ['card'],
@@ -66,7 +66,7 @@ export async function POST(req) {
           price_data: {
             currency: 'usd',
             product_data: {
-              name: `${tier.releases.title} — ${tier.name}`,
+              name: `${tier.releases.title} - ${tier.name}`,
               description: tier.description || undefined,
               images: tier.releases.artwork_url ? [tier.releases.artwork_url] : [],
             },

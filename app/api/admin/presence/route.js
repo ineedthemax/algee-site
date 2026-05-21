@@ -3,7 +3,7 @@ import { createAdminClient } from '../../../../lib/supabase/admin'
 import { createClient } from '../../../../lib/supabase/server'
 import { isAdmin } from '../../../../lib/isAdmin'
 
-// POST — update own presence (ping every 30s)
+// POST - update own presence (ping every 30s)
 export async function POST(req) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -20,7 +20,7 @@ export async function POST(req) {
   return NextResponse.json({ ok: true })
 }
 
-// GET — return all admins active in last 2 minutes
+// GET - return all admins active in last 2 minutes
 export async function GET(req) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

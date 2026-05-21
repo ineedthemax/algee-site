@@ -30,8 +30,9 @@ export const PROJECTS = [
     studio:   'HBO',
     logline:  'A group of high school students navigate love, identity, trauma, and social media.',
     status:   'released',
-    quote:    'Being on Euphoria was surreal — Sam Levinson gave me room to breathe.',
+    quote:    'Being on Euphoria was surreal - Sam Levinson gave me room to breathe.',
     trailerYT: '4YMuMEGNyMM',
+    sceneUrl:  'https://hvdnwkkggbbrhytrszdk.supabase.co/storage/v1/object/public/film-clips/euphoria-scene.mp4',
     watchLinks: [
       { label: 'Max', href: 'https://www.max.com/shows/euphoria/7c3de7f9-6e2c-4632-bb48-2a66b2b6ef95' },
     ],
@@ -49,6 +50,7 @@ export const PROJECTS = [
     status:   'released',
     quote:    'Khalil only had minutes of screen time but his impact was everything. That role changed me.',
     trailerYT: '3MM8OkVT0hw',
+    sceneUrl:  'https://hvdnwkkggbbrhytrszdk.supabase.co/storage/v1/object/public/film-clips/hate-u-give-scene.mp4',
     watchLinks: [
       { label: 'Hulu',      href: 'https://www.hulu.com/movie/the-hate-u-give-f38aed5a-9ede-4f55-b90e-0a9c2d8fb61c' },
       { label: 'Apple TV+', href: 'https://tv.apple.com/us/movie/the-hate-u-give/umc.cmc.4i3b4e3t9hvfmh0fmncjy3fw1' },
@@ -85,6 +87,7 @@ export const PROJECTS = [
     status:   'released',
     quote:    null,
     trailerYT: 'sSjtGqRXQ9Y',
+    sceneUrl:  'https://hvdnwkkggbbrhytrszdk.supabase.co/storage/v1/object/public/film-clips/judas-scene.mp4',
     watchLinks: [
       { label: 'Max', href: 'https://www.max.com/movies/judas-and-the-black-messiah/5b5afb50-f8e6-46fc-8a5e-d64d6dc1eb26' },
       { label: 'Amazon', href: 'https://www.amazon.com/Judas-Black-Messiah-Daniel-Kaluuya/dp/B08WJP8WR7' },
@@ -103,6 +106,7 @@ export const PROJECTS = [
     status:   'released',
     quote:    null,
     trailerYT: 'REt_NLj-CnE',
+    sceneUrl:  'https://hvdnwkkggbbrhytrszdk.supabase.co/storage/v1/object/public/film-clips/detroit-scene.mp4',
     watchLinks: [
       { label: 'Amazon',    href: 'https://www.amazon.com/Detroit-John-Boyega/dp/B075GKMNM5' },
       { label: 'Apple TV+', href: 'https://tv.apple.com/us/movie/detroit/umc.cmc.7gj0jf0jvwg4pge13r0iez2zj' },

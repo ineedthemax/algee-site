@@ -18,7 +18,7 @@ export async function POST(req) {
       return NextResponse.json({ ok: false, reason: 'local' })
     }
 
-    // Free IP geolocation — no API key needed
+    // Free IP geolocation - no API key needed
     const geo = await fetch(`https://ipapi.co/${ip}/json/`, {
       headers: { 'User-Agent': 'algeesmith-platform/1.0' },
     }).then(r => r.json())

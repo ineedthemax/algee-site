@@ -196,7 +196,7 @@ function RichTextEditor({ value, onChange, placeholder }) {
           <div className="rte-modal" onClick={e => e.stopPropagation()}>
             <div className="rte-modal-title">Insert Video</div>
             <div className="rte-modal-hint">
-              Paste a YouTube link — the thumbnail and play button are inserted automatically. Or add any video URL.
+              Paste a YouTube link - the thumbnail and play button are inserted automatically. Or add any video URL.
             </div>
             <label className="lm-label">Video URL *</label>
             <input className="lm-input" style={{ marginBottom: 10 }} value={videoUrl}
@@ -316,7 +316,7 @@ export default function CampaignManager() {
                     <div className="lm-row-desc" style={{ maxHeight: 36, overflow: 'hidden' }}
                       dangerouslySetInnerHTML={{ __html: c.body }} />
                     <div className="lm-row-live">
-                      Sent to {c.recipient_count?.toLocaleString() ?? '—'} fans · {new Date(c.sent_at ?? c.created_at).toLocaleDateString()}
+                      Sent to {c.recipient_count?.toLocaleString() ?? '-'} fans · {new Date(c.sent_at ?? c.created_at).toLocaleDateString()}
                     </div>
                   </div>
                 </div>

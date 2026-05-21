@@ -2,7 +2,7 @@ import { createAdminClient } from '../../lib/supabase/admin'
 import PlaylistsView from './PlaylistsView'
 
 export const metadata = {
-  title: 'Playlist Placements — Algee Smith',
+  title: 'Playlist Placements - Algee Smith',
   description: 'Every playlist Algee Smith has landed on. Share the love.',
 }
 

@@ -16,7 +16,7 @@ export default function LiveSignal() {
       target="_blank"
       rel="noopener noreferrer"
       className="live-signal"
-      aria-label="Algee is live on YouTube — watch now"
+      aria-label="Algee is live on YouTube - watch now"
     >
       <span className="live-signal-dot" aria-hidden="true" />
       <span className="live-signal-text">

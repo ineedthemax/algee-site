@@ -13,11 +13,14 @@ export const metadata = {
 
 export const dynamic = 'force-dynamic'
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
   if (!user) redirect('/account')
+
+  const params = await searchParams
+  const isNew = params?.welcome === '1'
 
   const isAdminUser = isAdmin(user.email)
 
@@ -74,6 +77,7 @@ export default async function DashboardPage() {
       isAdminUser={isAdminUser}
       rank={rank}
       totalFans={totalFans}
+      isNew={isNew}
     />
   )
 }

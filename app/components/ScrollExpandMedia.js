@@ -230,7 +230,7 @@ export default function ScrollExpandMedia({
                 </div>
               </div>
 
-              {/* Title — splits and slides apart as video expands */}
+              {/* Title - splits and slides apart as video expands */}
               <div style={{
                 display: 'flex',
                 alignItems: 'center',

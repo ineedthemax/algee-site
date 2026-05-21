@@ -5,11 +5,11 @@ import MusicPhotoStrip from '../components/MusicPhotoStrip'
 import SchemaMarkup from '../components/SchemaMarkup'
 
 export const metadata = {
-  title: 'Music — Algee Smith | Love Lost (Debut Album)',
+  title: 'Music - Algee Smith | Love Lost (Debut Album)',
   description: 'Stream Love Lost, the debut album from Algee Smith. Available on Spotify, Apple Music, Tidal, Amazon Music, and YouTube Music.',
   openGraph: {
-    title: 'Algee Smith — Love Lost (Debut Album)',
-    description: 'Stream Love Lost — available everywhere now.',
+    title: 'Algee Smith - Love Lost (Debut Album)',
+    description: 'Stream Love Lost - available everywhere now.',
     images: ['/images/music/love-lost-cover.webp'],
   },
 }
@@ -67,7 +67,7 @@ export default function MusicPage() {
           <div className="music-hero-cover">
             <Image
               src="/images/music/love-lost-cover.webp"
-              alt="Love Lost — Algee Smith"
+              alt="Love Lost - Algee Smith"
               fill
               sizes="(max-width: 900px) 60vw, 340px"
               className="music-hero-cover-img"
@@ -84,7 +84,7 @@ export default function MusicPage() {
             <p className="music-hero-artist">Algee Smith</p>
             <p className="music-hero-about">
               Eight tracks about love, loss, and everything in between.
-              Written from real life — raw, unfiltered, and direct from the artist.
+              Written from real life - raw, unfiltered, and direct from the artist.
               <em> No features. Just Algee.</em>
             </p>
 

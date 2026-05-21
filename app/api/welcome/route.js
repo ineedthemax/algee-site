@@ -1,6 +1,12 @@
 import { Resend } from 'resend'
 
 export async function POST(request) {
+  // Internal-only endpoint - must be called with the server secret
+  const authHeader = request.headers.get('x-internal-secret')
+  if (!authHeader || authHeader !== process.env.CRON_SECRET) {
+    return Response.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
   const resend = new Resend(process.env.RESEND_API_KEY)
   try {
     const { email } = await request.json()
@@ -70,7 +76,7 @@ function welcomeEmail(email) {
           <tr>
             <td style="padding:0 0 32px 0;">
               <p style="margin:0 0 16px 0;font-size:17px;color:#8A8078;line-height:1.75;">
-                Welcome to the world, fan. You&rsquo;re now part of a direct connection — no algorithm, no noise. Just Algee, direct to you.
+                Welcome to the world, fan. You&rsquo;re now part of a direct connection - no algorithm, no noise. Just Algee, direct to you.
               </p>
               <p style="margin:0;font-size:17px;color:#8A8078;line-height:1.75;">
                 You&rsquo;ll be first to know about new music, film projects, merch drops, and everything in between.

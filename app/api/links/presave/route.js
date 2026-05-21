@@ -8,7 +8,7 @@ export async function OPTIONS() {
   return new Response(null, { status: 204, headers: CORS })
 }
 
-// POST — fan signs up for a pre-save
+// POST - fan signs up for a pre-save
 export async function POST(request) {
   try {
     const { slug, email, name } = await request.json()
@@ -25,7 +25,7 @@ export async function POST(request) {
       name: name?.trim() || null,
     })
 
-    // Duplicate is fine — ignore unique violation
+    // Duplicate is fine - ignore unique violation
     if (error && !error.code?.includes('23505')) {
       return NextResponse.json({ error: error.message }, { status: 500, headers: CORS })
     }
@@ -39,7 +39,7 @@ export async function POST(request) {
     await resend.emails.send({
       from:    'Algee Smith <hello@thealgeesmith.com>',
       to:      email,
-      subject: `You're saved — ${link.title} drops ${releaseDate}`,
+      subject: `You're saved - ${link.title} drops ${releaseDate}`,
       html:    presaveConfirmHtml(link.title, releaseDate, name),
     }).catch(() => {}) // non-blocking
 

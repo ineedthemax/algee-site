@@ -1,21 +1,21 @@
 import HeroSection from './components/HeroSection'
 import FanWorldSection from './components/FanWorldSection'
-import DynamicTextSlider from './components/DynamicTextSlider'
+
 import TwoWorldsSection from './components/TwoWorldsSection'
 import AlbumSpotlight from './components/AlbumSpotlight'
 import QuoteSection from './components/QuoteSection'
 import PressStrip from './components/PressStrip'
 import OriginSection from './components/OriginSection'
 import PhotoMoments from './components/PhotoMoments'
-import JoinCTASection from './components/JoinCTASection'
+
 import SchemaMarkup from './components/SchemaMarkup'
 
 export const metadata = {
   title: 'Algee Smith | Actor, Recording Artist, Entrepreneur & Philanthropist',
-  description: 'Algee Smith is an actor, recording artist, entrepreneur, and philanthropist from Saginaw, Michigan — known for The Hate U Give, Euphoria, and his debut album Love Lost.',
+  description: 'Algee Smith is an actor, recording artist, entrepreneur, and philanthropist from Saginaw, Michigan - known for The Hate U Give, Euphoria, and his debut album Love Lost.',
   openGraph: {
     title: 'Algee Smith | Actor, Recording Artist, Entrepreneur & Philanthropist',
-    description: 'Algee Smith is an actor, recording artist, entrepreneur, and philanthropist from Saginaw, Michigan — known for The Hate U Give, Euphoria, and his debut album Love Lost.',
+    description: 'Algee Smith is an actor, recording artist, entrepreneur, and philanthropist from Saginaw, Michigan - known for The Hate U Give, Euphoria, and his debut album Love Lost.',
     images: ['/images/hero/algee-hero.jpg'],
     type: 'profile',
   },
@@ -54,7 +54,7 @@ const personSchema = {
   ],
 }
 
-// Marquee items — duplicated for seamless infinite loop
+// Marquee items - duplicated for seamless infinite loop
 const MARQUEE_ITEMS = [
   { text: 'Music',      italic: false, star: true  },
   { text: 'Film',       italic: true,  star: false },
@@ -108,8 +108,6 @@ export default function Home() {
 
       {/* ══ COMMUNITY ZONE ══ */}
       <div className="page-zone">
-        <JoinCTASection />
-        <DynamicTextSlider />
         <FanWorldSection />
       </div>
     </>

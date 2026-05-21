@@ -93,7 +93,7 @@ export async function GET(request) {
     summary: {
       totalViews,
       totalClicks,
-      ctr: totalViews ? ((totalClicks / totalViews) * 100).toFixed(1) + '%' : '—',
+      ctr: totalViews ? ((totalClicks / totalViews) * 100).toFixed(1) + '%' : '-',
       totalFans,
     },
     timeline,

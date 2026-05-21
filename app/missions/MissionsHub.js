@@ -2,6 +2,12 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
+
+const AlgeeCrossword = dynamic(() => import('../components/AlgeeCrossword'), {
+  ssr: false,
+  loading: () => <div className="crossword-loading">Loading puzzle…</div>,
+})
 
 // ── Push-notification mission button ──────────────────────────────────────────
 function PushMissionButton({ mission, onComplete }) {
@@ -64,7 +70,7 @@ function PushMissionButton({ mission, onComplete }) {
   if (state === 'denied') {
     return (
       <div className="push-denied">
-        Blocked in settings — go to your browser settings to allow notifications for this site.
+        Blocked in settings - go to your browser settings to allow notifications for this site.
       </div>
     )
   }
@@ -160,6 +166,124 @@ function ShareMissionButton({ mission, onComplete }) {
     >
       {state === 'saving' ? 'Saving...' : 'Share →'}
     </button>
+  )
+}
+
+// ── Trivia mission ────────────────────────────────────────────────────────────
+function TriviaMissionButton({ mission, onComplete }) {
+  const [selected, setSelected] = useState(null)   // choice id
+  const [state,    setState]    = useState('idle')  // idle | wrong | saving | done
+
+  const handleSubmit = async () => {
+    if (!selected) return
+    if (selected !== mission.correctId) {
+      setState('wrong')
+      setTimeout(() => setState('idle'), 1800)
+      setSelected(null)
+      return
+    }
+    setState('saving')
+    try {
+      await fetch('/api/missions/complete', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ missionId: mission.id, points: mission.points }),
+      })
+      setState('done')
+      onComplete(mission.points)
+    } catch { setState('idle') }
+  }
+
+  if (state === 'done') return <div className="push-done">✓ Correct · +{mission.points} pts</div>
+
+  return (
+    <div className="trivia-wrap">
+      <div className="trivia-choices">
+        {mission.choices.map(c => (
+          <button
+            key={c.id}
+            className={`trivia-choice${selected === c.id ? ' trivia-choice-selected' : ''}${state === 'wrong' ? ' trivia-choice-wrong' : ''}`}
+            style={selected === c.id ? { borderColor: mission.color, color: mission.color } : {}}
+            onClick={() => { if (state !== 'saving') setSelected(c.id) }}
+          >
+            <span className="trivia-choice-key">{c.id.toUpperCase()}</span>
+            {c.label}
+          </button>
+        ))}
+      </div>
+      {state === 'wrong' && (
+        <div className="trivia-wrong">Not quite - try again.</div>
+      )}
+      <button
+        className="mission-cta trivia-submit"
+        style={{ borderColor: mission.color, color: mission.color }}
+        onClick={handleSubmit}
+        disabled={!selected || state === 'saving'}
+      >
+        {state === 'saving' ? 'Saving...' : 'Submit Answer →'}
+      </button>
+    </div>
+  )
+}
+
+// ── Crossword mission ─────────────────────────────────────────────────────────
+function CrosswordMissionButton({ mission, onComplete }) {
+  const [open,  setOpen]  = useState(false)
+  const [state, setState] = useState('idle') // idle | saving | done
+
+  const handleSolve = async () => {
+    if (state !== 'idle') return
+    setState('saving')
+    try {
+      await fetch('/api/missions/complete', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ missionId: mission.id, points: mission.points }),
+      })
+      setState('done')
+      onComplete(mission.points)
+    } catch {
+      setState('idle')
+    }
+  }
+
+  if (state === 'done') {
+    return <div className="push-done">✓ Puzzle solved · +{mission.points} pts</div>
+  }
+
+  return (
+    <>
+      <button
+        className="mission-cta"
+        style={{ borderColor: mission.color, color: mission.color }}
+        onClick={() => setOpen(true)}
+      >
+        Start Puzzle →
+      </button>
+
+      {open && (
+        <div className="crossword-modal-backdrop" onClick={() => setOpen(false)}>
+          <div className="crossword-modal" onClick={e => e.stopPropagation()}>
+            <div className="crossword-modal-header">
+              <div className="crossword-modal-title">
+                <span className="crossword-modal-icon">🟩</span>
+                Algee Crossword Challenge
+              </div>
+              <div className="crossword-modal-pts">+{mission.points} pts on completion</div>
+              <button className="crossword-modal-close" onClick={() => setOpen(false)}>✕</button>
+            </div>
+
+            <div className="crossword-modal-body">
+              <AlgeeCrossword onSolve={handleSolve} />
+            </div>
+
+            {state === 'saving' && (
+              <div className="crossword-modal-saving">Saving your score…</div>
+            )}
+          </div>
+        </div>
+      )}
+    </>
   )
 }
 
@@ -265,6 +389,16 @@ export default function MissionsHub({ missions, completedMap }) {
                         />
                       ) : mission.type === 'share' ? (
                         <ShareMissionButton
+                          mission={mission}
+                          onComplete={(pts) => handleMissionComplete(mission.id, pts)}
+                        />
+                      ) : mission.type === 'trivia' ? (
+                        <TriviaMissionButton
+                          mission={mission}
+                          onComplete={(pts) => handleMissionComplete(mission.id, pts)}
+                        />
+                      ) : mission.type === 'crossword' ? (
+                        <CrosswordMissionButton
                           mission={mission}
                           onComplete={(pts) => handleMissionComplete(mission.id, pts)}
                         />

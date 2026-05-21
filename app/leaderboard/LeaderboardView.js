@@ -44,7 +44,7 @@ export default function LeaderboardView({ board, currentUserId, myPoints, myRank
           </div>
         )}
 
-        {/* Your rank card — only if logged in */}
+        {/* Your rank card - only if logged in */}
         {currentUserId && myRank && (
           <div className="lb-my-rank-card">
             <div className="lb-my-rank-left">
@@ -73,7 +73,7 @@ export default function LeaderboardView({ board, currentUserId, myPoints, myRank
         {/* Leaderboard table */}
         {board.length === 0 ? (
           <div className="lb-empty">
-            No fans yet — be the first.{' '}
+            No fans yet - be the first.{' '}
             <Link href="/account">Join now →</Link>
           </div>
         ) : (

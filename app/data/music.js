@@ -54,7 +54,7 @@ export const TRACKS = [
     album:   'Love Lost',
     year:    '2025',
     cover:   '/images/music/love-lost-cover.png',
-    story:   'Add your note here — why did you make this song? What were you going through? Fans want to hear it in your words.',
+    story:   'Add your note here - why did you make this song? What were you going through? Fans want to hear it in your words.',
     streaming: STREAMING,
     lyrics: [
       {
@@ -102,7 +102,7 @@ export const TRACKS = [
     album:   'Love Lost',
     year:    '2025',
     cover:   '/images/music/love-lost-cover.png',
-    story:   'Add your note here — why did you make this song? What were you going through? Fans want to hear it in your words.',
+    story:   'Add your note here - why did you make this song? What were you going through? Fans want to hear it in your words.',
     streaming: STREAMING,
     lyrics: [
       {
@@ -208,7 +208,7 @@ export const TRACKS = [
     year:        '2025',
     cover:       '/images/music/love-lost-cover.png',
     isInterlude: true,
-    story:       'Add your note here — why did you make this song? What were you going through? Fans want to hear it in your words.',
+    story:       'Add your note here - why did you make this song? What were you going through? Fans want to hear it in your words.',
     streaming:   STREAMING,
     lyrics: [
       {
@@ -229,7 +229,7 @@ export const TRACKS = [
     album:   'Love Lost',
     year:    '2025',
     cover:   '/images/music/love-lost-cover.png',
-    story:   'Add your note here — why did you make this song? What were you going through? Fans want to hear it in your words.',
+    story:   'Add your note here - why did you make this song? What were you going through? Fans want to hear it in your words.',
     streaming: STREAMING,
     lyrics: [
       {
@@ -302,7 +302,7 @@ export const TRACKS = [
     album:   'Love Lost',
     year:    '2025',
     cover:   '/images/music/love-lost-cover.png',
-    story:   'Add your note here — why did you make this song? What were you going through? Fans want to hear it in your words.',
+    story:   'Add your note here - why did you make this song? What were you going through? Fans want to hear it in your words.',
     streaming: STREAMING,
     lyrics: [
       {
@@ -375,7 +375,7 @@ export const TRACKS = [
     album:   'Love Lost',
     year:    '2025',
     cover:   '/images/music/love-lost-cover.png',
-    story:   'Add your note here — why did you make this song? What were you going through? Fans want to hear it in your words.',
+    story:   'Add your note here - why did you make this song? What were you going through? Fans want to hear it in your words.',
     streaming: STREAMING,
     lyrics: [
       {
@@ -447,7 +447,7 @@ export const TRACKS = [
     album:   'Love Lost',
     year:    '2025',
     cover:   '/images/music/love-lost-cover.png',
-    story:   'Add your note here — why did you make this song? What were you going through? Fans want to hear it in your words.',
+    story:   'Add your note here - why did you make this song? What were you going through? Fans want to hear it in your words.',
     streaming: STREAMING,
     lyrics: [
       {
@@ -530,7 +530,7 @@ export const TRACKS = [
     album:   'Love Lost',
     year:    '2025',
     cover:   '/images/music/love-lost-cover.png',
-    story:   'Add your note here — why did you make this song? What were you going through? Fans want to hear it in your words.',
+    story:   'Add your note here - why did you make this song? What were you going through? Fans want to hear it in your words.',
     streaming: STREAMING,
     lyrics: [
       {

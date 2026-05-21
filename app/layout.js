@@ -64,7 +64,7 @@ export default function RootLayout({ children }) {
       className={`${playfair.variable} ${barlow.variable} ${barlowCondensed.variable}`}
     >
       <body>
-        {/* Live stream alert banner — only renders when IS_LIVE = true */}
+        {/* Live stream alert banner - only renders when IS_LIVE = true */}
         <LiveSignal />
 
         {/* Scroll progress bar */}
@@ -76,7 +76,7 @@ export default function RootLayout({ children }) {
         {/* Persistent nav */}
         <Nav />
 
-        {/* Scroll reveal — fires on every page */}
+        {/* Scroll reveal - fires on every page */}
         <ScrollReveal />
 
         {/* Page content */}

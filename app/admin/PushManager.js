@@ -150,7 +150,7 @@ export default function PushManager() {
                   <div className="lm-row-title">{s.title}</div>
                   <div className="lm-row-desc">{s.body}</div>
                   <div className="lm-row-live">
-                    Sent to {s.sent?.toLocaleString() ?? '—'} fans · {new Date(s.created_at).toLocaleDateString()}
+                    Sent to {s.sent?.toLocaleString() ?? '-'} fans · {new Date(s.created_at).toLocaleDateString()}
                   </div>
                 </div>
               </div>

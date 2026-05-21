@@ -287,7 +287,7 @@ function FilmPosterCard({ item, active }) {
         </div>
       )}
 
-      {/* Bottom text — only on active */}
+      {/* Bottom text - only on active */}
       {active && (
         <div className="absolute bottom-0 left-0 right-0 p-4">
           <div

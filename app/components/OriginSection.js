@@ -20,7 +20,7 @@ const STOPS = [
   {
     city:    'Los Angeles, CA',
     label:   'Two Stages',
-    desc:    'Where the world opened up. Film, music — no limits.',
+    desc:    'Where the world opened up. Film, music - no limits.',
     year:    'Now',
   },
 ]

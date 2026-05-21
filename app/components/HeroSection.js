@@ -73,7 +73,7 @@ export default function HeroSection() {
       {/* Ghost watermark */}
       <div className="hero-bg-text" aria-hidden="true">ALGEE</div>
 
-      {/* ─── Rotating credit ticker — top right ─── */}
+      {/* ─── Rotating credit ticker - top right ─── */}
       <div className="hero-credit-ticker" aria-hidden="true">
         <span className="hero-credit-type">{credit.type}</span>
         <span className="hero-credit-divider">·</span>

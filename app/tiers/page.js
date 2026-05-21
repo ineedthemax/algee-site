@@ -4,7 +4,7 @@ import { TIERS, getTier, getNextTier } from '../../lib/tiers'
 import TiersView from './TiersView'
 
 export const metadata = {
-  title: 'Fan Tiers — Algee Smith',
+  title: 'Fan Tiers - Algee Smith',
   description: 'The levels of the Algee Smith fan community.',
 }
 

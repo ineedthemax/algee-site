@@ -36,7 +36,7 @@ export async function GET(request) {
     const trackIds     = new Set(artistTracks.map(t => t.id))
     const trackNames   = Object.fromEntries(artistTracks.map(t => [t.id, t.name]))
 
-    // 2. Ensure seed playlists exist in DB — always active
+    // 2. Ensure seed playlists exist in DB - always active
     await Promise.all(SEED_PLAYLISTS.map(p =>
       admin.from('spotify_playlists').upsert(
         { ...p, active: true },

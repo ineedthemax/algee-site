@@ -5,7 +5,7 @@ import { MISSIONS } from '../../lib/missions'
 import MissionsHub from './MissionsHub'
 
 export const metadata = {
-  title: 'Missions — Algee Smith',
+  title: 'Missions - Algee Smith',
   description: 'Complete missions. Earn points. Level up.',
 }
 

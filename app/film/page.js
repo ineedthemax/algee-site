@@ -4,10 +4,10 @@ import FilmGrid from '../components/FilmGrid'
 import SchemaMarkup from '../components/SchemaMarkup'
 
 export const metadata = {
-  title:       'Film & TV — Algee Smith | Acting Credits',
-  description: 'Full filmography of Algee Smith — including The Hate U Give, Euphoria (HBO), Detroit, Judas and the Black Messiah, The New Edition Story, and more.',
+  title:       'Film & TV - Algee Smith | Acting Credits',
+  description: 'Full filmography of Algee Smith - including The Hate U Give, Euphoria (HBO), Detroit, Judas and the Black Messiah, The New Edition Story, and more.',
   openGraph: {
-    title: 'Algee Smith — Film & TV Credits',
+    title: 'Algee Smith - Film & TV Credits',
     description: 'Acting credits from The Hate U Give, Euphoria, Detroit, Judas and the Black Messiah, and more.',
     images: ['/images/film/hate-u-give.webp'],
   },

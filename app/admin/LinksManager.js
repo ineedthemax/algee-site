@@ -10,7 +10,7 @@ const LINK_TYPES = [
 ]
 
 function formatDate(str) {
-  if (!str) return '—'
+  if (!str) return '-'
   return new Date(str).toLocaleDateString('en-US', {
     month: 'short', day: 'numeric', year: 'numeric',
   })
@@ -23,7 +23,7 @@ function totalClicks(link) {
 function ctr(link) {
   const views  = link.view_count ?? 0
   const clicks = totalClicks(link)
-  if (!views) return '—'
+  if (!views) return '-'
   return ((clicks / views) * 100).toFixed(1) + '%'
 }
 

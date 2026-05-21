@@ -1,4 +1,4 @@
-// Server component — no interactivity needed
+// Server component - no interactivity needed
 const PRESS = [
   { name: 'HBO',                sub: 'Euphoria'          },
   { name: 'Apple TV+',          sub: 'The Gates'         },

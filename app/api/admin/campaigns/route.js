@@ -17,7 +17,7 @@ export async function GET() {
   return NextResponse.json(data ?? [])
 }
 
-// POST — send campaign
+// POST - send campaign
 export async function POST(request) {
   if (!await guard()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { subject, body, tier_filter } = await request.json()
@@ -69,7 +69,7 @@ export async function POST(request) {
 }
 
 function campaignHtml(subject, body) {
-  // body may be HTML (from rich text editor) or plain text — handle both
+  // body may be HTML (from rich text editor) or plain text - handle both
   const isHtml = /<[a-z][\s\S]*>/i.test(body)
   const content = isHtml
     ? `<div style="font-size:16px;color:#8A8078;line-height:1.75;">${body}</div>`

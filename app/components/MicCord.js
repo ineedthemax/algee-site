@@ -3,7 +3,7 @@
 import { useRef, useEffect, useState } from 'react'
 import { motion, useScroll, useTransform, useSpring } from 'framer-motion'
 
-// The cord path — weaves left/right down the page
+// The cord path - weaves left/right down the page
 // ViewBox: 200 wide, 3200 tall. Centers at x=100.
 const CORD_PATH = `
   M 100 0
@@ -84,7 +84,7 @@ export default function MicCord() {
           strokeDashoffset={strokeDashoffset}
         />
 
-        {/* Main cord — dark cable */}
+        {/* Main cord - dark cable */}
         <motion.path
           ref={pathRef}
           d={CORD_PATH}

@@ -4,7 +4,7 @@ import { getLeaderboard, getUserPoints, getTier, getUserRank } from '../../lib/p
 import LeaderboardView from './LeaderboardView'
 
 export const metadata = {
-  title: 'Fan Leaderboard — Algee Smith',
+  title: 'Fan Leaderboard - Algee Smith',
   description: 'The top fans in the Algee Smith community.',
 }
 

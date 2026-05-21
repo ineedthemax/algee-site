@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 
 function timeAgo(str) {
-  if (!str) return '—'
+  if (!str) return '-'
   const diff  = Date.now() - new Date(str).getTime()
   const hours = Math.floor(diff / 3600000)
   const days  = Math.floor(diff / 86400000)

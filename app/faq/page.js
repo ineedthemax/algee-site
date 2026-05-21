@@ -2,11 +2,11 @@ import Link from 'next/link'
 import SchemaMarkup from '../components/SchemaMarkup'
 
 export const metadata = {
-  title: 'FAQ — Algee Smith | Common Questions Answered',
-  description: 'Frequently asked questions about Algee Smith — his music, films, background, genre, and more.',
+  title: 'FAQ - Algee Smith | Common Questions Answered',
+  description: 'Frequently asked questions about Algee Smith - his music, films, background, genre, and more.',
   openGraph: {
     title: 'Algee Smith FAQ',
-    description: 'Common questions about Algee Smith answered — music, film, background, and more.',
+    description: 'Common questions about Algee Smith answered - music, film, background, and more.',
   },
 }
 
@@ -79,7 +79,7 @@ export default function FAQPage() {
         <div className="page-hero">
           <div className="page-hero-label">FAQ</div>
           <h1>Common <span className="italic">Questions.</span></h1>
-          <p className="page-hero-sub">Everything people ask — answered directly.</p>
+          <p className="page-hero-sub">Everything people ask - answered directly.</p>
         </div>
 
         <div className="faq-list">

@@ -21,7 +21,7 @@ const SEED_PLAYLISTS = [
 ]
 
 export async function POST(request) {
-  // Auth check — admin only
+  // Auth check - admin only
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
   if (!user || !isAdmin(user.email)) {
@@ -37,7 +37,7 @@ export async function POST(request) {
     const trackIds     = new Set(artistTracks.map(t => t.id))
     const trackNames   = Object.fromEntries(artistTracks.map(t => [t.id, t.name]))
 
-    // Seed playlists — always active
+    // Seed playlists - always active
     await Promise.all(SEED_PLAYLISTS.map(p =>
       admin.from('spotify_playlists').upsert(
         { ...p, active: true },

@@ -88,12 +88,12 @@ export default function WatchVideoClient({ mission, alreadyDone }) {
                 </div>
                 <div className="watch-timer-label">
                   {started
-                    ? `${secondsLeft}s left — keep watching`
+                    ? `${secondsLeft}s left - keep watching`
                     : 'Press play above to start the timer'}
                 </div>
               </>
             ) : (
-              <div className="watch-timer-ready">✓ 30 seconds watched — you're good!</div>
+              <div className="watch-timer-ready">✓ 30 seconds watched - you're good!</div>
             )}
           </div>
         )}

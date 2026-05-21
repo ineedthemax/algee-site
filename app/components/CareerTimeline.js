@@ -234,7 +234,7 @@ export default function CareerTimeline() {
           <div className="tl-chapter-video-wrap">
             <iframe
               className="tl-chapter-video"
-              src="https://www.youtube.com/embed/elwuAOZH12A?rel=0&modestbranding=1&color=white"
+              src="https://www.youtube.com/embed/uO5GjsL0f8M?rel=0&modestbranding=1&color=white"
               title="Algee Smith"
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
               allowFullScreen
@@ -282,7 +282,7 @@ export default function CareerTimeline() {
                 className={`tl-h-item ${m.above ? 'tl-h-above' : 'tl-h-below'}`}
                 style={{ '--i': i }}
               >
-                {/* Top slot — card if above */}
+                {/* Top slot - card if above */}
                 <div className="tl-h-top">
                   {m.above && <TimelineCard milestone={m} />}
                 </div>
@@ -292,7 +292,7 @@ export default function CareerTimeline() {
                   <div className="tl-dot-inner" />
                 </div>
 
-                {/* Bottom slot — card if below */}
+                {/* Bottom slot - card if below */}
                 <div className="tl-h-bot">
                   {!m.above && <TimelineCard milestone={m} />}
                 </div>

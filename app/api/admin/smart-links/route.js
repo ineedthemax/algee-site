@@ -11,7 +11,7 @@ function auth() {
   }
 }
 
-// GET — all smart links with destinations
+// GET - all smart links with destinations
 export async function GET(request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -26,7 +26,7 @@ export async function GET(request) {
   return NextResponse.json(links ?? [])
 }
 
-// POST — create a smart link
+// POST - create a smart link
 export async function POST(request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -61,7 +61,7 @@ export async function POST(request) {
   return NextResponse.json(full)
 }
 
-// PATCH — update a smart link + replace destinations
+// PATCH - update a smart link + replace destinations
 export async function PATCH(request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

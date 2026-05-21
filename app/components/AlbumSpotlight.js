@@ -27,7 +27,7 @@ export default function AlbumSpotlight() {
 
       <div className="alb-inner">
 
-        {/* Left — Cover */}
+        {/* Left - Cover */}
         <motion.div
           className="alb-cover-col"
           initial={{ opacity: 0, x: -50 }}
@@ -37,7 +37,7 @@ export default function AlbumSpotlight() {
           <div className="alb-cover-wrap">
             <Image
               src="/images/music/love-lost-cover.webp"
-              alt="Love Lost — Algee Smith"
+              alt="Love Lost - Algee Smith"
               fill
               sizes="(max-width: 900px) 80vw, 380px"
               className="alb-cover-img"
@@ -50,7 +50,7 @@ export default function AlbumSpotlight() {
           </div>
         </motion.div>
 
-        {/* Right — Info */}
+        {/* Right - Info */}
         <motion.div
           className="alb-info-col"
           initial={{ opacity: 0, x: 50 }}

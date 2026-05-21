@@ -33,7 +33,7 @@ export async function GET(request) {
       const isNew   = !data.session?.user?.last_sign_in_at ||
                       data.session.user.last_sign_in_at === data.session.user.created_at
 
-      // Upsert profile — saves email + phone on first login, updates on return visits
+      // Upsert profile - saves email + phone on first login, updates on return visits
       const { data: existing } = await supabase
         .from('profiles')
         .select('id')
@@ -51,7 +51,10 @@ export async function GET(request) {
         try {
           await fetch(`${origin}/api/welcome`, {
             method:  'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+              'Content-Type':      'application/json',
+              'x-internal-secret': process.env.CRON_SECRET ?? '',
+            },
             body:    JSON.stringify({ email: user.email }),
           })
         } catch (e) {
@@ -69,7 +72,7 @@ export async function GET(request) {
         }
       }
 
-      // Geolocate fan (fire-and-forget — don't block login)
+      // Geolocate fan (fire-and-forget - don't block login)
       try {
         fetch(`${origin}/api/fan/locate`, {
           method:  'POST',
@@ -81,7 +84,15 @@ export async function GET(request) {
       } catch {}
 
       // Send admin straight to the admin dashboard
-      const destination = isAdmin(user.email) ? '/admin' : next
+      // New fans get the welcome overlay
+      let destination
+      if (isAdmin(user.email)) {
+        destination = '/admin'
+      } else if (!existing) {
+        destination = '/account/dashboard?welcome=1'
+      } else {
+        destination = next
+      }
 
       return NextResponse.redirect(`${origin}${destination}`)
     }

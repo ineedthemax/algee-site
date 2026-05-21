@@ -3,7 +3,7 @@ import { createAdminClient } from '../../../../lib/supabase/admin'
 import { NextResponse } from 'next/server'
 import { isAdmin } from '../../../../lib/isAdmin'
 
-// GET — fetch all links
+// GET - fetch all links
 export async function GET(request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -22,7 +22,7 @@ export async function GET(request) {
   return NextResponse.json(data)
 }
 
-// POST — create a link
+// POST - create a link
 export async function POST(request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -55,7 +55,7 @@ export async function POST(request) {
   return NextResponse.json(data)
 }
 
-// PATCH — update a link
+// PATCH - update a link
 export async function PATCH(request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
@@ -79,7 +79,7 @@ export async function PATCH(request) {
   return NextResponse.json(data)
 }
 
-// DELETE — delete a link
+// DELETE - delete a link
 export async function DELETE(request) {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()

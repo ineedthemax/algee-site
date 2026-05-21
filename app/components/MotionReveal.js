@@ -17,10 +17,10 @@ const STAGGER_CONTAINER = {
  * Wraps children with a scroll-triggered Framer Motion reveal.
  *
  * Props:
- *   delay    — initial delay in seconds (default 0)
- *   y        — vertical offset to animate from (default 40)
- *   stagger  — if true, stagger direct children using variants
- *   once     — only animate once (default true)
+ *   delay    - initial delay in seconds (default 0)
+ *   y        - vertical offset to animate from (default 40)
+ *   stagger  - if true, stagger direct children using variants
+ *   once     - only animate once (default true)
  *   className
  */
 export default function MotionReveal({
@@ -64,7 +64,7 @@ export default function MotionReveal({
   )
 }
 
-/** Individual stagger child — use inside a <MotionReveal stagger> parent */
+/** Individual stagger child - use inside a <MotionReveal stagger> parent */
 export function MotionChild({ children, className, y = 32 }) {
   return (
     <motion.div

@@ -16,7 +16,7 @@ export default function LiveStreamSection() {
         <div className="ls-eyebrow">Live Stream</div>
         <p className="ls-sub">
           {IS_LIVE
-            ? `Algee is live right now — ${LIVE_TITLE}`
+            ? `Algee is live right now - ${LIVE_TITLE}`
             : 'This is where Algee streams. Check back soon.'}
         </p>
       </div>

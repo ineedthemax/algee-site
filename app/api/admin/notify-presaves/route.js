@@ -4,7 +4,7 @@ import { isAdmin } from '../../../../lib/isAdmin'
 import { Resend } from 'resend'
 import { NextResponse } from 'next/server'
 
-// POST — notify all presave signups that a link is now live
+// POST - notify all presave signups that a link is now live
 // body: { slug }
 export async function POST(request) {
   const supabase = await createClient()
