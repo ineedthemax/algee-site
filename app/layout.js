@@ -1,4 +1,5 @@
 import { Playfair_Display, Barlow, Barlow_Condensed } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/next'
 import './globals.css'
 import Nav from './components/Nav'
 import Footer from './components/Footer'
@@ -85,6 +86,7 @@ export default function RootLayout({ children }) {
         {/* Persistent footer */}
         <Footer />
         <ScrollToTop />
+        <Analytics />
       </body>
     </html>
   )
