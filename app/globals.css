@@ -10624,7 +10624,7 @@ footer::before {
 }
 .tw-photo-wrap {
   position: absolute;
-  inset: -8% 0 -8%;
+  inset: -8% 16px -8% 48px;
   will-change: transform;
 }
 .tw-photo-img {
