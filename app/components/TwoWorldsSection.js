@@ -60,19 +60,28 @@ export default function TwoWorldsSection() {
   const rightX  = useTransform(scrollYProgress, [0, 0.5], [60, 0])
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0])
   const centerY = useTransform(scrollYProgress, [0, 0.4], [40, 0])
-  return (
-    <section
-      className="tw-section"
-      ref={sectionRef}
-      onMouseEnter={() => setHovered(true)}
-      onMouseLeave={() => setHovered(false)}
-    >
 
-      {/* ── Hover photo (far left) ── */}
+  return (
+    <section className="tw-section" ref={sectionRef}>
+
+      {/* ── Far left: Two Stages label ── */}
+      <motion.div
+        className="tw-center"
+        style={{ y: centerY, opacity }}
+      >
+        <div className="tw-center-line" />
+        <div className="tw-center-label">Two Stages</div>
+        <div className="tw-center-sub">One Soul</div>
+        <div className="tw-center-line" />
+      </motion.div>
+
+      {/* ── Middle left: Hover photo ── */}
       <motion.div
         className="tw-photo-col"
         animate={{ opacity: hovered ? 1 : 0 }}
         transition={{ duration: hovered ? 0.5 : 0.12, ease: 'easeInOut' }}
+        onMouseEnter={() => setHovered(true)}
+        onMouseLeave={() => setHovered(false)}
       >
         <div className="tw-photo-wrap">
           <Image
@@ -88,18 +97,7 @@ export default function TwoWorldsSection() {
         </div>
       </motion.div>
 
-      {/* Center divider label */}
-      <motion.div
-        className="tw-center"
-        style={{ y: centerY, opacity }}
-      >
-        <div className="tw-center-line" />
-        <div className="tw-center-label">Two Stages</div>
-        <div className="tw-center-sub">One Soul</div>
-        <div className="tw-center-line" />
-      </motion.div>
-
-      {/* ── Left: The Actor ── */}
+      {/* ── The Actor ── */}
       <motion.div
         className="tw-panel tw-panel-left"
         style={{ x: leftX, opacity }}
@@ -114,7 +112,7 @@ export default function TwoWorldsSection() {
         <Link href="/film" className="tw-panel-cta">View all credits →</Link>
       </motion.div>
 
-      {/* ── Right: The Artist ── */}
+      {/* ── The Artist ── */}
       <motion.div
         className="tw-panel tw-panel-right"
         style={{ x: rightX, opacity }}

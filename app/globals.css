@@ -10606,7 +10606,7 @@ footer::before {
 .tw-section {
   position: relative;
   display: grid;
-  grid-template-columns: minmax(0, 280px) 1fr auto 1fr;
+  grid-template-columns: auto minmax(0, 300px) 1fr 1fr;
   gap: 0;
   padding: 120px 0;
   border-top: 1px solid rgba(245,240,235,0.06);
@@ -10624,7 +10624,7 @@ footer::before {
 }
 .tw-photo-wrap {
   position: absolute;
-  inset: -8% 16px -8% 48px;
+  inset: -8% 20px -8% 20px;
   will-change: transform;
 }
 .tw-photo-img {
