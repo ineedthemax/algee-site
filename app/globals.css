@@ -10629,7 +10629,6 @@ footer::before {
 }
 .tw-photo-img {
   object-fit: cover;
-  object-position: center 15%;
   /* CSS mask: fade into dark bg on right, top, bottom */
   -webkit-mask-image: linear-gradient(
     to right,

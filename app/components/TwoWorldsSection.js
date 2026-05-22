@@ -81,6 +81,7 @@ export default function TwoWorldsSection() {
             fill
             sizes="25vw"
             className="tw-photo-img"
+            style={{ objectPosition: 'center 30%' }}
             priority={false}
           />
           <div className="tw-photo-overlay" />
