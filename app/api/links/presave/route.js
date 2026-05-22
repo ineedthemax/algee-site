@@ -2,7 +2,7 @@ import { createAdminClient } from '../../../../lib/supabase/admin'
 import { Resend } from 'resend'
 import { NextResponse } from 'next/server'
 
-const CORS = { 'Access-Control-Allow-Origin': '*' }
+const CORS = { 'Access-Control-Allow-Origin': 'https://www.thealgeesmith.com' }
 
 export async function OPTIONS() {
   return new Response(null, { status: 204, headers: CORS })

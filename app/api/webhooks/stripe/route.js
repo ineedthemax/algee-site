@@ -61,13 +61,14 @@ export async function POST(req) {
         })
       }
 
-      await admin.from('fan_purchases').insert({
+      await admin.from('fan_purchases').upsert({
         user_id,
+        stripe_session_id: session.id,
         amount: session.amount_total / 100,
         item_name: `Fan Tier: ${tier_name}`,
         source: 'stripe',
         notes: `Purchased ${tier_name} tier directly`,
-      })
+      }, { onConflict: 'stripe_session_id', ignoreDuplicates: true })
 
       console.log(`[stripe webhook] fan_tier: ${tier_name} unlocked for ${user_id}, awarded ${needed} pts`)
     }

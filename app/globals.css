@@ -12852,21 +12852,7 @@ footer::before {
   top: 0;
   z-index: 100;
 }
-.fd-topbar-left  { display: flex; flex-direction: column; gap: 2px; }
-.fd-topbar-label {
-  font-family: var(--font-label, sans-serif);
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: rgba(255,255,255,0.3);
-}
-.fd-topbar-name {
-  font-family: var(--font-display, serif);
-  font-size: 18px;
-  font-weight: 700;
-  color: #F5F0EB;
-}
+.fd-topbar-left  { display: none; }
 .fd-topbar-right { display: flex; align-items: center; gap: 16px; }
 .fd-topbar-link {
   font-family: var(--font-label, sans-serif);
@@ -14560,4 +14546,96 @@ footer::before {
 
 @media (max-width: 480px) {
   .fd-cs-card { padding: 18px; }
+}
+
+/* ═══════════════════════════════════════
+   AVATAR UPLOAD
+═══════════════════════════════════════ */
+
+.fd-avatar-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  margin-bottom: 14px;
+  position: relative;
+  z-index: 1;
+}
+
+.fd-avatar-btn {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: 2px solid color-mix(in srgb, var(--tc) 50%, transparent);
+  background: rgba(0,0,0,0.4);
+  cursor: pointer;
+  overflow: hidden;
+  transition: border-color 0.2s, transform 0.2s;
+  padding: 0;
+  flex-shrink: 0;
+}
+
+.fd-avatar-btn:hover {
+  border-color: var(--tc);
+  transform: scale(1.05);
+}
+
+.fd-avatar-btn:hover .fd-avatar-overlay {
+  opacity: 1;
+}
+
+.fd-avatar-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
+  display: block;
+}
+
+.fd-avatar-initials {
+  font-family: var(--font-display, serif);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--tc);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.fd-avatar-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.2s;
+  border-radius: 50%;
+}
+
+.fd-avatar-camera {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.fd-avatar-error {
+  font-size: 11px;
+  color: #f87171;
+  font-family: var(--font-label, sans-serif);
+}
+
+/* Also fix identity name overflow */
+.fd-identity-name {
+  font-family: var(--font-display, serif);
+  font-size: 22px;
+  font-weight: 700;
+  color: #F5F0EB;
+  line-height: 1.1;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  max-width: 100%;
 }

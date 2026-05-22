@@ -1,7 +1,9 @@
 import { createAdminClient } from '../../../lib/supabase/admin'
+import { createClient }      from '../../../lib/supabase/server'
+import { isAdmin }           from '../../../lib/isAdmin'
 import { NextResponse } from 'next/server'
 
-// Public endpoint - returns aggregate playlist placement stats
+// Admin-only endpoint - returns playlist placement stats
 export const dynamic = 'force-dynamic'
 
 const CORS = {
@@ -14,6 +16,12 @@ export async function OPTIONS() {
 }
 
 export async function GET() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user || !isAdmin(user.email)) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   try {
     const admin = createAdminClient()
 

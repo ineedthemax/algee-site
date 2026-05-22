@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import DashboardTour from './DashboardTour'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -314,6 +314,79 @@ function WelcomeOverlay({ displayName, signupPoints, onDone }) {
   )
 }
 
+/* ── Avatar upload ───────────────────────────────────────────── */
+function AvatarUpload({ userId, currentUrl, displayName, tierColor }) {
+  const [url,       setUrl]       = useState(currentUrl)
+  const [uploading, setUploading] = useState(false)
+  const [error,     setError]     = useState(null)
+  const inputRef = useRef(null)
+
+  const initials = displayName
+    ? displayName.split(' ').map(w => w[0]).join('').toUpperCase().slice(0, 2)
+    : '?'
+
+  const handleFile = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    if (file.size > 5 * 1024 * 1024) { setError('Max 5MB'); return }
+
+    setUploading(true)
+    setError(null)
+
+    try {
+      const supabase = createClient()
+      const ext  = file.name.split('.').pop()
+      const path = `${userId}/avatar.${ext}`
+
+      const { error: upErr } = await supabase.storage
+        .from('avatars')
+        .upload(path, file, { upsert: true, contentType: file.type })
+
+      if (upErr) throw upErr
+
+      const { data } = supabase.storage.from('avatars').getPublicUrl(path)
+      const publicUrl = `${data.publicUrl}?t=${Date.now()}`
+
+      await supabase.auth.updateUser({ data: { avatar_url: publicUrl } })
+      setUrl(publicUrl)
+    } catch (err) {
+      setError('Upload failed. Try again.')
+      console.error(err)
+    } finally {
+      setUploading(false)
+    }
+  }
+
+  return (
+    <div className="fd-avatar-wrap">
+      <button
+        className="fd-avatar-btn"
+        onClick={() => inputRef.current?.click()}
+        title="Change profile photo"
+        disabled={uploading}
+        style={{ '--tc': tierColor }}
+      >
+        {url ? (
+          <img src={url} alt={displayName} className="fd-avatar-img" />
+        ) : (
+          <span className="fd-avatar-initials">{initials}</span>
+        )}
+        <div className="fd-avatar-overlay">
+          <span className="fd-avatar-camera">{uploading ? '…' : '📷'}</span>
+        </div>
+      </button>
+      <input
+        ref={inputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        style={{ display: 'none' }}
+        onChange={handleFile}
+      />
+      {error && <div className="fd-avatar-error">{error}</div>}
+    </div>
+  )
+}
+
 /* ── Main dashboard ──────────────────────────────────────────── */
 export default function FanDashboard({
   user, points = 0, tier, nextTier,
@@ -413,11 +486,7 @@ export default function FanDashboard({
 
       {/* ── Top bar ── */}
       <div className="fd-topbar">
-        <div className="fd-topbar-left">
-          <span className="fd-topbar-label">Fan Dashboard</span>
-          <span className="fd-topbar-name">Hey, {displayName} 👋</span>
-        </div>
-        <div className="fd-topbar-right">
+        <div className="fd-topbar-right" style={{ marginLeft: 'auto' }}>
           <button className="fd-tour-btn" onClick={restartTour} title="Take the dashboard tour">?</button>
           <Link href="/" className="fd-topbar-link">← Back to site</Link>
           <button className="fd-signout" onClick={handleSignOut} disabled={signingOut}>
@@ -503,12 +572,21 @@ export default function FanDashboard({
             </div>
             <div className="fd-identity-glow" aria-hidden="true" />
             <div className="fd-identity-eyebrow">Algee Smith Fan Club</div>
-            <div className="fd-identity-emblem" style={{ color: tierColor, borderColor: `${tierColor}40` }}>
-              {tier?.icon ?? '◈'}
-            </div>
+
+            {/* Profile photo */}
+            <AvatarUpload
+              userId={user.id}
+              currentUrl={user.user_metadata?.avatar_url}
+              displayName={displayName}
+              tierColor={tierColor}
+            />
+
             <div className="fd-identity-name">{displayName}</div>
             <div className="fd-identity-email">{user.email}</div>
-            <div className="fd-identity-tier" style={{ color: tierColor }}>{tier?.name ?? 'Free'}</div>
+            <div className="fd-identity-tier" style={{ color: tierColor }}>
+              <span style={{ marginRight: 6 }}>{tier?.icon ?? '◈'}</span>
+              {tier?.name ?? 'Free'}
+            </div>
             <div className="fd-identity-since">Member since {joinedDate}</div>
             <Link href="/tiers" className="fd-identity-upgrade">View all tiers →</Link>
           </div>

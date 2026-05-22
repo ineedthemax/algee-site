@@ -9,8 +9,9 @@ async function guard() {
   return user && isAdmin(user.email) ? user : null
 }
 
-// GET - current + past fan of the month
+// GET - current + past fan of the month (admin only)
 export async function GET() {
+  if (!await guard()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const admin = createAdminClient()
   const { data } = await admin
     .from('fan_of_month')

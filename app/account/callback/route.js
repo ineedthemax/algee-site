@@ -7,7 +7,8 @@ import { isAdmin } from '../../../lib/isAdmin'
 export async function GET(request) {
   const { searchParams, origin } = new URL(request.url)
   const code = searchParams.get('code')
-  const next = searchParams.get('next') ?? '/account/dashboard'
+  const rawNext = searchParams.get('next') ?? '/account/dashboard'
+  const next = rawNext.startsWith('/') && !rawNext.startsWith('//') ? rawNext : '/account/dashboard'
 
   if (code) {
     const cookieStore = await cookies()
