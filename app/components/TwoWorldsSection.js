@@ -72,7 +72,7 @@ export default function TwoWorldsSection() {
       <motion.div
         className="tw-photo-col"
         animate={{ opacity: hovered ? 1 : 0 }}
-        transition={{ duration: 0.6, ease: 'easeInOut' }}
+        transition={{ duration: hovered ? 0.5 : 0.12, ease: 'easeInOut' }}
       >
         <div className="tw-photo-wrap">
           <Image
