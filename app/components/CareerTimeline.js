@@ -10,6 +10,8 @@ const MILESTONES = [
     tag:   'The Beginning',
     title: 'Music Was Always the Language',
     story: 'Before any camera, before any script, there was a voice. Raised in Saginaw, Michigan, music came first. Everything else followed.',
+    image: '/images/timeline/Algee Baby Photo.png',
+    imagePosition: 'center top',
     above: true,
   },
   {
