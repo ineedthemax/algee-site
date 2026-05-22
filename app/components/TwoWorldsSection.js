@@ -10,7 +10,7 @@ const FILM_CREDITS = [
   { title: 'The Hate U Give',       year: '2018', role: 'Khalil Harris'  },
   { title: 'New Edition Story',     year: '2017', role: 'Ralph Tresvant' },
   { title: 'Detroit',               year: '2017', role: 'Larry Reed'     },
-  { title: 'Judas & Black Messiah', year: '2021', role: 'Jake Winters'   },
+  { title: 'Judas & The Black Messiah', year: '2021', role: 'Jake Winters'   },
 ]
 
 const MUSIC_CREDITS = [
