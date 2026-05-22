@@ -1,7 +1,8 @@
 'use client'
 
-import { useRef } from 'react'
+import { useRef, useState } from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { motion, useInView, useScroll, useTransform } from 'framer-motion'
 
 const FILM_CREDITS = [
@@ -48,6 +49,7 @@ function CreditRow({ item, index, side }) {
 export default function TwoWorldsSection() {
   const sectionRef = useRef(null)
   const inView     = useInView(sectionRef, { once: true, margin: '0px 0px -100px 0px' })
+  const [hovered, setHovered] = useState(false)
 
   const { scrollYProgress } = useScroll({
     target:  sectionRef,
@@ -59,7 +61,31 @@ export default function TwoWorldsSection() {
   const opacity = useTransform(scrollYProgress, [0, 0.2, 0.8, 1], [0, 1, 1, 0])
   const centerY = useTransform(scrollYProgress, [0, 0.4], [40, 0])
   return (
-    <section className="tw-section" ref={sectionRef}>
+    <section
+      className="tw-section"
+      ref={sectionRef}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+    >
+
+      {/* ── Hover photo (far left) ── */}
+      <motion.div
+        className="tw-photo-col"
+        animate={{ opacity: hovered ? 1 : 0 }}
+        transition={{ duration: 0.6, ease: 'easeInOut' }}
+      >
+        <div className="tw-photo-wrap">
+          <Image
+            src="/images/algee-tw.webp"
+            alt="Algee Smith"
+            fill
+            sizes="25vw"
+            className="tw-photo-img"
+            priority={false}
+          />
+          <div className="tw-photo-overlay" />
+        </div>
+      </motion.div>
 
       {/* Center divider label */}
       <motion.div
