@@ -76,7 +76,7 @@ export default function TwoWorldsSection() {
       >
         <div className="tw-photo-wrap">
           <Image
-            src="/images/algee-tw.webp"
+            src="/images/Algee Hover.jpg"
             alt="Algee Smith"
             fill
             sizes="25vw"
