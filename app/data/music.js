@@ -54,7 +54,7 @@ export const TRACKS = [
     album:   'Love Lost',
     year:    '2025',
     cover:   '/images/music/love-lost-cover.png',
-    story:   'Add your note here - why did you make this song? What were you going through? Fans want to hear it in your words.',
+    story:   'Numb is where it all starts. The break up was so fresh I couldn\'t even feel the hurt yet. I wouldn\'t let myself. This song lives in that frozen moment, before the weight actually hits.',
     streaming: STREAMING,
     lyrics: [
       {
@@ -102,7 +102,7 @@ export const TRACKS = [
     album:   'Love Lost',
     year:    '2025',
     cover:   '/images/music/love-lost-cover.png',
-    story:   'Add your note here - why did you make this song? What were you going through? Fans want to hear it in your words.',
+    story:   'After the numbness wore off, the guilt and shame crept in...so I ran. Magic City is the distraction phase: chasing momentary pleasures to keep from sitting with what I\'d done. It feels like a good time, but underneath it\'s me looking the other way.',
     streaming: STREAMING,
     lyrics: [
       {
@@ -229,7 +229,7 @@ export const TRACKS = [
     album:   'Love Lost',
     year:    '2025',
     cover:   '/images/music/love-lost-cover.png',
-    story:   'Add your note here - why did you make this song? What were you going through? Fans want to hear it in your words.',
+    story:   'Once the distractions stopped working, I had to sit with myself. Spiraling is that 3 a.m. loop in your head...should I call her, should I leave her alone, what did I do? It\'s the sound of overthinking everything you can\'t undo.',
     streaming: STREAMING,
     lyrics: [
       {
@@ -302,7 +302,7 @@ export const TRACKS = [
     album:   'Love Lost',
     year:    '2025',
     cover:   '/images/music/love-lost-cover.png',
-    story:   'Add your note here - why did you make this song? What were you going through? Fans want to hear it in your words.',
+    story:   'This is where the reflection turns healthy. I had to admit I was the problem and actually deal with that. No spinning it, no blaming her. The Way It Goes is me finally telling myself the truth.',
     streaming: STREAMING,
     lyrics: [
       {
@@ -375,7 +375,7 @@ export const TRACKS = [
     album:   'Love Lost',
     year:    '2025',
     cover:   '/images/music/love-lost-cover.png',
-    story:   'Add your note here - why did you make this song? What were you going through? Fans want to hear it in your words.',
+    story:   'Departed is the release. I\'m letting go of what was, accepting it, and choosing to grow from it instead of holding on. It\'s the exhale after carrying something too long.',
     streaming: STREAMING,
     lyrics: [
       {
@@ -447,7 +447,7 @@ export const TRACKS = [
     album:   'Love Lost',
     year:    '2025',
     cover:   '/images/music/love-lost-cover.png',
-    story:   'Add your note here - why did you make this song? What were you going through? Fans want to hear it in your words.',
+    story:   'Honest is me ready to turn the page. Whoever comes next, I want to show up open, transparent, all the way real. It\'s a promise to do it different this time.',
     streaming: STREAMING,
     lyrics: [
       {
@@ -530,7 +530,7 @@ export const TRACKS = [
     album:   'Love Lost',
     year:    '2025',
     cover:   '/images/music/love-lost-cover.png',
-    story:   'Add your note here - why did you make this song? What were you going through? Fans want to hear it in your words.',
+    story:   'Sinners is the after...a new situation I\'m not rushing, but I\'m still human, I still wanna have fun. It\'s that in-between space where you\'re healed enough to enjoy somebody, but wise enough not to force it into more than it is.',
     streaming: STREAMING,
     lyrics: [
       {
