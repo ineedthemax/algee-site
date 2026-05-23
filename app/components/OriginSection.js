@@ -18,6 +18,12 @@ const STOPS = [
     year:    '2010s',
   },
   {
+    city:    'Florence, AL',
+    label:   'The Roots',
+    desc:    'Where family kept him grounded. Home in every sense of the word.',
+    year:    '',
+  },
+  {
     city:    'Los Angeles, CA',
     label:   'Two Stages',
     desc:    'Where the world opened up. Film, music - no limits.',
