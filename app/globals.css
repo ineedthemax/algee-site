@@ -2361,6 +2361,52 @@ footer::before {
 
 .merch-page { min-height: 100vh; }
 
+/* ── Merch Coming Soon ── */
+.merch-coming-soon {
+  min-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 120px 24px 80px;
+  gap: 24px;
+}
+.merch-cs-eyebrow {
+  font-family: var(--font-label, sans-serif);
+  font-size: 10px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: #C4222E;
+}
+.merch-cs-title {
+  font-family: var(--font-display, serif);
+  font-size: clamp(48px, 8vw, 100px);
+  font-weight: 900;
+  color: #F5F0EB;
+  line-height: 1;
+  letter-spacing: -2px;
+  margin: 0;
+}
+.merch-cs-sub {
+  font-family: var(--font-body, sans-serif);
+  font-size: 18px;
+  color: rgba(245,240,235,0.45);
+  max-width: 400px;
+  line-height: 1.7;
+  margin: 0;
+}
+.merch-cs-badge {
+  font-family: var(--font-label, sans-serif);
+  font-size: 10px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: rgba(245,240,235,0.3);
+  border: 1px solid rgba(245,240,235,0.12);
+  padding: 10px 20px;
+  border-radius: 100px;
+}
+
 /* Drop layout */
 .merch-drop-section {
   max-width: 1400px;
