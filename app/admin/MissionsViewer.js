@@ -33,14 +33,18 @@ export default function MissionsViewer() {
   useEffect(() => {
     fetch('/api/admin/missions')
       .then(r => r.json())
-      .then(d => { setData(d); setLoading(false) })
+      .then(d => {
+        if (d?.byMission && d?.counts) setData(d)
+        else setData(null)
+        setLoading(false)
+      })
       .catch(() => setLoading(false))
   }, [])
 
   if (loading) return <div className="adm-loading">Loading mission data…</div>
-  if (!data)   return <div className="adm-error">Failed to load mission data.</div>
+  if (!data)   return <div className="adm-error">Failed to load mission data. Check Supabase logs.</div>
 
-  const { byMission, counts, total } = data
+  const { byMission = {}, counts = [], total = 0 } = data
 
   // Match a mission_id to its definition
   const getMissionDef = (id) => MISSIONS.find(m => m.id === id)

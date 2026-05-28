@@ -99,17 +99,23 @@ function SectionLabel({ children }) {
 function BarChart({ data }) {
   const [ready, setReady] = useState(false)
   useEffect(() => { const t = setTimeout(() => setReady(true), 80); return () => clearTimeout(t) }, [])
-  const max   = Math.max(...data.map(d => d.count), 1)
+
+  // Guard: need at least 2 data points to draw a line
+  const safeData = Array.isArray(data) && data.length > 1 ? data : null
+
+  const max   = safeData ? Math.max(...safeData.map(d => d.count), 1) : 1
   const W     = 600
   const H     = 120
   const pad   = 12
-  const pts   = data.map((d, i) => {
-    const x = pad + (i / (data.length - 1)) * (W - pad * 2)
+  const pts   = safeData ? safeData.map((d, i) => {
+    const x = pad + (i / (safeData.length - 1)) * (W - pad * 2)
     const y = H - pad - (d.count / max) * (H - pad * 2)
     return { x, y, ...d }
-  })
+  }) : []
   const pathD = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
-  const areaD = `${pathD} L ${pts[pts.length-1].x} ${H} L ${pts[0].x} ${H} Z`
+  const areaD = pts.length > 1
+    ? `${pathD} L ${pts[pts.length-1].x} ${H} L ${pts[0].x} ${H} Z`
+    : ''
 
   return (
     <div className="adm-linechart-wrap">
