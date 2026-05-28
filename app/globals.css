@@ -12894,6 +12894,26 @@ footer::before {
   font-family: var(--font-body, sans-serif);
   font-size: 12px;
   color: rgba(245, 240, 235, 0.5);
+  flex: 1;
+}
+.fd-admin-bar-back {
+  font-family: var(--font-label, sans-serif);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #ff6b6b;
+  text-decoration: none;
+  padding: 6px 16px;
+  border-radius: 100px;
+  border: 1px solid rgba(196, 34, 46, 0.5);
+  background: rgba(196, 34, 46, 0.15);
+  transition: background 0.15s, border-color 0.15s;
+  white-space: nowrap;
+}
+.fd-admin-bar-back:hover {
+  background: rgba(196, 34, 46, 0.3);
+  border-color: rgba(196, 34, 46, 0.8);
 }
 .fd-admin-back-wrap {
   display: flex;

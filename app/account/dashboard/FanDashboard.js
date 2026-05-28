@@ -481,6 +481,7 @@ export default function FanDashboard({
         <div className="fd-admin-bar">
           <span className="fd-admin-bar-badge">👁 Admin Preview</span>
           <span className="fd-admin-bar-label">You&apos;re viewing the fan experience</span>
+          <a href="/admin" className="fd-admin-bar-back">← Back to Admin</a>
         </div>
       )}
 
