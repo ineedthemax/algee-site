@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, Component, lazy, Suspense } from 'react'
+import { useState, useEffect, useRef, useCallback, Component, lazy, Suspense } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '../../lib/supabase/client'
 
@@ -96,49 +96,208 @@ function SectionLabel({ children }) {
   )
 }
 
-function BarChart({ data }) {
-  const [ready, setReady] = useState(false)
-  useEffect(() => { const t = setTimeout(() => setReady(true), 80); return () => clearTimeout(t) }, [])
+// Smooth bezier path through points using cardinal spline approach
+function smoothCurve(pts) {
+  if (pts.length < 2) return ''
+  const d = [`M ${pts[0].x.toFixed(2)} ${pts[0].y.toFixed(2)}`]
+  for (let i = 1; i < pts.length; i++) {
+    const p0 = pts[i - 2] ?? pts[i - 1]
+    const p1 = pts[i - 1]
+    const p2 = pts[i]
+    const p3 = pts[i + 1] ?? p2
+    // Catmull-Rom → cubic bezier conversion
+    const cp1x = p1.x + (p2.x - p0.x) / 6
+    const cp1y = p1.y + (p2.y - p0.y) / 6
+    const cp2x = p2.x - (p3.x - p1.x) / 6
+    const cp2y = p2.y - (p3.y - p1.y) / 6
+    d.push(`C ${cp1x.toFixed(2)} ${cp1y.toFixed(2)} ${cp2x.toFixed(2)} ${cp2y.toFixed(2)} ${p2.x.toFixed(2)} ${p2.y.toFixed(2)}`)
+  }
+  return d.join(' ')
+}
 
-  // Guard: need at least 2 data points to draw a line
+function GrowthChart({ data }) {
+  const svgRef   = useRef(null)
+  const [ready,   setReady]   = useState(false)
+  const [hover,   setHover]   = useState(null)   // { x, y, date, count, idx }
+  const [pathLen, setPathLen] = useState(null)
+
+  const lineRef = useRef(null)
+
+  const W   = 600
+  const H   = 140
+  const padX = 4
+  const padY = 20
+
   const safeData = Array.isArray(data) && data.length > 1 ? data : null
+  const max = safeData ? Math.max(...safeData.map(d => d.count), 1) : 1
 
-  const max   = safeData ? Math.max(...safeData.map(d => d.count), 1) : 1
-  const W     = 600
-  const H     = 120
-  const pad   = 12
-  const pts   = safeData ? safeData.map((d, i) => {
-    const x = pad + (i / (safeData.length - 1)) * (W - pad * 2)
-    const y = H - pad - (d.count / max) * (H - pad * 2)
-    return { x, y, ...d }
-  }) : []
-  const pathD = pts.map((p, i) => `${i === 0 ? 'M' : 'L'} ${p.x} ${p.y}`).join(' ')
-  const areaD = pts.length > 1
-    ? `${pathD} L ${pts[pts.length-1].x} ${H} L ${pts[0].x} ${H} Z`
+  const pts = safeData ? safeData.map((d, i) => ({
+    x: padX + (i / (safeData.length - 1)) * (W - padX * 2),
+    y: H - padY - (d.count / max) * (H - padY * 2),
+    date:  d.date,
+    count: d.count,
+    idx:   i,
+  })) : []
+
+  const linePath = smoothCurve(pts)
+  const areaPath = pts.length > 1
+    ? `${linePath} L ${pts[pts.length-1].x} ${H} L ${pts[0].x} ${H} Z`
     : ''
 
+  // Measure path length for draw animation
+  useEffect(() => {
+    if (lineRef.current) {
+      setPathLen(lineRef.current.getTotalLength())
+    }
+    const t = setTimeout(() => setReady(true), 50)
+    return () => clearTimeout(t)
+  }, [linePath])
+
+  // Find nearest point to mouse
+  const handleMouseMove = (e) => {
+    if (!svgRef.current || pts.length === 0) return
+    const rect = svgRef.current.getBoundingClientRect()
+    const mx   = ((e.clientX - rect.left) / rect.width) * W
+    let closest = pts[0], minDist = Infinity
+    for (const p of pts) {
+      const dist = Math.abs(p.x - mx)
+      if (dist < minDist) { minDist = dist; closest = p }
+    }
+    setHover(closest)
+  }
+
+  const totalSignups = safeData ? safeData.reduce((s, d) => s + d.count, 0) : 0
+  const peakDay      = safeData ? safeData.reduce((a, b) => b.count > a.count ? b : a, safeData[0]) : null
+
   return (
-    <div className="adm-linechart-wrap">
-      <svg viewBox={`0 0 ${W} ${H}`} className="adm-linechart" preserveAspectRatio="none">
+    <div className="gc-wrap">
+      <svg
+        ref={svgRef}
+        viewBox={`0 0 ${W} ${H}`}
+        className="gc-svg"
+        preserveAspectRatio="none"
+        onMouseMove={handleMouseMove}
+        onMouseLeave={() => setHover(null)}
+      >
         <defs>
-          <linearGradient id="lineGrad" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%"   stopColor="rgba(196,34,46,0.3)" />
+          <linearGradient id="gcGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%"   stopColor="rgba(196,34,46,0.35)" />
+            <stop offset="70%"  stopColor="rgba(196,34,46,0.08)" />
             <stop offset="100%" stopColor="rgba(196,34,46,0)" />
           </linearGradient>
+          <linearGradient id="gcLine" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%"   stopColor="rgba(196,34,46,0.4)" />
+            <stop offset="60%"  stopColor="#C4222E" />
+            <stop offset="100%" stopColor="#ff4455" />
+          </linearGradient>
+          <filter id="gcGlow">
+            <feGaussianBlur stdDeviation="3" result="blur" />
+            <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          </filter>
+          <clipPath id="gcClip">
+            <rect x="0" y="0" width={W} height={H} />
+          </clipPath>
         </defs>
-        {ready && <>
-          <path d={areaD} fill="url(#lineGrad)" />
-          <path d={pathD} fill="none" stroke="#C4222E" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-          {pts.map((p, i) => p.count > 0 && (
-            <circle key={i} cx={p.x} cy={p.y} r="3" fill="#C4222E">
-              <title>{p.date}: {p.count} signups</title>
-            </circle>
+
+        {/* Subtle horizontal grid lines */}
+        {[0.25, 0.5, 0.75].map(t => (
+          <line
+            key={t}
+            x1={0} y1={padY + t * (H - padY * 2)}
+            x2={W} y2={padY + t * (H - padY * 2)}
+            stroke="rgba(245,240,235,0.04)" strokeWidth="1"
+          />
+        ))}
+
+        <g clipPath="url(#gcClip)">
+          {/* Area fill */}
+          {pts.length > 1 && (
+            <path
+              d={areaPath}
+              fill="url(#gcGrad)"
+              style={{ transition: 'opacity 0.6s', opacity: ready ? 1 : 0 }}
+            />
+          )}
+
+          {/* Glow layer (thicker, blurred) */}
+          {pts.length > 1 && ready && (
+            <path
+              d={linePath}
+              fill="none"
+              stroke="rgba(196,34,46,0.35)"
+              strokeWidth="6"
+              strokeLinecap="round"
+              filter="url(#gcGlow)"
+            />
+          )}
+
+          {/* Main line with draw animation */}
+          {pts.length > 1 && (
+            <path
+              ref={lineRef}
+              d={linePath}
+              fill="none"
+              stroke="url(#gcLine)"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              style={pathLen ? {
+                strokeDasharray:  pathLen,
+                strokeDashoffset: ready ? 0 : pathLen,
+                transition: 'stroke-dashoffset 1.4s cubic-bezier(0.4, 0, 0.2, 1)',
+              } : {}}
+            />
+          )}
+
+          {/* Data points — only show where signups > 0 */}
+          {ready && pts.map((p) => p.count > 0 && (
+            <g key={p.idx}>
+              <circle cx={p.x} cy={p.y} r="5" fill="rgba(196,34,46,0.2)" />
+              <circle cx={p.x} cy={p.y} r="3" fill="#C4222E" />
+            </g>
           ))}
-        </>}
+
+          {/* Hover crosshair */}
+          {hover && (
+            <g>
+              <line
+                x1={hover.x} y1={0} x2={hover.x} y2={H}
+                stroke="rgba(245,240,235,0.15)" strokeWidth="1" strokeDasharray="4 3"
+              />
+              <circle cx={hover.x} cy={hover.y} r="6" fill="rgba(196,34,46,0.25)" />
+              <circle cx={hover.x} cy={hover.y} r="4" fill="#ff4455" />
+            </g>
+          )}
+        </g>
       </svg>
-      <div className="adm-chart-footer">
-        <span>{data[0]?.date}</span>
-        <span>Today</span>
+
+      {/* Hover tooltip */}
+      <div
+        className="gc-tooltip"
+        style={{
+          opacity:   hover ? 1 : 0,
+          transform: hover
+            ? `translateX(${Math.min(hover.idx / (pts.length - 1), 0.7) > 0.7 ? -100 : 0}%)`
+            : 'none',
+          left: hover
+            ? `${(hover.x / W) * 100}%`
+            : '50%',
+        }}
+      >
+        {hover && (
+          <>
+            <div className="gc-tooltip-count">{hover.count} signup{hover.count !== 1 ? 's' : ''}</div>
+            <div className="gc-tooltip-date">{new Date(hover.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}</div>
+          </>
+        )}
+      </div>
+
+      {/* Footer */}
+      <div className="gc-footer">
+        <span className="gc-footer-label">{safeData?.[0]?.date ? new Date(safeData[0].date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}</span>
+        <div className="gc-footer-center">
+          {totalSignups > 0 && <span className="gc-peak">Peak: {peakDay?.count} on {peakDay ? new Date(peakDay.date + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) : ''}</span>}
+        </div>
+        <span className="gc-footer-label">Today</span>
       </div>
     </div>
   )
@@ -272,7 +431,7 @@ function OverviewTab({ initialStats, initialSignupChart, initialRecentFans, enga
             <div className="ov-chart-title">Fan Growth</div>
             <div className="ov-chart-sub">Last 30 days</div>
           </div>
-          <BarChart data={signupChart} />
+          <GrowthChart data={signupChart} />
           <div className="ov-chart-stats">
             <div className="ov-chart-stat">
               <span className="ov-chart-stat-val" style={stats.today > 0 ? { color: '#4caf50' } : {}}>+{stats.today}</span>
