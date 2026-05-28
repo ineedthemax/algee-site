@@ -13198,10 +13198,13 @@ footer::before {
 }
 .fd-identity-name {
   font-family: var(--font-display, serif);
-  font-size: 26px;
+  font-size: clamp(16px, 4vw, 26px);
   font-weight: 700;
   color: #F5F0EB;
-  line-height: 1.1;
+  line-height: 1.2;
+  word-break: break-word;
+  overflow-wrap: anywhere;
+  max-width: 100%;
 }
 .fd-identity-email {
   font-family: var(--font-body, sans-serif);
@@ -14676,10 +14679,10 @@ footer::before {
 /* Also fix identity name overflow */
 .fd-identity-name {
   font-family: var(--font-display, serif);
-  font-size: 22px;
+  font-size: clamp(16px, 4vw, 22px);
   font-weight: 700;
   color: #F5F0EB;
-  line-height: 1.1;
+  line-height: 1.2;
   word-break: break-word;
   overflow-wrap: anywhere;
   max-width: 100%;
