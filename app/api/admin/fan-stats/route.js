@@ -14,7 +14,7 @@ export async function GET() {
 
   const { data: fans, error } = await admin
     .from('profiles')
-    .select('id, email, phone, created_at')
+    .select('id, email, phone, created_at, city, region, country')
     .order('created_at', { ascending: false })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

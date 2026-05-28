@@ -27,11 +27,13 @@ export async function POST(req) {
 
     const admin = createAdminClient()
     await admin.from('profiles').update({
-      country:      geo.country_name ?? null,
-      country_code: geo.country_code ?? null,
+      country:      geo.country_name  ?? null,
+      country_code: geo.country_code  ?? null,
+      region:       geo.region        ?? null,   // state / province
+      city:         geo.city          ?? null,
     }).eq('id', user.id)
 
-    return NextResponse.json({ ok: true, country: geo.country_name })
+    return NextResponse.json({ ok: true, country: geo.country_name, region: geo.region, city: geo.city })
   } catch {
     return NextResponse.json({ ok: false })
   }

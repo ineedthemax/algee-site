@@ -13,16 +13,48 @@ export async function GET() {
   const admin = createAdminClient()
   const { data } = await admin
     .from('profiles')
-    .select('country_code, country')
+    .select('country_code, country, region, city')
     .not('country_code', 'is', null)
 
   // Count fans per country
-  const counts = {}
+  const countryCounts = {}
+  // Count fans per US state
+  const stateCounts = {}
+  // Top cities
+  const cityCounts = {}
+
   for (const row of data ?? []) {
+    // Country rollup
     const key = row.country_code
-    if (!counts[key]) counts[key] = { country_code: key, country: row.country, count: 0 }
-    counts[key].count++
+    if (!countryCounts[key]) {
+      countryCounts[key] = { country_code: key, country: row.country, count: 0 }
+    }
+    countryCounts[key].count++
+
+    // US state breakdown
+    if (row.country_code === 'US' && row.region) {
+      stateCounts[row.region] = (stateCounts[row.region] ?? 0) + 1
+    }
+
+    // City rollup (show city + region for US, city + country elsewhere)
+    if (row.city) {
+      const cityLabel = row.country_code === 'US' && row.region
+        ? `${row.city}, ${row.region}`
+        : `${row.city}, ${row.country}`
+      cityCounts[cityLabel] = (cityCounts[cityLabel] ?? 0) + 1
+    }
   }
 
-  return NextResponse.json({ countries: Object.values(counts) })
+  const countries = Object.values(countryCounts).sort((a, b) => b.count - a.count)
+
+  const states = Object.entries(stateCounts)
+    .map(([state, count]) => ({ state, count }))
+    .sort((a, b) => b.count - a.count)
+
+  const cities = Object.entries(cityCounts)
+    .map(([city, count]) => ({ city, count }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 15)
+
+  return NextResponse.json({ countries, states, cities })
 }

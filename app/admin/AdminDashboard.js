@@ -177,6 +177,8 @@ function MirrorCard({ icon, label, tabId, lines, setTab }) {
 function OverviewTab({ initialStats, initialSignupChart, initialRecentFans, engagement, setTab, onRefreshDone }) {
   const [ov,          setOv]          = useState(null)
   const [mapData,     setMapData]     = useState([])
+  const [stateData,   setStateData]   = useState([])
+  const [cityData,    setCityData]    = useState([])
   const [stats,       setStats]       = useState(initialStats)
   const [signupChart, setSignupChart] = useState(initialSignupChart)
   const [recentFans,  setRecentFans]  = useState(initialRecentFans)
@@ -198,8 +200,13 @@ function OverviewTab({ initialStats, initialSignupChart, initialRecentFans, enga
       fetch('/api/admin/overview'),
       fetch('/api/admin/fan-map'),
     ])
-    if (ovRes.ok)  setOv(await ovRes.json())
-    if (mapRes.ok) setMapData((await mapRes.json()).countries ?? [])
+    if (ovRes.ok) setOv(await ovRes.json())
+    if (mapRes.ok) {
+      const geo = await mapRes.json()
+      setMapData(geo.countries ?? [])
+      setStateData(geo.states   ?? [])
+      setCityData(geo.cities    ?? [])
+    }
   }
 
   const refresh = async () => {
@@ -333,16 +340,22 @@ function OverviewTab({ initialStats, initialSignupChart, initialRecentFans, enga
       <div className="adm2-card">
         {recentFans.length === 0 ? (
           <div className="adm2-empty">No fans yet.</div>
-        ) : recentFans.map((fan, i) => (
-          <div key={fan.id} className="adm2-row">
-            <span className="adm2-row-num">{i + 1}</span>
-            <span className="adm2-row-main">{fan.email}</span>
-            <div className="adm2-row-meta">
-              {fan.phone && <span className="adm-sms-badge">SMS</span>}
-              <span className="adm2-row-time">{timeAgo(fan.created_at)}</span>
+        ) : recentFans.map((fan, i) => {
+          const location = fan.city && fan.region
+            ? `${fan.city}, ${fan.region}`
+            : fan.city || fan.region || fan.country || null
+          return (
+            <div key={fan.id} className="adm2-row">
+              <span className="adm2-row-num">{i + 1}</span>
+              <span className="adm2-row-main">{fan.email}</span>
+              <div className="adm2-row-meta">
+                {fan.phone && <span className="adm-sms-badge">SMS</span>}
+                {location && <span className="adm2-row-location">📍 {location}</span>}
+                <span className="adm2-row-time">{timeAgo(fan.created_at)}</span>
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* Fan World Map */}
@@ -372,6 +385,34 @@ function OverviewTab({ initialStats, initialSignupChart, initialRecentFans, enga
           </>
         )}
       </div>
+
+      {/* State + City breakdown */}
+      {(stateData.length > 0 || cityData.length > 0) && (
+        <div className="ov-geo-grid">
+          {stateData.length > 0 && (
+            <div className="adm2-card">
+              <div className="ov-geo-header">🇺🇸 US States</div>
+              {stateData.slice(0, 10).map(({ state, count }) => (
+                <div key={state} className="adm2-row">
+                  <span className="adm2-row-main">{state}</span>
+                  <span className="adm2-row-pts">{count} fan{count !== 1 ? 's' : ''}</span>
+                </div>
+              ))}
+            </div>
+          )}
+          {cityData.length > 0 && (
+            <div className="adm2-card">
+              <div className="ov-geo-header">📍 Top Cities</div>
+              {cityData.slice(0, 10).map(({ city, count }) => (
+                <div key={city} className="adm2-row">
+                  <span className="adm2-row-main">{city}</span>
+                  <span className="adm2-row-pts">{count} fan{count !== 1 ? 's' : ''}</span>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
     </>
   )
 }
@@ -746,20 +787,25 @@ function AdminDashboardInner({
               <div className="adm2-card adm2-table-wrap">
                 <table className="adm-table">
                   <thead>
-                    <tr><th>#</th><th>Email</th><th>Phone</th><th>SMS</th><th>Joined</th></tr>
+                    <tr><th>#</th><th>Email</th><th>Location</th><th>SMS</th><th>Joined</th></tr>
                   </thead>
                   <tbody>
                     {filtered.length === 0 ? (
                       <tr><td colSpan={5} className="adm2-empty">{fansList.length === 0 ? 'No fans yet.' : 'No results.'}</td></tr>
-                    ) : filtered.map((fan, i) => (
-                      <tr key={fan.id}>
-                        <td className="adm-td-num">{fansList.indexOf(fan) + 1}</td>
-                        <td className="adm-td-email">{fan.email}</td>
-                        <td className="adm-td-phone">{fan.phone || <span className="adm-none">-</span>}</td>
-                        <td>{fan.phone ? <span className="adm-badge sms-yes">Yes</span> : <span className="adm-badge sms-no">No</span>}</td>
-                        <td className="adm-td-date">{new Date(fan.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
-                      </tr>
-                    ))}
+                    ) : filtered.map((fan) => {
+                      const loc = fan.city && fan.region
+                        ? `${fan.city}, ${fan.region}`
+                        : fan.city || fan.region || fan.country || '—'
+                      return (
+                        <tr key={fan.id}>
+                          <td className="adm-td-num">{fansList.indexOf(fan) + 1}</td>
+                          <td className="adm-td-email">{fan.email}</td>
+                          <td className="adm-td-phone">{loc}</td>
+                          <td>{fan.phone ? <span className="adm-badge sms-yes">Yes</span> : <span className="adm-badge sms-no">No</span>}</td>
+                          <td className="adm-td-date">{new Date(fan.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+                        </tr>
+                      )
+                    })}
                   </tbody>
                 </table>
               </div>

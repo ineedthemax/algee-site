@@ -5735,7 +5735,8 @@ footer::before {
 .adm2-row-num  { font-size: 11px; color: var(--muted); width: 24px; text-align: center; flex-shrink: 0; }
 .adm2-row-main { flex: 1; font-size: 14px; color: var(--white); }
 .adm2-row-meta { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
-.adm2-row-time { font-size: 12px; color: var(--muted); }
+.adm2-row-time     { font-size: 12px; color: var(--muted); }
+.adm2-row-location { font-size: 12px; color: var(--muted); }
 .adm2-row-tag  { font-size: 12px; font-weight: 700; }
 .adm2-row-pts  { font-family: var(--font-display, serif); font-size: 15px; font-weight: 700; color: var(--white); flex-shrink: 0; }
 .adm2-empty { text-align: center; padding: 40px 20px; color: var(--muted); font-size: 13px; }
@@ -10014,6 +10015,26 @@ footer::before {
   font-size: 11px;
   color: #C4222E;
   font-weight: 700;
+}
+.ov-geo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin-top: 16px;
+}
+.ov-geo-header {
+  font-family: var(--font-label, sans-serif);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  padding-bottom: 12px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+}
+@media (max-width: 600px) {
+  .ov-geo-grid { grid-template-columns: 1fr; }
 }
 
 .ov-mirror {
