@@ -174,21 +174,78 @@ function MirrorCard({ icon, label, tabId, lines, setTab }) {
   )
 }
 
-function OverviewTab({ stats, smsRate, engagement, signupChart, recentFans, setTab }) {
-  const [ov, setOv]             = useState(null)
-  const [mapData, setMapData]   = useState([])
+function OverviewTab({ initialStats, initialSignupChart, initialRecentFans, engagement, setTab, onRefreshDone }) {
+  const [ov,          setOv]          = useState(null)
+  const [mapData,     setMapData]     = useState([])
+  const [stats,       setStats]       = useState(initialStats)
+  const [signupChart, setSignupChart] = useState(initialSignupChart)
+  const [recentFans,  setRecentFans]  = useState(initialRecentFans)
+  const [refreshing,  setRefreshing]  = useState(false)
+  const [lastUpdated, setLastUpdated] = useState(null)
+
+  const fetchFanStats = async () => {
+    const res = await fetch('/api/admin/fan-stats')
+    if (res.ok) {
+      const d = await res.json()
+      setStats(d.stats)
+      setSignupChart(d.signupChart)
+      setRecentFans(d.recentFans)
+    }
+  }
+
+  const fetchOverview = async () => {
+    const [ovRes, mapRes] = await Promise.all([
+      fetch('/api/admin/overview'),
+      fetch('/api/admin/fan-map'),
+    ])
+    if (ovRes.ok)  setOv(await ovRes.json())
+    if (mapRes.ok) setMapData((await mapRes.json()).countries ?? [])
+  }
+
+  const refresh = async () => {
+    setRefreshing(true)
+    try {
+      await Promise.all([fetchFanStats(), fetchOverview()])
+      setLastUpdated(new Date())
+      if (onRefreshDone) onRefreshDone()
+    } finally {
+      setRefreshing(false)
+    }
+  }
 
   useEffect(() => {
-    fetch('/api/admin/overview').then(r => r.json()).then(setOv).catch(() => {})
-    fetch('/api/admin/fan-map').then(r => r.json()).then(d => setMapData(d.countries ?? [])).catch(() => {})
+    fetchFanStats()
+    fetchOverview()
+    // Auto-refresh every 60s
+    const id = setInterval(refresh, 60000)
+    return () => clearInterval(id)
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  const smsRate = stats.total > 0 ? Math.round((stats.withPhone / stats.total) * 100) : 0
 
   return (
     <>
       {/* Welcome greeting */}
       <div className="ov-greeting">
-        <div className="ov-greeting-title">Dashboard Overview</div>
-        <div className="ov-greeting-sub">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</div>
+        <div>
+          <div className="ov-greeting-title">Dashboard Overview</div>
+          <div className="ov-greeting-sub">
+            {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+            {lastUpdated && (
+              <span className="ov-last-updated"> · Updated {lastUpdated.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</span>
+            )}
+          </div>
+        </div>
+        <button
+          className="ov-refresh-btn"
+          onClick={refresh}
+          disabled={refreshing}
+          title="Refresh dashboard"
+        >
+          <span className={refreshing ? 'ov-refresh-spinning' : ''} style={{ display: 'inline-block' }}>↻</span>
+          {refreshing ? 'Refreshing…' : 'Refresh'}
+        </button>
       </div>
 
       {/* Top grid - chart + key stats side by side */}
@@ -404,11 +461,8 @@ function AdminDashboardInner({
     return () => clearInterval(id)
   }, [])
 
-  // Auto-refresh server data every 60s
-  useEffect(() => {
-    const id = setInterval(() => router.refresh(), 60000)
-    return () => clearInterval(id)
-  }, [router])
+  const [refreshKey, setRefreshKey] = useState(0)
+  const bumpRefresh = () => setRefreshKey(k => k + 1)
 
   // Presence - ping every 30s, fetch active admins every 30s
   useEffect(() => {
@@ -443,9 +497,6 @@ function AdminDashboardInner({
     f.email?.toLowerCase().includes(search.toLowerCase()) ||
     f.phone?.includes(search)
   )
-
-  const smsRate = stats.total > 0
-    ? Math.round((stats.withPhone / stats.total) * 100) : 0
 
   const handleSignOut = async () => {
     setSigningOut(true)
@@ -538,7 +589,7 @@ function AdminDashboardInner({
             </a>
             <button
               className="adm2-refresh-btn"
-              onClick={() => router.refresh()}
+              onClick={bumpRefresh}
               title="Refresh data"
             >
               ↻
@@ -555,12 +606,13 @@ function AdminDashboardInner({
           {/* ── OVERVIEW ── */}
           {tab === 'Overview' && (
             <OverviewTab
-              stats={stats}
-              smsRate={smsRate}
+              key={refreshKey}
+              initialStats={stats}
+              initialSignupChart={signupChart}
+              initialRecentFans={recentFans}
               engagement={engagement}
-              signupChart={signupChart}
-              recentFans={recentFans}
               setTab={setTab}
+              onRefreshDone={bumpRefresh}
             />
           )}
 
