@@ -15,6 +15,7 @@ import PushManager from './PushManager'
 import SpendingManager from './SpendingManager'
 import FanOfMonthManager from './FanOfMonthManager'
 import ReleasesManager from './ReleasesManager'
+import MissionsViewer from './MissionsViewer'
 
 // ── Error boundary ────────────────────────────────────────────────────────────
 class AdminErrorBoundary extends Component {
@@ -49,6 +50,7 @@ const NAV = [
   { id: 'Exclusive',   icon: '🔒', label: 'Exclusive'  },
   { id: 'Playlists',   icon: '♫', label: 'Playlists'  },
   { id: 'Releases',    icon: '◈', label: 'Releases'     },
+  { id: 'Missions',    icon: '⚡', label: 'Missions'    },
   { id: 'FanOfMonth',  icon: '👑', label: 'Fan of Month' },
   { id: 'Platform',    icon: '◈', label: 'Platform'   },
 ]
@@ -828,6 +830,7 @@ function AdminDashboardInner({
           {tab === 'Announce'  && <AnnouncementManager />}
           {tab === 'Campaigns' && <CampaignManager />}
           {tab === 'Push'      && <PushManager />}
+          {tab === 'Missions'   && <MissionsViewer />}
           {tab === 'Releases'   && <ReleasesManager />}
           {tab === 'FanOfMonth' && <FanOfMonthManager />}
           {tab === 'Exclusive' && <ExclusiveContentManager />}
