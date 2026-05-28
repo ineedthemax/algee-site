@@ -554,22 +554,24 @@ export default function FanDashboard({
           </div>
         </div>
 
+        {/* ── Algee photo banner ── */}
+        <div className="fd-algee-banner">
+          <Image
+            src="/images/hero/algee-hero.webp"
+            alt="Algee Smith"
+            fill
+            sizes="100vw"
+            style={{ objectFit: 'cover', objectPosition: 'center 20%' }}
+            aria-hidden="true"
+          />
+          <div className="fd-algee-banner-overlay" />
+        </div>
+
         {/* ── Bento grid ── */}
         <div className="fd-bento fd-bento-animate">
 
           {/* Identity card */}
           <div className="fd-card fd-card-identity fd-card-animate" style={{ '--tc': tierColor, '--i': 0 }}>
-            <div className="fd-identity-photo">
-              <Image
-                src="/images/hero/algee-hero.webp"
-                alt=""
-                fill
-                sizes="160px"
-                style={{ objectFit: 'cover', objectPosition: 'center 15%' }}
-                aria-hidden="true"
-              />
-              <div className="fd-identity-photo-overlay" />
-            </div>
             <div className="fd-identity-glow" aria-hidden="true" />
             <div className="fd-identity-eyebrow">Algee Smith Fan Club</div>
 
