@@ -2,9 +2,10 @@
 import { usePathname } from 'next/navigation'
 
 const SOCIALS = [
-  { label: 'Instagram', href: 'https://www.instagram.com/itsalgee' },
-  { label: 'YouTube',   href: 'https://youtube.com/@algeesmith'  },
-  { label: 'Discord',   href: '#discord'                          },
+  { label: 'Instagram', href: 'https://www.instagram.com/itsalgee'          },
+  { label: 'YouTube',   href: 'https://youtube.com/@algeesmith'             },
+  { label: 'TikTok',    href: 'https://www.tiktok.com/@itsalgeesmith'       },
+  { label: 'Discord',   href: '#discord'                                     },
 ]
 
 export default function Footer() {
