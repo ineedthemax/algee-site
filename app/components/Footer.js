@@ -3,7 +3,7 @@ import { usePathname } from 'next/navigation'
 
 const SOCIALS = [
   { label: 'Instagram', href: 'https://www.instagram.com/itsalgee'          },
-  { label: 'YouTube',   href: 'https://youtube.com/@algeesmith'             },
+  { label: 'YouTube',   href: 'https://www.youtube.com/@itsalgee'            },
   { label: 'TikTok',    href: 'https://www.tiktok.com/@itsalgeesmith'       },
   { label: 'Discord',   href: '#discord'                                     },
 ]
