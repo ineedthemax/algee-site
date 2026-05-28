@@ -47,6 +47,31 @@ export async function POST(request) {
     return NextResponse.json({ error: 'Failed to save mission' }, { status: 500 })
   }
 
+  // If fan-profile mission, sync survey fields back to profiles table
+  if (missionId === 'fan-profile' && answers) {
+    try {
+      const profileUpdate = {}
+
+      // City — fan said "Atlanta, GA" or "Yonkers NY" etc.
+      if (answers.city?.trim()) {
+        profileUpdate.city = answers.city.trim()
+      }
+
+      // Favourite song + project stored as display_name-adjacent fields
+      // Store in dedicated columns if they exist, else skip gracefully
+      if (answers.fav_song?.trim())    profileUpdate.fav_song    = answers.fav_song.trim()
+      if (answers.fav_project?.trim()) profileUpdate.fav_project = answers.fav_project.trim()
+      if (answers.discovered?.trim())  profileUpdate.discovered  = answers.discovered.trim()
+
+      if (Object.keys(profileUpdate).length > 0) {
+        await admin.from('profiles').update(profileUpdate).eq('id', user.id)
+      }
+    } catch (e) {
+      console.error('Profile sync error:', e)
+      // Non-blocking
+    }
+  }
+
   // Award points directly (missions use their own point value)
   try {
     await admin.from('fan_points_events').insert({
