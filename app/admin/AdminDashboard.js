@@ -404,6 +404,12 @@ function AdminDashboardInner({
     return () => clearInterval(id)
   }, [])
 
+  // Auto-refresh server data every 60s
+  useEffect(() => {
+    const id = setInterval(() => router.refresh(), 60000)
+    return () => clearInterval(id)
+  }, [router])
+
   // Presence - ping every 30s, fetch active admins every 30s
   useEffect(() => {
     const ping = async () => {
@@ -530,6 +536,13 @@ function AdminDashboardInner({
             <a href="/account/dashboard" className="adm2-topbar-fanview">
               <span>👁</span> Fan View
             </a>
+            <button
+              className="adm2-refresh-btn"
+              onClick={() => router.refresh()}
+              title="Refresh data"
+            >
+              ↻
+            </button>
             <span className="adm2-topbar-clock">{clock}</span>
             <span className="adm2-topbar-date">
               {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
