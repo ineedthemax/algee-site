@@ -38,7 +38,7 @@ export default async function DashboardPage({ searchParams }) {
     getUserPoints(user.id),
     admin.from('announcements').select('id, title, body, type, created_at').eq('active', true).order('created_at', { ascending: false }).limit(5),
     admin.from('fan_purchases').select('id, amount, item_name, notes, created_at').eq('user_id', user.id).order('created_at', { ascending: false }).limit(5),
-    admin.from('profiles').select('birthday_month, birthday_day').eq('id', user.id).single(),
+    admin.from('profiles').select('birthday_month, birthday_day, username').eq('id', user.id).single(),
     admin.from('exclusive_content').select('id, title, description, type, content_url, content_body, min_tier, created_at').eq('active', true).order('created_at', { ascending: false }),
     admin.from('profiles').select('id', { count: 'exact', head: true }),
   ])
@@ -55,6 +55,7 @@ export default async function DashboardPage({ searchParams }) {
   const today      = new Date()
   const isBirthday = profile?.birthday_month === (today.getMonth() + 1) &&
                      profile?.birthday_day   === today.getDate()
+  const username   = profile?.username ?? null
 
   // Tag exclusive content with unlock status
   const tierOrder    = TIERS.map(t => t.name)
@@ -78,6 +79,7 @@ export default async function DashboardPage({ searchParams }) {
       rank={rank}
       totalFans={totalFans}
       isNew={isNew}
+      username={username}
     />
   )
 }

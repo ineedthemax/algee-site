@@ -395,13 +395,19 @@ export default function FanDashboard({
   isAdminUser = false,
   rank = null, totalFans = 0,
   isNew = false,
+  username = null,
 }) {
-  const [signingOut,    setSigningOut]    = useState(false)
-  const [dismissed,     setDismissed]     = useState([])
-  const [copied,        setCopied]        = useState(false)
-  const [showWelcome,   setShowWelcome]   = useState(isNew)
-  const [tourKey,       setTourKey]       = useState(0)
-  const [displayPoints, setDisplayPoints] = useState(0)
+  const [signingOut,      setSigningOut]      = useState(false)
+  const [dismissed,       setDismissed]       = useState([])
+  const [copied,          setCopied]          = useState(false)
+  const [showWelcome,     setShowWelcome]     = useState(isNew)
+  const [tourKey,         setTourKey]         = useState(0)
+  const [displayPoints,   setDisplayPoints]   = useState(0)
+  const [currentUsername, setCurrentUsername] = useState(username)
+  const [usernameInput,   setUsernameInput]   = useState('')
+  const [usernameError,   setUsernameError]   = useState(null)
+  const [usernameSaving,  setUsernameSaving]  = useState(false)
+  const [usernameSaved,   setUsernameSaved]   = useState(false)
   const router = useRouter()
 
   // Animate points counter on mount
@@ -446,7 +452,29 @@ export default function FanDashboard({
     } catch {}
   }
 
-  const displayName  = user.user_metadata?.full_name || user.email.split('@')[0]
+  const handleSetUsername = async () => {
+    const val = usernameInput.trim().toLowerCase()
+    if (!val) return
+    setUsernameSaving(true)
+    setUsernameError(null)
+    try {
+      const res  = await fetch('/api/profile/set-username', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ username: val }),
+      })
+      const data = await res.json()
+      if (!res.ok) { setUsernameError(data.error); return }
+      setCurrentUsername(val)
+      setUsernameSaved(true)
+    } catch {
+      setUsernameError('Something went wrong. Try again.')
+    } finally {
+      setUsernameSaving(false)
+    }
+  }
+
+  const displayName  = currentUsername || user.user_metadata?.full_name || user.email.split('@')[0]
   const joinedDate   = new Date(user.created_at).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
   const tierColor    = tier?.color ?? '#666'
   const progressPct  = nextTier
@@ -567,6 +595,49 @@ export default function FanDashboard({
           />
           <div className="fd-algee-banner-overlay" />
         </div>
+
+        {/* ── Username prompt (shown until fan sets one) ── */}
+        {!currentUsername && (
+          <div className="fd-username-prompt">
+            <div className="fd-username-prompt-left">
+              <div className="fd-username-prompt-title">
+                {usernameSaved ? '✓ Username set!' : 'Claim your fan name'}
+              </div>
+              <div className="fd-username-prompt-sub">
+                {usernameSaved
+                  ? `You're now @${currentUsername} on the leaderboard.`
+                  : 'Your username shows on the leaderboard — not your email.'}
+              </div>
+            </div>
+            {!usernameSaved && (
+              <div className="fd-username-prompt-right">
+                <div className="fd-username-input-wrap">
+                  <span className="fd-username-at">@</span>
+                  <input
+                    className="fd-username-input"
+                    type="text"
+                    placeholder="yourname"
+                    maxLength={20}
+                    value={usernameInput}
+                    onChange={e => {
+                      setUsernameInput(e.target.value.toLowerCase().replace(/[^a-z0-9_]/g, ''))
+                      setUsernameError(null)
+                    }}
+                    onKeyDown={e => e.key === 'Enter' && handleSetUsername()}
+                  />
+                </div>
+                <button
+                  className="fd-username-save-btn"
+                  onClick={handleSetUsername}
+                  disabled={usernameSaving || usernameInput.trim().length < 3}
+                >
+                  {usernameSaving ? '…' : 'Save'}
+                </button>
+              </div>
+            )}
+            {usernameError && <div className="fd-username-error">{usernameError}</div>}
+          </div>
+        )}
 
         {/* ── Bento grid ── */}
         <div className="fd-bento fd-bento-animate">

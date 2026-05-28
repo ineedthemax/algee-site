@@ -10,9 +10,11 @@ function rankLabel(n) {
   return `#${n}`
 }
 
-function anonymize(email) {
-  if (!email) return 'Anonymous'
-  const [local] = email.split('@')
+// Show username if set, otherwise show anonymized email (never full email)
+function displayHandle(entry) {
+  if (entry.username) return `@${entry.username}`
+  if (!entry.email)   return 'Anonymous'
+  const [local] = entry.email.split('@')
   if (local.length <= 3) return local + '***'
   return local.slice(0, 3) + '•'.repeat(Math.min(local.length - 3, 5))
 }
@@ -37,7 +39,7 @@ export default function LeaderboardView({ board, currentUserId, myPoints, myRank
           <div className="fotm-public-card">
             <div className="fotm-public-crown">👑</div>
             <div className="fotm-public-label">{MONTHS[fanOfMonth.month - 1]} {fanOfMonth.year} Fan of the Month</div>
-            <div className="fotm-public-name">{fanOfMonth.display_name || anonymize(fanOfMonth.email)}</div>
+            <div className="fotm-public-name">{fanOfMonth.display_name || displayHandle(fanOfMonth)}</div>
             {fanOfMonth.reason && (
               <div className="fotm-public-reason">"{fanOfMonth.reason}"</div>
             )}
@@ -89,7 +91,7 @@ export default function LeaderboardView({ board, currentUserId, myPoints, myRank
                     className={`lb-podium-card lb-podium-${entry.rank}${isMe ? ' lb-me' : ''}`}
                   >
                     <div className="lb-podium-medal">{RANK_MEDALS[entry.rank]}</div>
-                    <div className="lb-podium-name">{anonymize(entry.email)}{isMe ? ' (you)' : ''}</div>
+                    <div className="lb-podium-name">{displayHandle(entry)}{isMe ? ' (you)' : ''}</div>
                     <div className="lb-podium-pts" style={{ color: tier.color }}>
                       {entry.total.toLocaleString()}
                       <span className="lb-podium-pts-label"> pts</span>
@@ -110,7 +112,7 @@ export default function LeaderboardView({ board, currentUserId, myPoints, myRank
                     <div key={entry.user_id} className={`lb-row${isMe ? ' lb-me' : ''}`}>
                       <div className="lb-row-rank">{rankLabel(entry.rank)}</div>
                       <div className="lb-row-name">
-                        {anonymize(entry.email)}
+                        {displayHandle(entry)}
                         {isMe && <span className="lb-you-tag">you</span>}
                       </div>
                       <div className="lb-row-tier" style={{ color: tier.color }}>{tier.name}</div>
