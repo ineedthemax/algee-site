@@ -22,8 +22,8 @@ const VIDEOS = [
   {
     id:        'v2',
     videoId:   'TjOHVPo5iwM',
-    title:     'Algee Smith – Spiraling',
-    label:     'Official Visual',
+    title:     'My Movie Just Premiered Here\'s What That Felt Like',
+    label:     'Vlog',
     year:      '2025',
     live:      true,
   },
@@ -38,8 +38,8 @@ const VIDEOS = [
   {
     id:        'v4',
     videoId:   'KSwsT4WS-Uo',
-    title:     'One Music Fest 2025',
-    label:     'Live Performance',
+    title:     'Algee Smith – Spiraling',
+    label:     'Official Visual',
     year:      '2025',
     live:      true,
   },
