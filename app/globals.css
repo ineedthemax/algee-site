@@ -15279,6 +15279,112 @@ footer::before {
 }
 
 /* ═══════════════════════════════════════
+   COUNTDOWN — RELEASES BANNER
+═══════════════════════════════════════ */
+.cd-banner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(196,34,46,0.06);
+  border: 1px solid rgba(196,34,46,0.18);
+  border-radius: 16px;
+  padding: 18px 28px;
+  margin-bottom: 32px;
+  overflow: hidden;
+}
+
+.cd-banner-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cd-banner-pulse {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #c4222e;
+  flex-shrink: 0;
+  animation: cd-pulse 1.8s ease-in-out infinite;
+}
+
+.cd-banner-label {
+  font-family: var(--font-label, sans-serif);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 2.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.35);
+}
+
+.cd-banner-units {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.cd-banner-unit {
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+}
+
+.cd-banner-sep {
+  font-family: var(--font-display, serif);
+  font-size: 22px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.15);
+  padding: 0 4px;
+}
+
+.cd-banner-num {
+  font-family: var(--font-display, serif);
+  font-size: 28px;
+  font-weight: 700;
+  color: #f5f0eb;
+  letter-spacing: -1px;
+  font-variant-numeric: tabular-nums;
+  min-width: 2ch;
+  text-align: center;
+}
+
+.cd-banner-unit-label {
+  font-family: var(--font-label, sans-serif);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.2);
+  margin-left: 2px;
+  align-self: flex-end;
+  margin-bottom: 3px;
+}
+
+.cd-banner-glow {
+  position: absolute;
+  right: -40px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 200px;
+  height: 80px;
+  background: radial-gradient(ellipse, rgba(196,34,46,0.15), transparent 70%);
+  pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  .cd-banner {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 18px 20px;
+  }
+  .cd-banner-num { font-size: 22px; }
+  .cd-banner-sep { font-size: 18px; }
+}
+
+/* ═══════════════════════════════════════
    COUNTDOWN — DASHBOARD CARD
 ═══════════════════════════════════════ */
 .cd-card {

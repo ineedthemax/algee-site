@@ -1,6 +1,7 @@
 import { createAdminClient } from '../../lib/supabase/admin'
 import Link from 'next/link'
 import Image from 'next/image'
+import { CountdownBanner } from '../components/CountdownTimer'
 
 export const metadata = {
   title: 'Releases - Algee Smith',
@@ -32,6 +33,9 @@ export default async function ReleasesPage() {
             Get closer to the music. Every release has tiers - pick yours and unlock what&apos;s inside.
           </p>
         </div>
+
+        {/* ─── Countdown Banner ─── */}
+        <CountdownBanner />
 
         {list.length === 0 ? (
           <div className="releases-empty">Nothing live yet. Check back soon.</div>

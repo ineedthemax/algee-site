@@ -75,6 +75,39 @@ export function CountdownHero() {
   )
 }
 
+/* ── Releases page banner version ───────────────────────────── */
+export function CountdownBanner() {
+  const time = useCountdown()
+
+  return (
+    <div className="cd-banner">
+      <div className="cd-banner-left">
+        <span className="cd-banner-pulse" />
+        <span className="cd-banner-label">something&apos;s coming</span>
+      </div>
+      {time ? (
+        <div className="cd-banner-units">
+          {[
+            { val: time.days,    label: 'days' },
+            { val: time.hours,   label: 'hrs'  },
+            { val: time.minutes, label: 'min'  },
+            { val: time.seconds, label: 'sec'  },
+          ].map(({ val, label }, i) => (
+            <div key={label} className="cd-banner-unit">
+              {i > 0 && <span className="cd-banner-sep">:</span>}
+              <span className="cd-banner-num">{pad(val)}</span>
+              <span className="cd-banner-unit-label">{label}</span>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <div className="cd-banner-units">--:--:--:--</div>
+      )}
+      <div className="cd-banner-glow" />
+    </div>
+  )
+}
+
 /* ── Mini dashboard card version ─────────────────────────────── */
 export function CountdownCard() {
   const time = useCountdown()
