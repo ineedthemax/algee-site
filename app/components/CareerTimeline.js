@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import Image from 'next/image'
 import { ContainerScroll } from './ContainerScroll'
 
@@ -29,7 +29,7 @@ const MILESTONES = [
     year:  '2017',
     tag:   'Breakthrough',
     title: 'He Became Ralph Tresvant.',
-    story: 'BET\'s The New Edition Story didn\'t just introduce Algee to the country. It announced him. Millions felt it.',
+    story: "BET's The New Edition Story didn't just introduce Algee to the country. It announced him. Millions felt it.",
     above: true,
     image: '/images/timeline/New-Edition1.webp',
   },
@@ -38,7 +38,7 @@ const MILESTONES = [
     year:  '2017',
     tag:   'Film',
     title: 'Kathryn Bigelow Called.',
-    story: 'Detroit. A harrowing true story. A director who doesn\'t cast twice without reason. He answered.',
+    story: "Detroit. A harrowing true story. A director who doesn't cast twice without reason. He answered.",
     above: false,
     image: '/images/timeline/Detroit.webp',
   },
@@ -65,7 +65,7 @@ const MILESTONES = [
     year:  '2019',
     tag:   'Series',
     title: 'A Generation Claimed Him.',
-    story: 'Euphoria on HBO. McKay. A new generation found him and didn\'t let go.',
+    story: "Euphoria on HBO. McKay. A new generation found him and didn't let go.",
     above: true,
     image: '/images/timeline/Euphoria.webp',
   },
@@ -82,8 +82,8 @@ const MILESTONES = [
     id:    9,
     year:  '2023',
     tag:   'Film',
-    title: 'LeBron\'s Origin. His Chapter.',
-    story: 'Shooting Stars on Peacock. The untold story of where greatness is born, before the world is watching.',
+    title: "LeBron's Origin. His Chapter.",
+    story: "Shooting Stars on Peacock. The untold story of where greatness is born, before the world is watching.",
     above: true,
     image: '/images/timeline/SHOOTING-STARS.webp',
   },
@@ -126,9 +126,29 @@ const MILESTONES = [
   },
 ]
 
-function TimelineCard({ milestone }) {
+/* ── Catmull-Rom → cubic bezier path ─────────────────────────── */
+function catmullRomPath(pts) {
+  if (pts.length < 2) return ''
+  const t = 1 / 6
+  let d = `M ${pts[0].x.toFixed(1)} ${pts[0].y.toFixed(1)}`
+  for (let i = 0; i < pts.length - 1; i++) {
+    const p0 = pts[Math.max(i - 1, 0)]
+    const p1 = pts[i]
+    const p2 = pts[i + 1]
+    const p3 = pts[Math.min(i + 2, pts.length - 1)]
+    const cp1x = p1.x + (p2.x - p0.x) * t
+    const cp1y = p1.y + (p2.y - p0.y) * t
+    const cp2x = p2.x - (p3.x - p1.x) * t
+    const cp2y = p2.y - (p3.y - p1.y) * t
+    d += ` C ${cp1x.toFixed(1)} ${cp1y.toFixed(1)}, ${cp2x.toFixed(1)} ${cp2y.toFixed(1)}, ${p2.x.toFixed(1)} ${p2.y.toFixed(1)}`
+  }
+  return d
+}
+
+/* ── Timeline card ────────────────────────────────────────────── */
+function TimelineCard({ milestone, side }) {
   return (
-    <div className="tl-card">
+    <div className={`tl-v-card tl-v-card-${side}`}>
       <div className="tl-card-top">
         <span className="tl-tag">{milestone.tag}</span>
         <span className="tl-year">{milestone.year}</span>
@@ -142,7 +162,7 @@ function TimelineCard({ milestone }) {
             src={milestone.image}
             alt={milestone.title}
             fill
-            sizes="240px"
+            sizes="(max-width: 768px) 90vw, 420px"
             style={{ objectFit: 'cover', objectPosition: milestone.imagePosition || 'center' }}
           />
         </div>
@@ -162,64 +182,60 @@ function TimelineCard({ milestone }) {
   )
 }
 
+/* ── Main component ───────────────────────────────────────────── */
 export default function CareerTimeline() {
-  const scrollRef = useRef(null)
-  const [canLeft,  setCanLeft]  = useState(false)
-  const [canRight, setCanRight] = useState(true)
+  const containerRef = useRef(null)
+  const dotRefs      = useRef([])
+  const [svgState, setSvgState] = useState({ path: '', dots: [], h: 0, w: 0 })
+  const [visible,  setVisible]  = useState(new Set())
 
-  const updateArrows = () => {
-    const el = scrollRef.current
-    if (!el) return
-    setCanLeft(el.scrollLeft > 20)
-    setCanRight(el.scrollLeft < el.scrollWidth - el.clientWidth - 20)
-  }
+  /* Measure dot positions and build SVG path */
+  const recalc = useCallback(() => {
+    const container = containerRef.current
+    if (!container) return
+    const cRect = container.getBoundingClientRect()
+    const w     = container.offsetWidth
+    const h     = container.offsetHeight
 
-  const nudge = (dir) => {
-    scrollRef.current?.scrollBy({ left: dir * 280, behavior: 'smooth' })
-  }
+    const pts = dotRefs.current.map((el) => {
+      if (!el) return null
+      const r = el.getBoundingClientRect()
+      return {
+        x: r.left - cRect.left + r.width  / 2,
+        y: r.top  - cRect.top  + r.height / 2,
+      }
+    }).filter(Boolean)
 
-  /* Drag to scroll */
+    if (pts.length > 0) {
+      setSvgState({ path: catmullRomPath(pts), dots: pts, h, w })
+    }
+  }, [])
+
   useEffect(() => {
-    const el = scrollRef.current
-    if (!el) return
+    const t = setTimeout(recalc, 120)
+    const ro = new ResizeObserver(recalc)
+    if (containerRef.current) ro.observe(containerRef.current)
+    window.addEventListener('resize', recalc)
+    return () => { clearTimeout(t); ro.disconnect(); window.removeEventListener('resize', recalc) }
+  }, [recalc])
 
-    let down = false, startX = 0, initScroll = 0
-
-    const onDown  = e => {
-      down = true
-      startX = e.pageX - el.offsetLeft
-      initScroll = el.scrollLeft
-      el.classList.add('dragging')
-    }
-    const onUp    = () => { down = false; el.classList.remove('dragging') }
-    const onLeave = () => { down = false; el.classList.remove('dragging') }
-    const onMove  = e => {
-      if (!down) return
-      e.preventDefault()
-      const dx = e.pageX - el.offsetLeft - startX
-      el.scrollLeft = initScroll - dx * 1.2
-    }
-
-    el.addEventListener('mousedown',  onDown)
-    el.addEventListener('mouseup',    onUp)
-    el.addEventListener('mouseleave', onLeave)
-    el.addEventListener('mousemove',  onMove, { passive: false })
-    el.addEventListener('scroll',     updateArrows)
-    updateArrows()
-
-    return () => {
-      el.removeEventListener('mousedown',  onDown)
-      el.removeEventListener('mouseup',    onUp)
-      el.removeEventListener('mouseleave', onLeave)
-      el.removeEventListener('mousemove',  onMove)
-      el.removeEventListener('scroll',     updateArrows)
-    }
+  /* Scroll-reveal */
+  useEffect(() => {
+    const items = containerRef.current?.querySelectorAll('.tl-v-item')
+    if (!items) return
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (e.isIntersecting) setVisible(prev => new Set([...prev, e.target.dataset.idx]))
+      })
+    }, { threshold: 0.15 })
+    items.forEach(el => obs.observe(el))
+    return () => obs.disconnect()
   }, [])
 
   return (
     <section className="career-timeline-section">
 
-      {/* ── ContainerScroll intro card ── */}
+      {/* ── ContainerScroll intro ── */}
       <ContainerScroll
         titleComponent={
           <div className="tl-scroll-header">
@@ -245,74 +261,97 @@ export default function CareerTimeline() {
         </div>
       </ContainerScroll>
 
-      {/* ── Horizontal timeline ── */}
-      <div className="tl-h-wrap">
-
-        {/* Controls */}
-        <div className="tl-h-controls">
-          <div className="tl-h-hint">
-            <span className="tl-h-hint-desktop">Drag to explore the journey</span>
-            <span className="tl-h-hint-mobile">Swipe to explore</span>
-          </div>
-          <div className="tl-h-arrows">
-            <button
-              className="tl-h-arrow"
-              onClick={() => nudge(-1)}
-              disabled={!canLeft}
-              aria-label="Scroll left"
-            >←</button>
-            <button
-              className="tl-h-arrow"
-              onClick={() => nudge(1)}
-              disabled={!canRight}
-              aria-label="Scroll right"
-            >→</button>
-          </div>
+      {/* ── Vertical timeline ── */}
+      <div className="tl-v-section">
+        <div className="tl-v-header">
+          <div className="label">The Journey</div>
         </div>
 
-        {/* Scrollable track */}
-        <div className="tl-h-scroll" ref={scrollRef}>
-          <div className="tl-h-inner">
+        <div className="tl-v-container" ref={containerRef}>
 
-            {/* The horizontal line */}
-            <div className="tl-h-line" />
+          {/* SVG curve overlay */}
+          {svgState.path && (
+            <svg
+              className="tl-v-svg"
+              style={{ width: svgState.w, height: svgState.h }}
+              viewBox={`0 0 ${svgState.w} ${svgState.h}`}
+              aria-hidden="true"
+            >
+              <defs>
+                <linearGradient id="tl-path-grad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"   stopColor="rgba(196,34,46,0.9)" />
+                  <stop offset="50%"  stopColor="rgba(196,34,46,0.4)" />
+                  <stop offset="100%" stopColor="rgba(245,240,235,0.1)" />
+                </linearGradient>
+              </defs>
 
-            {/* Milestones */}
-            {MILESTONES.map((m, i) => (
-              <div
-                key={m.id}
-                className={`tl-h-item ${m.above ? 'tl-h-above' : 'tl-h-below'}`}
-                style={{ '--i': i }}
-              >
-                {/* Top slot - card if above */}
-                <div className="tl-h-top">
-                  {m.above && <TimelineCard milestone={m} />}
-                </div>
+              {/* Main curved path */}
+              <path
+                d={svgState.path}
+                stroke="url(#tl-path-grad)"
+                strokeWidth="1.5"
+                fill="none"
+                strokeLinecap="round"
+              />
 
-                {/* Dot on the line */}
-                <div className="tl-h-mid">
-                  <div className="tl-dot-inner" />
-                </div>
+              {/* Dots */}
+              {svgState.dots.map((pt, i) => {
+                const m = MILESTONES[i]
+                return (
+                  <g key={i}>
+                    {m?.current && (
+                      <circle cx={pt.x} cy={pt.y} r="14" fill="rgba(196,34,46,0.12)" />
+                    )}
+                    <circle
+                      cx={pt.x} cy={pt.y} r="5"
+                      fill={m?.current ? '#c4222e' : '#0d0d0d'}
+                      stroke={m?.current ? '#c4222e' : 'rgba(245,240,235,0.3)'}
+                      strokeWidth="1.5"
+                    />
+                  </g>
+                )
+              })}
+            </svg>
+          )}
 
-                {/* Bottom slot - card if below */}
-                <div className="tl-h-bot">
-                  {!m.above && <TimelineCard milestone={m} />}
-                </div>
+          {/* Milestone rows */}
+          {MILESTONES.map((m, i) => (
+            <div
+              key={m.id}
+              className={`tl-v-item ${m.above ? 'tl-v-left' : 'tl-v-right'} ${visible.has(String(i)) ? 'tl-v-visible' : ''}`}
+              data-idx={i}
+              style={{ '--delay': `${i * 40}ms` }}
+            >
+              {/* Left side */}
+              <div className="tl-v-side tl-v-side-left">
+                {m.above && <TimelineCard milestone={m} side="left" />}
               </div>
-            ))}
 
-            {/* End cap */}
-            <div className="tl-h-endcap">
-              <div className="tl-h-endcap-top" />
-              <div className="tl-h-mid">
-                <div className="tl-end-dot" />
+              {/* Center dot anchor (invisible — SVG draws over it) */}
+              <div className="tl-v-center">
+                <div
+                  ref={el => { dotRefs.current[i] = el }}
+                  className="tl-v-dot-anchor"
+                />
               </div>
-              <div className="tl-h-endcap-bot">
-                <span className="tl-end-label">Story<br />in progress</span>
+
+              {/* Right side */}
+              <div className="tl-v-side tl-v-side-right">
+                {!m.above && <TimelineCard milestone={m} side="right" />}
               </div>
             </div>
+          ))}
 
+          {/* End cap */}
+          <div className="tl-v-endcap">
+            <div className="tl-v-side" />
+            <div className="tl-v-center tl-v-endcap-center">
+              <div className="tl-end-dot" />
+              <span className="tl-end-label">Story<br />in progress</span>
+            </div>
+            <div className="tl-v-side" />
           </div>
+
         </div>
       </div>
 

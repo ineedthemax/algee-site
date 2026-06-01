@@ -8304,184 +8304,120 @@ footer::before {
 }
 
 /* ══════════════════════════════════════════
-   HORIZONTAL TIMELINE
+   VERTICAL TIMELINE
    ══════════════════════════════════════════ */
 
-.tl-h-wrap {
+.tl-v-section {
   background: var(--deep);
-  padding: 0 0 7rem;
+  padding: 0 0 8rem;
 }
 
-/* Controls row */
-.tl-h-controls {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 2.5rem 2rem 1.5rem;
-  max-width: 1400px;
+.tl-v-header {
+  text-align: center;
+  padding: 3rem 0 1rem;
+  opacity: 0.5;
+}
+
+/* Outer container — relative so SVG can overlay */
+.tl-v-container {
+  position: relative;
+  max-width: 1100px;
   margin: 0 auto;
+  padding: 0 2rem;
 }
 
-.tl-h-hint {
-  font-size: 10px;
-  letter-spacing: 3px;
-  text-transform: uppercase;
-  color: var(--dim);
-  opacity: 0.55;
-}
-.tl-h-hint-mobile { display: none; }
-.tl-h-hint-desktop { display: inline; }
-
-.tl-h-arrows {
-  display: flex;
-  gap: 8px;
-}
-
-.tl-h-arrow {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  background: transparent;
-  color: var(--white);
-  cursor: pointer;
-  font-size: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: border-color 0.2s, color 0.2s, background 0.2s;
-}
-.tl-h-arrow:hover:not(:disabled) {
-  border-color: var(--red);
-  color: var(--red);
-  background: rgba(196, 34, 46, 0.08);
-}
-.tl-h-arrow:disabled { opacity: 0.2; cursor: default; }
-
-/* Scroll container */
-.tl-h-scroll {
-  overflow-x: auto;
-  overflow-y: hidden;
-  cursor: grab;
-  user-select: none;
-  scrollbar-width: none;
-  -ms-overflow-style: none;
-  /* Smooth momentum on iOS */
-  -webkit-overflow-scrolling: touch;
-  touch-action: pan-x;
-}
-.tl-h-scroll::-webkit-scrollbar { display: none; }
-.tl-h-scroll.dragging { cursor: grabbing; }
-
-/* Inner flex row — all items side by side */
-.tl-h-inner {
-  display: flex;
-  align-items: stretch;
-  min-width: max-content;
-  position: relative;
-  padding: 0 6vw;
-}
-
-/* ── The horizontal line ── */
-.tl-h-line {
+/* SVG overlay — drawn on top of everything */
+.tl-v-svg {
   position: absolute;
-  /* sits at the boundary between row 1 and row 2 of items */
-  top: 420px;
+  top: 0;
   left: 0;
-  right: 0;
-  height: 1px;
-  background: linear-gradient(
-    to right,
-    transparent 0%,
-    rgba(196, 34, 46, 0.4) 3%,
-    rgba(196, 34, 46, 0.9) 6%,
-    rgba(245, 240, 235, 0.22) 14%,
-    rgba(245, 240, 235, 0.12) 86%,
-    transparent 100%
-  );
   pointer-events: none;
-  z-index: 0;
+  overflow: visible;
 }
 
-/* ── Each milestone column ── */
-.tl-h-item {
+/* Each milestone row */
+.tl-v-item {
   display: grid;
-  grid-template-rows: 420px 24px 420px;
-  width: 252px;
-  flex-shrink: 0;
-  position: relative;
+  grid-template-columns: 1fr 80px 1fr;
+  align-items: center;
+  gap: 0 16px;
+  padding: 36px 0;
+  opacity: 0;
+  transform: translateY(24px);
+  transition: opacity 0.55s ease var(--delay, 0ms), transform 0.55s ease var(--delay, 0ms);
 }
 
-/* Top slot: card sits at the bottom of this area (touching the line) */
-.tl-h-top {
+.tl-v-item.tl-v-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Left / right card placement */
+.tl-v-side {
+  min-height: 1px;
+}
+
+.tl-v-side-left {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.tl-v-side-right {
+  display: flex;
+  justify-content: flex-start;
+}
+
+/* Center gutter — dot anchor lives here */
+.tl-v-center {
   display: flex;
   flex-direction: column;
-  justify-content: flex-end;
-  padding: 0 10px 14px;
-  box-sizing: border-box;
-}
-
-/* Dot strip: sits on the line */
-.tl-h-mid {
-  display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2;
   position: relative;
+  z-index: 2;
 }
 
-/* Bottom slot: card sits at the top of this area (touching the line) */
-.tl-h-bot {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  padding: 14px 10px 0;
-  box-sizing: border-box;
-}
-
-/* Connector line — thin vertical line from card edge to dot */
-.tl-h-above .tl-h-top .tl-card::after {
-  content: '';
-  display: block;
-  width: 1px;
-  height: 14px;
-  background: rgba(245, 240, 235, 0.1);
-  margin: 10px auto 0;
-}
-.tl-h-below .tl-h-bot .tl-card::before {
-  content: '';
-  display: block;
-  width: 1px;
-  height: 14px;
-  background: rgba(245, 240, 235, 0.1);
-  margin: 0 auto 10px;
-}
-
-/* End cap column */
-.tl-h-endcap {
-  display: grid;
-  grid-template-rows: 420px 24px 420px;
-  width: 160px;
-  flex-shrink: 0;
-}
-.tl-h-endcap-top { /* empty above */ }
-.tl-h-endcap-bot {
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  padding-top: 14px;
-}
-
-/* ── Shared dot styles ── */
-.tl-dot-inner {
-  width: 10px;
-  height: 10px;
+/* Invisible anchor used only for SVG position measurement */
+.tl-v-dot-anchor {
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background: var(--red);
-  border: 2px solid var(--deep);
-  box-shadow: 0 0 0 3px rgba(196, 34, 46, 0.25);
+  visibility: hidden;
   flex-shrink: 0;
 }
+
+/* End cap */
+.tl-v-endcap {
+  display: grid;
+  grid-template-columns: 1fr 80px 1fr;
+  gap: 0 16px;
+  padding: 24px 0 48px;
+}
+
+.tl-v-endcap-center {
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+/* Cards */
+.tl-v-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 1.5rem;
+  max-width: 440px;
+  width: 100%;
+  transition: border-color 0.3s, transform 0.3s;
+}
+
+.tl-v-card:hover {
+  border-color: var(--border-hover);
+  transform: translateY(-2px);
+}
+
+.tl-v-card-left  { margin-right: 0; }
+.tl-v-card-right { margin-left:  0; }
 
 /* ── Card ── */
 .tl-card {
@@ -8621,52 +8557,29 @@ footer::before {
   .cscroll-card { height: 22rem; }
   .tl-chapter-stats { gap: 1rem; }
 
-  /* Timeline horizontal — swipe on mobile */
-  .tl-h-scroll {
-    /* Smooth momentum scroll on iOS */
-    -webkit-overflow-scrolling: touch;
-    /* Allow horizontal swipe */
-    touch-action: pan-x;
-    cursor: default;
+  /* Vertical timeline — stack on mobile */
+  .tl-v-item {
+    grid-template-columns: 40px 1fr;
+    grid-template-rows: auto;
+    gap: 0 12px;
+    padding: 24px 0;
   }
 
-  .tl-h-item {
-    width: 240px;
-    grid-template-rows: 360px 24px 360px;
-  }
-  .tl-h-line { top: 360px; }
-  .tl-h-endcap {
-    grid-template-rows: 360px 24px 360px;
-    width: 100px;
+  /* On mobile, all cards go right, dot goes left */
+  .tl-v-side-left  { display: none; }
+  .tl-v-side-right { display: flex; grid-column: 2; }
+  .tl-v-center     { grid-column: 1; grid-row: 1; align-items: center; justify-content: center; }
+
+  .tl-v-left  .tl-v-side-right { display: flex; }
+  .tl-v-left  .tl-v-center     { grid-column: 1; }
+
+  .tl-v-card { max-width: 100%; }
+
+  .tl-v-endcap {
+    grid-template-columns: 40px 1fr;
   }
 
-  /* Tighter card padding on mobile */
-  .tl-h-item .tl-card {
-    padding: 1rem;
-  }
-  .tl-h-item .tl-title {
-    font-size: 0.95rem;
-  }
-  .tl-h-item .tl-story {
-    font-size: 12px;
-  }
-
-  /* Controls */
-  .tl-h-controls {
-    padding: 1.5rem 1.25rem 1rem;
-  }
-  .tl-h-hint-desktop { display: none; }
-  .tl-h-hint-mobile  { display: inline; }
-
-  /* Slightly smaller arrows */
-  .tl-h-arrow {
-    width: 36px;
-    height: 36px;
-    font-size: 13px;
-  }
-
-  /* Inner padding — let item bleed to edges a bit */
-  .tl-h-inner { padding: 0 4vw; }
+  .tl-v-container { padding: 0 1rem; }
 }
 
 /* ══════════════════════════════════════════
