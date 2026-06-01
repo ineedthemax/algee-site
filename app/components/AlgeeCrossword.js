@@ -147,8 +147,12 @@ export default function AlgeeCrossword({ onSolve }) {
   const advance = useCallback((key, direction) => {
     const [r, c] = key.split(',').map(Number)
     const next = direction === 'across' ? `${r},${c + 1}` : `${r + 1},${c}`
-    if (CELL_MAP[next]) selectCell(next, direction)
-  }, [selectCell])
+    if (!CELL_MAP[next]) return
+    // Only advance if the next cell is part of the same active word —
+    // prevents bleeding into adjacent cells that belong to different words
+    const inSameWord = CELL_MAP[next].words.some(w => w.num === activeWord && w.dir === direction)
+    if (inSameWord) selectCell(next, direction)
+  }, [selectCell, activeWord])
 
   const retreat = useCallback((key, direction) => {
     const [r, c] = key.split(',').map(Number)

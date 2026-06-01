@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import JoinCheckoutBtn from './JoinButtons'
 
 export const metadata = {
   title: 'Join | Algee Smith',
@@ -119,15 +120,14 @@ export default function JoinPage() {
 
               {/* CTA */}
               <div className="tier-cta-wrap">
-                {tier.soon ? (
-                  <div className="tier-soon-btn">
-                    {tier.cta}
-                    <span className="tier-soon-badge">Stripe coming soon</span>
-                  </div>
-                ) : (
+                {tier.id === 'free' ? (
                   <Link href={tier.href} className="tier-cta-btn">
                     {tier.cta}
                   </Link>
+                ) : (
+                  <JoinCheckoutBtn plan={tier.id} className="tier-cta-btn">
+                    {tier.cta}
+                  </JoinCheckoutBtn>
                 )}
               </div>
 

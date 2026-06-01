@@ -1,5 +1,6 @@
 import HeroSection from './components/HeroSection'
 import FanWorldSection from './components/FanWorldSection'
+import { CountdownHero } from './components/CountdownTimer'
 
 import TwoWorldsSection from './components/TwoWorldsSection'
 import AlbumSpotlight from './components/AlbumSpotlight'
@@ -74,6 +75,7 @@ export default function Home() {
       {/* ══ HERO ZONE ══ */}
       <HeroSection />
       <PressStrip />
+      <CountdownHero />
 
       {/* ══ STORY ZONE ══ */}
       <div className="page-zone">

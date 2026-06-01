@@ -34,6 +34,7 @@ export default async function DashboardPage({ searchParams }) {
     profileRes,
     exclusiveRes,
     totalFansRes,
+    subscriptionRes,
   ] = await Promise.all([
     getUserPoints(user.id),
     admin.from('announcements').select('id, title, body, type, created_at').eq('active', true).order('created_at', { ascending: false }).limit(5),
@@ -41,6 +42,7 @@ export default async function DashboardPage({ searchParams }) {
     admin.from('profiles').select('birthday_month, birthday_day, username').eq('id', user.id).single(),
     admin.from('exclusive_content').select('id, title, description, type, content_url, content_body, min_tier, created_at').eq('active', true).order('created_at', { ascending: false }),
     admin.from('profiles').select('id', { count: 'exact', head: true }),
+    admin.from('fan_subscriptions').select('*').eq('user_id', user.id).eq('status', 'active').gt('current_period_end', new Date().toISOString()).order('created_at', { ascending: false }).limit(1).maybeSingle(),
   ])
 
   const tier      = getTier(points)
@@ -65,6 +67,9 @@ export default async function DashboardPage({ searchParams }) {
     unlocked: userTierIdx >= tierOrder.indexOf(item.min_tier),
   }))
 
+  const subscription  = subscriptionRes.data ?? null
+  const discordInvite = subscription ? (process.env.DISCORD_INVITE_URL ?? null) : null
+
   return (
     <FanDashboard
       user={user}
@@ -80,6 +85,8 @@ export default async function DashboardPage({ searchParams }) {
       totalFans={totalFans}
       isNew={isNew}
       username={username}
+      subscription={subscription}
+      discordInvite={discordInvite}
     />
   )
 }

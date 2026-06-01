@@ -96,7 +96,21 @@ export async function POST(req) {
         notes: `Bundle purchase - ${tier_name} tier unlocked`,
       })
 
-      console.log(`[stripe webhook] fan_plan (${plan}): ${tier_name} unlocked for ${user_id}`)
+      // Grant 3 months Discord access via fan_subscriptions
+      const threeMonthsOut = new Date()
+      threeMonthsOut.setMonth(threeMonthsOut.getMonth() + 3)
+
+      await admin.from('fan_subscriptions').upsert({
+        user_id,
+        stripe_customer_id:     session.customer ?? null,
+        stripe_subscription_id: `bundle_${session.id}`, // synthetic ID for one-time
+        tier_name:              'bundle',
+        status:                 'active',
+        current_period_end:     threeMonthsOut.toISOString(),
+        updated_at:             new Date().toISOString(),
+      }, { onConflict: 'stripe_subscription_id' })
+
+      console.log(`[stripe webhook] fan_plan (${plan}): ${tier_name} unlocked for ${user_id}, Discord access until ${threeMonthsOut.toDateString()}`)
     }
 
     // ── Subscription checkout complete ─────────────────────────────────

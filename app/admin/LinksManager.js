@@ -4,9 +4,9 @@ import { useState, useEffect } from 'react'
 import { PLATFORMS, slugify } from '../../lib/platforms'
 
 const LINK_TYPES = [
-  { id: 'streaming', label: 'Streaming Link', desc: 'Direct fans to listen on any DSP' },
-  { id: 'presave',   label: 'Pre-Save Link',  desc: 'Fans save before release drops'   },
-  { id: 'funnel',    label: 'Funnel Link',    desc: 'Collect fan info + redirect'       },
+  { id: 'streaming', icon: '🎵', label: 'Streaming Link', desc: 'Direct fans to listen on any DSP' },
+  { id: 'presave',   icon: '🔔', label: 'Pre-Save Link',  desc: 'Fans save before release drops'   },
+  { id: 'funnel',    icon: '📡', label: 'Funnel Link',    desc: 'Collect fan info + redirect'       },
 ]
 
 function formatDate(str) {
@@ -117,132 +117,149 @@ function SmartLinkForm({ initial, onSave, onCancel }) {
             className={`sl-type-btn${form.type === t.id ? ' sl-type-active' : ''}`}
             onClick={() => set('type', t.id)}
           >
+            <div className="sl-type-icon">{t.icon}</div>
             <div className="sl-type-name">{t.label}</div>
             <div className="sl-type-desc">{t.desc}</div>
           </button>
         ))}
       </div>
 
-      {/* Cover art URL + preview */}
-      <div className="sl-cover-row">
-        <div className="sl-cover-preview">
-          {form.cover_art_url
-            ? <img src={form.cover_art_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8 }} />
-            : <div className="sl-cover-empty">No art</div>
-          }
-        </div>
-        <div style={{ flex: 1 }}>
-          <label className="lm-label">Cover Art URL</label>
-          <input
-            className="lm-input"
-            value={form.cover_art_url}
-            onChange={e => set('cover_art_url', e.target.value)}
-            placeholder="https://... (paste image URL)"
-          />
-          <div className="sl-hint">Paste a direct image URL from your distributor, Apple Music, etc.</div>
-        </div>
-      </div>
+      {/* Card: Cover art + metadata */}
+      <div className="sl-card">
+        <div className="sl-card-label">Artwork &amp; Details</div>
 
-      {/* Title + Slug */}
-      <div className="lm-form-row">
-        <div className="lm-form-field lm-form-field-grow">
-          <label className="lm-label">Title *</label>
-          <input
-            className="lm-input"
-            value={form.title}
-            onChange={e => handleTitleChange(e.target.value)}
-            placeholder="e.g. Love Lost"
-          />
+        <div className="sl-cover-row">
+          <div className="sl-cover-preview">
+            {form.cover_art_url
+              ? <img src={form.cover_art_url} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 10 }} />
+              : <div className="sl-cover-empty">
+                  <span style={{ fontSize: 28, opacity: 0.3 }}>🎵</span>
+                  <span style={{ fontSize: 10, color: 'var(--muted)', marginTop: 4 }}>No art</span>
+                </div>
+            }
+          </div>
+          <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
+            <div className="lm-form-field">
+              <label className="lm-label">Cover Art URL</label>
+              <input
+                className="lm-input"
+                value={form.cover_art_url}
+                onChange={e => set('cover_art_url', e.target.value)}
+                placeholder="https://... (paste image URL)"
+              />
+              <div className="sl-hint">From your distributor, Apple Music, or Spotify</div>
+            </div>
+          </div>
         </div>
-        <div className="lm-form-field lm-form-field-grow">
-          <label className="lm-label">Slug *</label>
-          <div style={{ position: 'relative' }}>
-            <span className="sl-slug-prefix">algee.fan/links/</span>
+
+        <div className="lm-form-row" style={{ marginTop: 4 }}>
+          <div className="lm-form-field lm-form-field-grow">
+            <label className="lm-label">Title *</label>
             <input
-              className="lm-input sl-slug-input"
-              value={form.slug}
-              onChange={e => { setSlugEdited(true); set('slug', slugify(e.target.value)) }}
-              placeholder="love-lost"
+              className="lm-input"
+              value={form.title}
+              onChange={e => handleTitleChange(e.target.value)}
+              placeholder="e.g. Love Lost"
             />
+          </div>
+          <div className="lm-form-field lm-form-field-grow">
+            <label className="lm-label">Slug *</label>
+            <div style={{ position: 'relative' }}>
+              <span className="sl-slug-prefix">algee.fan/links/</span>
+              <input
+                className="lm-input sl-slug-input"
+                value={form.slug}
+                onChange={e => { setSlugEdited(true); set('slug', slugify(e.target.value)) }}
+                placeholder="love-lost"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div className="lm-form-row">
+          <div className="lm-form-field" style={{ minWidth: 120 }}>
+            <label className="lm-label">Artist</label>
+            <input className="lm-input" value={form.artist} onChange={e => set('artist', e.target.value)} placeholder="Algee" />
+          </div>
+          <div className="lm-form-field lm-form-field-grow">
+            <label className="lm-label">Subtext <span className="lm-optional">(optional)</span></label>
+            <input className="lm-input" value={form.subtext} onChange={e => set('subtext', e.target.value)} placeholder="e.g. The wait is over. Tap in." />
           </div>
         </div>
       </div>
 
-      {/* Artist + Subtext */}
-      <div className="lm-form-row">
-        <div className="lm-form-field">
-          <label className="lm-label">Artist</label>
-          <input className="lm-input" value={form.artist} onChange={e => set('artist', e.target.value)} placeholder="Algee" />
-        </div>
-        <div className="lm-form-field lm-form-field-grow">
-          <label className="lm-label">Subtext <span className="lm-optional">(optional)</span></label>
-          <input className="lm-input" value={form.subtext} onChange={e => set('subtext', e.target.value)} placeholder="e.g. The wait is over. Tap in." />
-        </div>
-      </div>
-
-      {/* Theme + Schedule */}
-      <div className="lm-form-row">
-        <div className="lm-form-field">
-          <label className="lm-label">Theme</label>
-          <div className="sl-theme-row">
-            {['dark', 'light'].map(t => (
-              <button key={t} className={`sl-theme-btn sl-theme-${t}${form.theme === t ? ' sl-theme-active' : ''}`}
-                onClick={() => set('theme', t)}>
-                {t.charAt(0).toUpperCase() + t.slice(1)}
-              </button>
-            ))}
+      {/* Card: Schedule + Theme */}
+      <div className="sl-card">
+        <div className="sl-card-label">Settings</div>
+        <div className="lm-form-row">
+          <div className="lm-form-field">
+            <label className="lm-label">Theme</label>
+            <div className="sl-theme-row">
+              {['dark', 'light'].map(t => (
+                <button key={t} className={`sl-theme-btn sl-theme-${t}${form.theme === t ? ' sl-theme-active' : ''}`}
+                  onClick={() => set('theme', t)}>
+                  {t === 'dark' ? '🌑' : '☀️'} {t.charAt(0).toUpperCase() + t.slice(1)}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="lm-form-field lm-form-field-grow">
+            <label className="lm-label">Goes Live At <span className="lm-optional">(blank = live now)</span></label>
+            <input className="lm-input" type="datetime-local" value={form.goes_live_at} onChange={e => set('goes_live_at', e.target.value)} />
           </div>
         </div>
-        <div className="lm-form-field lm-form-field-grow">
-          <label className="lm-label">Goes Live At <span className="lm-optional">(blank = live now)</span></label>
-          <input className="lm-input" type="datetime-local" value={form.goes_live_at} onChange={e => set('goes_live_at', e.target.value)} />
+      </div>
+
+      {/* Card: DSP Destinations */}
+      <div className="sl-card">
+        <div className="sl-card-label">Streaming Platforms</div>
+
+        {destinations.length > 0 && (
+          <div className="sl-dest-list">
+            {destinations.map((d, i) => {
+              const meta = PLATFORMS.find(p => p.id === d.platform)
+              return (
+                <div key={d.platform} className="sl-dest-row" style={{ '--dest-color': meta?.bg ?? '#333' }}>
+                  <div className="sl-dest-icon" style={{ background: meta?.bg ?? '#222' }}
+                    dangerouslySetInnerHTML={{ __html: meta?.icon ? `<svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="${meta.text ?? '#fff'}">${meta.icon.match(/<path[^>]*>/g)?.[0] ?? ''}</svg>` : '' }}
+                  />
+                  <span className="sl-dest-name">{meta?.label ?? d.platform}</span>
+                  <input
+                    className="lm-input sl-dest-url"
+                    value={d.url}
+                    onChange={e => setDestUrl(i, e.target.value)}
+                    placeholder={`Paste ${meta?.label ?? d.platform} URL`}
+                  />
+                  <button className="sl-dest-remove" onClick={() => removeDestination(i)} title="Remove">✕</button>
+                </div>
+              )
+            })}
+          </div>
+        )}
+
+        {destinations.length === 0 && (
+          <div className="sl-dest-empty">Click a platform below to add a streaming link</div>
+        )}
+
+        <div className="sl-platform-grid">
+          {PLATFORMS.filter(p => !usedPlatforms.has(p.id)).map(p => (
+            <button key={p.id} className="sl-platform-add" onClick={() => addDestination(p.id)}
+              style={{ '--p-color': p.bg }}>
+              <div className="sl-platform-add-icon" style={{ background: p.bg }}
+                dangerouslySetInnerHTML={{ __html: `<svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="${p.text}">${p.icon?.match(/<path[^>]*>/g)?.[0] ?? ''}</svg>` }}
+              />
+              {p.label}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* DSP Destinations */}
-      <div className="sl-section-label">Streaming Platforms</div>
-
-      {destinations.length > 0 && (
-        <div className="sl-dest-list">
-          {destinations.map((d, i) => {
-            const meta = PLATFORMS.find(p => p.id === d.platform)
-            return (
-              <div key={d.platform} className="sl-dest-row">
-                <div className="sl-dest-icon" style={{ background: meta?.bg ?? '#222' }}
-                  dangerouslySetInnerHTML={{ __html: meta?.icon ? `<svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="${meta.text ?? '#fff'}">${meta.icon.match(/<path[^>]*>/g)?.[0] ?? ''}</svg>` : '' }}
-                />
-                <span className="sl-dest-name">{meta?.label ?? d.platform}</span>
-                <input
-                  className="lm-input sl-dest-url"
-                  value={d.url}
-                  onChange={e => setDestUrl(i, e.target.value)}
-                  placeholder={`${meta?.label} URL`}
-                />
-                <button className="sl-dest-remove" onClick={() => removeDestination(i)}>✕</button>
-              </div>
-            )
-          })}
-        </div>
-      )}
-
-      <div className="sl-platform-grid">
-        {PLATFORMS.filter(p => !usedPlatforms.has(p.id)).map(p => (
-          <button key={p.id} className="sl-platform-add" onClick={() => addDestination(p.id)}
-            style={{ '--p-color': p.bg }}>
-            <div className="sl-platform-add-icon" style={{ background: p.bg }}
-              dangerouslySetInnerHTML={{ __html: `<svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="${p.text}">${p.icon?.match(/<path[^>]*>/g)?.[0] ?? ''}</svg>` }}
-            />
-            + {p.label}
-          </button>
-        ))}
-      </div>
-
-      {error && <div className="lm-error">{error}</div>}
+      {error && <div className="lm-error" style={{ marginTop: 4 }}>{error}</div>}
 
       <div className="lm-form-actions">
         <button className="lm-btn-cancel" onClick={onCancel} disabled={saving}>Cancel</button>
-        <button className="lm-btn-save"   onClick={handleSave} disabled={saving}>
-          {saving ? 'Saving...' : initial ? 'Save Changes' : 'Create Link'}
+        <button className="lm-btn-save sl-btn-create" onClick={handleSave} disabled={saving}>
+          {saving ? 'Saving...' : initial ? 'Save Changes' : '↗ Create Link'}
         </button>
       </div>
     </div>

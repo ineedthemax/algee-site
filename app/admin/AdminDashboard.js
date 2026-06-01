@@ -38,22 +38,45 @@ class AdminErrorBoundary extends Component {
   }
 }
 
-const NAV = [
-  { id: 'Overview',    icon: '⊞', label: 'Overview'    },
-  { id: 'Engagement',  icon: '★', label: 'Engagement'  },
-  { id: 'Fans',        icon: '◎', label: 'Fans'        },
-  { id: 'Spend',       icon: '$', label: 'Spending'    },
-  { id: 'Links',       icon: '↗', label: 'Smart Links' },
-  { id: 'Announce',    icon: '📢', label: 'Announce'   },
-  { id: 'Campaigns',   icon: '✉',  label: 'Campaigns'  },
-  { id: 'Push',        icon: '🔔', label: 'Push'       },
-  { id: 'Exclusive',   icon: '🔒', label: 'Exclusive'  },
-  { id: 'Playlists',   icon: '♫', label: 'Playlists'  },
-  { id: 'Releases',    icon: '◈', label: 'Releases'     },
-  { id: 'Missions',    icon: '⚡', label: 'Missions'    },
-  { id: 'FanOfMonth',  icon: '👑', label: 'Fan of Month' },
-  { id: 'Platform',    icon: '◈', label: 'Platform'   },
+const NAV_GROUPS = [
+  {
+    label: 'Analytics',
+    items: [
+      { id: 'Overview',   icon: '◉', label: 'Overview'   },
+      { id: 'Engagement', icon: '★', label: 'Engagement' },
+      { id: 'Fans',       icon: '◎', label: 'Fans'       },
+      { id: 'Platform',   icon: '◈', label: 'Platform'   },
+    ],
+  },
+  {
+    label: 'Content',
+    items: [
+      { id: 'Releases',  icon: '◈',  label: 'Releases'   },
+      { id: 'Exclusive', icon: '🔒', label: 'Exclusive'  },
+      { id: 'Playlists', icon: '♫',  label: 'Playlists'  },
+    ],
+  },
+  {
+    label: 'Engage',
+    items: [
+      { id: 'Missions',   icon: '⚡', label: 'Missions'    },
+      { id: 'Announce',   icon: '📢', label: 'Announce'   },
+      { id: 'Campaigns',  icon: '✉',  label: 'Campaigns'  },
+      { id: 'Push',       icon: '🔔', label: 'Push'       },
+      { id: 'FanOfMonth', icon: '👑', label: 'Fan of Month' },
+    ],
+  },
+  {
+    label: 'Manage',
+    items: [
+      { id: 'Links', icon: '↗', label: 'Smart Links' },
+      { id: 'Spend', icon: '$', label: 'Spending'    },
+    ],
+  },
 ]
+
+// Flat list for topbar title lookup
+const NAV = NAV_GROUPS.flatMap(g => g.items)
 
 function useCountUp(target, duration = 1200) {
   const [value, setValue] = useState(0)
@@ -315,7 +338,7 @@ function timeAgo(dateStr) {
 }
 
 // ── Overview mirror cards ─────────────────────────────────────────────────────
-function MirrorCard({ icon, label, tabId, lines, setTab }) {
+function MirrorCard({ icon, label, tabId, lines, setTab, color = '#C4222E' }) {
   const [hovered, setHovered] = useState(false)
   return (
     <button
@@ -323,16 +346,18 @@ function MirrorCard({ icon, label, tabId, lines, setTab }) {
       onClick={() => setTab(tabId)}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
+      style={{ '--mc-accent': color }}
     >
+      <div className="ov-mirror-accent-bar" />
       <div className="ov-mirror-head">
-        <span className="ov-mirror-icon">{icon}</span>
+        <span className="ov-mirror-icon" style={{ color }}>{icon}</span>
         <span className="ov-mirror-label">{label}</span>
         <span className="ov-mirror-arrow">{hovered ? '↗' : '→'}</span>
       </div>
       <div className="ov-mirror-body">
         {lines.map((line, i) => (
           <div key={i} className="ov-mirror-line">
-            <span className="ov-mirror-val" style={line.color ? { color: line.color } : {}}>{line.value}</span>
+            <span className="ov-mirror-val" style={line.color ? { color: line.color } : i === 0 ? { color: '#fff' } : {}}>{line.value}</span>
             <span className="ov-mirror-desc">{line.desc}</span>
           </div>
         ))}
@@ -342,15 +367,16 @@ function MirrorCard({ icon, label, tabId, lines, setTab }) {
 }
 
 function OverviewTab({ initialStats, initialSignupChart, initialRecentFans, engagement, setTab, onRefreshDone }) {
-  const [ov,          setOv]          = useState(null)
-  const [mapData,     setMapData]     = useState([])
-  const [stateData,   setStateData]   = useState([])
-  const [cityData,    setCityData]    = useState([])
-  const [stats,       setStats]       = useState(initialStats)
-  const [signupChart, setSignupChart] = useState(initialSignupChart)
-  const [recentFans,  setRecentFans]  = useState(initialRecentFans)
-  const [refreshing,  setRefreshing]  = useState(false)
-  const [lastUpdated, setLastUpdated] = useState(null)
+  const [ov,                setOv]                = useState(null)
+  const [mapData,           setMapData]           = useState([])
+  const [stateData,         setStateData]         = useState([])
+  const [cityData,          setCityData]          = useState([])
+  const [stats,             setStats]             = useState(initialStats)
+  const [signupChart,       setSignupChart]       = useState(initialSignupChart)
+  const [recentFans,        setRecentFans]        = useState(initialRecentFans)
+  const [upcomingBirthdays, setUpcomingBirthdays] = useState([])
+  const [refreshing,        setRefreshing]        = useState(false)
+  const [lastUpdated,       setLastUpdated]       = useState(null)
 
   const fetchFanStats = async () => {
     const res = await fetch('/api/admin/fan-stats')
@@ -359,6 +385,7 @@ function OverviewTab({ initialStats, initialSignupChart, initialRecentFans, enga
       setStats(d.stats)
       setSignupChart(d.signupChart)
       setRecentFans(d.recentFans)
+      setUpcomingBirthdays(d.upcomingBirthdays ?? [])
     }
   }
 
@@ -479,24 +506,24 @@ function OverviewTab({ initialStats, initialSignupChart, initialRecentFans, enga
       {/* Section tiles */}
       <SectionLabel>Platform</SectionLabel>
       <div className="ov-mirror-grid">
-        <MirrorCard icon="↗" label="Smart Links" tabId="Links" setTab={setTab} lines={[
+        <MirrorCard icon="↗" label="Smart Links" tabId="Links" setTab={setTab} color="#7C3AED" lines={[
           { value: ov?.links.count ?? '-',  desc: 'links' },
           { value: ov?.links.views ?? '-',  desc: 'views' },
           { value: ov?.links.clicks ?? '-', desc: 'clicks' },
         ]} />
-        <MirrorCard icon="✉" label="Campaigns" tabId="Campaigns" setTab={setTab} lines={[
+        <MirrorCard icon="✉" label="Campaigns" tabId="Campaigns" setTab={setTab} color="#C4222E" lines={[
           { value: ov?.campaigns.sent ?? '-',       desc: 'sent' },
           { value: ov?.campaigns.recipients ?? '-', desc: 'recipients' },
         ]} />
-        <MirrorCard icon="$" label="Revenue" tabId="Spend" setTab={setTab} lines={[
+        <MirrorCard icon="$" label="Revenue" tabId="Spend" setTab={setTab} color="#4CAF50" lines={[
           { value: ov ? `$${ov.spending.revenue.toFixed(2)}` : '-', desc: 'total', color: '#4caf50' },
           { value: ov?.spending.purchases ?? '-', desc: 'purchases' },
         ]} />
-        <MirrorCard icon="♫" label="Playlists" tabId="Playlists" setTab={setTab} lines={[
+        <MirrorCard icon="♫" label="Playlists" tabId="Playlists" setTab={setTab} color="#1DB954" lines={[
           { value: ov?.playlists.active ?? '-', desc: 'active' },
           { value: ov?.playlists.total  ?? '-', desc: 'tracked' },
         ]} />
-        <MirrorCard icon="★" label="Engagement" tabId="Engagement" setTab={setTab} lines={[
+        <MirrorCard icon="★" label="Engagement" tabId="Engagement" setTab={setTab} color="#F59E0B" lines={[
           { value: engagement.totalPointsAwarded.toLocaleString(), desc: 'points' },
           { value: engagement.missionCount, desc: 'missions' },
         ]} />
@@ -511,10 +538,17 @@ function OverviewTab({ initialStats, initialSignupChart, initialRecentFans, enga
           const location = fan.city && fan.region
             ? `${fan.city}, ${fan.region}`
             : fan.city || fan.region || fan.country || null
+          const initial  = (fan.email || '?')[0].toUpperCase()
+          const hue      = (fan.email.charCodeAt(0) * 37 + fan.email.charCodeAt(1) * 17) % 360
           return (
-            <div key={fan.id} className="adm2-row">
-              <span className="adm2-row-num">{i + 1}</span>
-              <span className="adm2-row-main">{fan.email}</span>
+            <div key={fan.id} className="adm2-row adm2-row-fan">
+              <div className="adm2-fan-avatar" style={{ background: `hsl(${hue},40%,22%)`, color: `hsl(${hue},60%,65%)` }}>
+                {initial}
+              </div>
+              <div className="adm2-fan-info">
+                <span className="adm2-fan-email">{fan.email}</span>
+                {fan.username && <span className="adm2-fan-handle">@{fan.username}</span>}
+              </div>
               <div className="adm2-row-meta">
                 {fan.phone && <span className="adm-sms-badge">SMS</span>}
                 {location && <span className="adm2-row-location">📍 {location}</span>}
@@ -524,6 +558,32 @@ function OverviewTab({ initialStats, initialSignupChart, initialRecentFans, enga
           )
         })}
       </div>
+
+      {/* Upcoming Birthdays */}
+      {upcomingBirthdays.length > 0 && (
+        <>
+          <SectionLabel>🎂 Upcoming Birthdays</SectionLabel>
+          <div className="adm2-card">
+            {upcomingBirthdays.map((fan, i) => {
+              const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+              const dateStr = `${MONTHS[fan.month - 1]} ${fan.day}`
+              const handle  = fan.username ? `@${fan.username}` : fan.email
+              return (
+                <div key={i} className="adm2-row">
+                  <span className="adm2-row-num">{fan.isToday ? '🎂' : '🎈'}</span>
+                  <span className="adm2-row-main">{handle}</span>
+                  <div className="adm2-row-meta">
+                    <span className="adm2-row-location">{dateStr}</span>
+                    <span className="adm2-row-time">
+                      {fan.isToday ? 'Today!' : `in ${fan.daysUntil} day${fan.daysUntil !== 1 ? 's' : ''}`}
+                    </span>
+                  </div>
+                </div>
+              )
+            })}
+          </div>
+        </>
+      )}
 
       {/* Fan World Map */}
       <SectionLabel>Fans Around the World</SectionLabel>
@@ -585,20 +645,25 @@ function OverviewTab({ initialStats, initialSignupChart, initialRecentFans, enga
 }
 
 function PlatformTab() {
-  const [youtube, setYoutube] = useState(null)
-  const [discord, setDiscord] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error,   setError]   = useState(null)
+  const [youtube,  setYoutube]  = useState(null)
+  const [discord,  setDiscord]  = useState(null)
+  const [spotify,  setSpotify]  = useState(null)
+  const [loading,  setLoading]  = useState(true)
+  const [error,    setError]    = useState(null)
+  const [updatedAt, setUpdatedAt] = useState(null)
 
   const fetchMetrics = async () => {
     setLoading(true); setError(null)
     try {
-      const [ytRes, dcRes] = await Promise.all([
+      const [ytRes, dcRes, spRes] = await Promise.all([
         fetch('/api/metrics/youtube'),
         fetch('/api/metrics/discord'),
+        fetch('/api/metrics/spotify'),
       ])
       if (ytRes.ok) setYoutube(await ytRes.json())
       if (dcRes.ok) setDiscord(await dcRes.json())
+      if (spRes.ok) setSpotify(await spRes.json())
+      setUpdatedAt(new Date())
     } catch (e) { setError(e.message) }
     finally { setLoading(false) }
   }
@@ -608,38 +673,96 @@ function PlatformTab() {
   if (loading) return <div className="adm-loading">Loading platform data...</div>
   if (error)   return <div className="adm-error">{error} <button onClick={fetchMetrics}>Retry</button></div>
 
+  // Popularity bar color
+  const popColor = spotify?.popularity >= 60 ? '#1DB954'
+    : spotify?.popularity >= 35 ? '#f59e0b'
+    : '#6b7280'
+
   return (
     <div>
       <div className="adm-platform-refresh">
         <button className="adm-refresh-btn" onClick={fetchMetrics}>↻ Refresh</button>
-        <span className="adm-refresh-time">Updated {new Date().toLocaleTimeString()}</span>
+        {updatedAt && <span className="adm-refresh-time">Updated {updatedAt.toLocaleTimeString()}</span>}
       </div>
-      <div className="adm-platform-grid">
-        {youtube && (<>
-          <div className="adm-platform-card">
-            <div className="adm-platform-source">YouTube</div>
-            <div className="adm-platform-metric">{youtube.subscribers?.toLocaleString()}</div>
-            <div className="adm-platform-label">Subscribers</div>
+
+      {/* ── Spotify ── */}
+      {spotify && (
+        <>
+          <SectionLabel>🎵 Spotify</SectionLabel>
+          <div className="adm-platform-grid" style={{ marginBottom: 0 }}>
+            <div className="adm-platform-card">
+              <div className="adm-platform-source">Spotify</div>
+              <div className="adm-platform-metric">{spotify.followers?.toLocaleString()}</div>
+              <div className="adm-platform-label">Followers</div>
+            </div>
+            <div className="adm-platform-card">
+              <div className="adm-platform-source">Spotify</div>
+              <div className="adm-platform-metric" style={{ color: popColor }}>
+                {spotify.popularity}<span style={{ fontSize: 14, color: 'var(--muted)', marginLeft: 2 }}>/100</span>
+              </div>
+              <div className="adm-platform-label">Popularity Score</div>
+              <div style={{ marginTop: 8, height: 4, borderRadius: 2, background: 'var(--border)' }}>
+                <div style={{ width: `${spotify.popularity}%`, height: '100%', borderRadius: 2, background: popColor, transition: 'width 0.8s ease' }} />
+              </div>
+            </div>
           </div>
-          <div className="adm-platform-card">
-            <div className="adm-platform-source">YouTube</div>
-            <div className="adm-platform-metric">{youtube.views?.toLocaleString()}</div>
-            <div className="adm-platform-label">Total Views</div>
+          {spotify.topTracks?.length > 0 && (
+            <div className="adm2-card" style={{ marginTop: 16 }}>
+              <div className="ov-geo-header">🏆 Top Tracks (US)</div>
+              {spotify.topTracks.map((track, i) => (
+                <div key={track.id} className="adm2-row">
+                  <span className="adm2-row-num">{i + 1}</span>
+                  <span className="adm2-row-main">{track.name}</span>
+                  <div className="adm2-row-meta">
+                    <span className="adm2-row-location" style={{ fontSize: 11 }}>{track.album}</span>
+                    <span className="adm2-row-pts" style={{ color: popColor }}>
+                      {track.popularity}<span style={{ color: 'var(--muted)', fontSize: 10 }}>/100</span>
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
+
+      {/* ── YouTube ── */}
+      {youtube && (
+        <>
+          <SectionLabel style={{ marginTop: 28 }}>📺 YouTube</SectionLabel>
+          <div className="adm-platform-grid">
+            <div className="adm-platform-card">
+              <div className="adm-platform-source">YouTube</div>
+              <div className="adm-platform-metric">{youtube.subscribers?.toLocaleString()}</div>
+              <div className="adm-platform-label">Subscribers</div>
+            </div>
+            <div className="adm-platform-card">
+              <div className="adm-platform-source">YouTube</div>
+              <div className="adm-platform-metric">{youtube.views?.toLocaleString()}</div>
+              <div className="adm-platform-label">Total Views</div>
+            </div>
+            <div className="adm-platform-card">
+              <div className="adm-platform-source">YouTube</div>
+              <div className="adm-platform-metric">{youtube.videos?.toLocaleString()}</div>
+              <div className="adm-platform-label">Videos Published</div>
+            </div>
           </div>
-          <div className="adm-platform-card">
-            <div className="adm-platform-source">YouTube</div>
-            <div className="adm-platform-metric">{youtube.videos?.toLocaleString()}</div>
-            <div className="adm-platform-label">Videos Published</div>
+        </>
+      )}
+
+      {/* ── Discord ── */}
+      {discord && (
+        <>
+          <SectionLabel>💬 Discord</SectionLabel>
+          <div className="adm-platform-grid">
+            <div className="adm-platform-card">
+              <div className="adm-platform-source">Discord</div>
+              <div className="adm-platform-metric">{discord.members?.toLocaleString()}</div>
+              <div className="adm-platform-label">Members · {discord.name}</div>
+            </div>
           </div>
-        </>)}
-        {discord && (
-          <div className="adm-platform-card">
-            <div className="adm-platform-source">Discord</div>
-            <div className="adm-platform-metric">{discord.members?.toLocaleString()}</div>
-            <div className="adm-platform-label">Members · {discord.name}</div>
-          </div>
-        )}
-      </div>
+        </>
+      )}
     </div>
   )
 }
@@ -734,15 +857,20 @@ function AdminDashboardInner({
         </div>
 
         <nav className="adm2-nav">
-          {NAV.map(item => (
-            <button
-              key={item.id}
-              className={`adm2-nav-item${tab === item.id ? ' adm2-nav-active' : ''}`}
-              onClick={() => handleNav(item.id)}
-            >
-              <span className="adm2-nav-icon">{item.icon}</span>
-              <span className="adm2-nav-label">{item.label}</span>
-            </button>
+          {NAV_GROUPS.map(group => (
+            <div key={group.label} className="adm2-nav-group">
+              <div className="adm2-nav-group-label">{group.label}</div>
+              {group.items.map(item => (
+                <button
+                  key={item.id}
+                  className={`adm2-nav-item${tab === item.id ? ' adm2-nav-active' : ''}`}
+                  onClick={() => handleNav(item.id)}
+                >
+                  <span className="adm2-nav-icon">{item.icon}</span>
+                  <span className="adm2-nav-label">{item.label}</span>
+                </button>
+              ))}
+            </div>
           ))}
         </nav>
 
@@ -954,21 +1082,26 @@ function AdminDashboardInner({
               <div className="adm2-card adm2-table-wrap">
                 <table className="adm-table">
                   <thead>
-                    <tr><th>#</th><th>Email</th><th>Location</th><th>SMS</th><th>Joined</th></tr>
+                    <tr><th>#</th><th>Email</th><th>Location</th><th>SMS</th><th>Birthday</th><th>Joined</th></tr>
                   </thead>
                   <tbody>
                     {filtered.length === 0 ? (
-                      <tr><td colSpan={5} className="adm2-empty">{fansList.length === 0 ? 'No fans yet.' : 'No results.'}</td></tr>
+                      <tr><td colSpan={6} className="adm2-empty">{fansList.length === 0 ? 'No fans yet.' : 'No results.'}</td></tr>
                     ) : filtered.map((fan) => {
                       const loc = fan.city && fan.region
                         ? `${fan.city}, ${fan.region}`
                         : fan.city || fan.region || fan.country || '—'
+                      const MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
+                      const bday = fan.birthday_month && fan.birthday_day
+                        ? `${MONTHS[fan.birthday_month - 1]} ${fan.birthday_day}`
+                        : '—'
                       return (
                         <tr key={fan.id}>
                           <td className="adm-td-num">{fansList.indexOf(fan) + 1}</td>
                           <td className="adm-td-email">{fan.email}</td>
                           <td className="adm-td-phone">{loc}</td>
                           <td>{fan.phone ? <span className="adm-badge sms-yes">Yes</span> : <span className="adm-badge sms-no">No</span>}</td>
+                          <td className="adm-td-date">{bday}</td>
                           <td className="adm-td-date">{new Date(fan.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
                         </tr>
                       )

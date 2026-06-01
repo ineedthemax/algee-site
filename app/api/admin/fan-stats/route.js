@@ -14,7 +14,7 @@ export async function GET() {
 
   const { data: fans, error } = await admin
     .from('profiles')
-    .select('id, email, phone, created_at, city, region, country')
+    .select('id, email, phone, created_at, city, region, country, birthday_month, birthday_day, username')
     .order('created_at', { ascending: false })
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
@@ -39,9 +39,38 @@ export async function GET() {
   })
   const signupChart = Object.entries(signupsByDay).map(([date, count]) => ({ date, count }))
 
+  // Upcoming birthdays — next 30 days
+  const todayDate = new Date()
+  const todayM    = todayDate.getMonth() + 1
+  const todayD    = todayDate.getDate()
+
+  const upcomingBirthdays = fans
+    .filter(f => f.birthday_month && f.birthday_day)
+    .map(f => {
+      const bM = f.birthday_month
+      const bD = f.birthday_day
+      // Days until birthday this year (or next year if already passed)
+      let bDate = new Date(todayDate.getFullYear(), bM - 1, bD)
+      const todayMidnight = new Date(todayDate.getFullYear(), todayDate.getMonth(), todayDate.getDate())
+      if (bDate < todayMidnight) bDate.setFullYear(bDate.getFullYear() + 1)
+      const daysUntil = Math.round((bDate - todayMidnight) / DAY)
+      return {
+        email:    f.email,
+        username: f.username ?? null,
+        month:    bM,
+        day:      bD,
+        daysUntil,
+        isToday:  bM === todayM && bD === todayD,
+      }
+    })
+    .filter(f => f.daysUntil <= 30)
+    .sort((a, b) => a.daysUntil - b.daysUntil)
+
   return NextResponse.json({
     stats: { total, today, thisWeek, thisMonth, withPhone },
     signupChart,
     recentFans: fans.slice(0, 8),
+    upcomingBirthdays,
+    allFans: fans,
   })
 }
