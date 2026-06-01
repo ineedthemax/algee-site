@@ -4,7 +4,7 @@ import { useState } from 'react'
 import Link from 'next/link'
 import { createClient } from '../../lib/supabase/client'
 
-export default function ScorpionPage() {
+export default function ScorpioPage() {
   const [email,     setEmail]     = useState('')
   const [loading,   setLoading]   = useState(false)
   const [submitted, setSubmitted] = useState(false)
@@ -46,7 +46,7 @@ export default function ScorpionPage() {
 
         {/* Title */}
         <h1 className="scorpion-title">
-          Scorpion<br />
+          Scorpio<br />
           <span className="italic">in Me</span>
         </h1>
 
@@ -66,7 +66,7 @@ export default function ScorpionPage() {
           <div className="scorpion-bundle-label">The Bundle - $34.99</div>
           <h3 className="scorpion-bundle-title">Get everything.</h3>
           <ul className="scorpion-bundle-list">
-            <li><span className="tier-check">✓</span> Scorpion in Me - early digital download</li>
+            <li><span className="tier-check">✓</span> Scorpio in Me - early digital download</li>
             <li><span className="tier-check">✓</span> Love Lost Collection shirt</li>
             <li><span className="tier-check">✓</span> Signed digital poster</li>
             <li><span className="tier-check">✓</span> 3 months Inner Circle membership</li>

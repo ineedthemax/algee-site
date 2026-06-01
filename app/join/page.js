@@ -36,7 +36,7 @@ const TIERS = [
     features: [
       'Everything in Free',
       'Early access to new music',
-      'Scorpion in Me - digital download',
+      'Scorpio in Me - digital download',
       'Exclusive behind-the-scenes content',
       'Members-only updates from Algee',
       'First access to merch drops',
@@ -58,7 +58,7 @@ const TIERS = [
       'Everything in Inner Circle',
       'Love Lost Collection shirt',
       'Signed digital poster (download)',
-      'Scorpion in Me - digital download',
+      'Scorpio in Me - digital download',
       '3 months Inner Circle included',
       'Your name in the credits',
     ],
@@ -136,12 +136,12 @@ export default function JoinPage() {
         </div>
       </div>
 
-      {/* Scorpion in Me callout */}
+      {/* Scorpio in Me callout */}
       <div className="join-project-callout reveal">
         <div className="join-callout-inner">
           <div className="join-callout-label">New Project</div>
           <h2 className="join-callout-title">
-            Scorpion<br /><span className="italic">in Me</span>
+            Scorpio<br /><span className="italic">in Me</span>
           </h2>
           <p className="join-callout-sub">
             Inner Circle members and bundle buyers get the first listen.
