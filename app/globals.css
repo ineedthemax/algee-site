@@ -6135,7 +6135,7 @@ footer::before {
 }
 
 .adm-fan-detail-sub-badge {
-  margin-top: 10px;
+  margin-bottom: 14px;
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -6153,6 +6153,36 @@ footer::before {
 
 @media (max-width: 900px) {
   .adm-fan-detail-grid { grid-template-columns: 1fr; }
+}
+
+/* ── Fan survey panel (Tell Us About You) ── */
+.adm-fan-survey-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 10px;
+  padding: 4px 0 8px;
+}
+.adm-fan-survey-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  background: rgba(245,240,235,0.03);
+  border: 1px solid rgba(245,240,235,0.06);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+.adm-fan-survey-label {
+  font-family: var(--font-label, sans-serif);
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: rgba(245,240,235,0.35);
+}
+.adm-fan-survey-val {
+  font-size: 14px;
+  color: var(--white);
+  line-height: 1.3;
 }
 
 /* ── Platform tab ── */

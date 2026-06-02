@@ -1115,17 +1115,15 @@ function AdminDashboardInner({
                       const profile   = fanProfile[fan.id]
                       const loading   = fanProfileLoad[fan.id]
 
-                      // Mission labels
-                      const MISSION_LABELS = {
-                        'add-phone':        '📱 Added Phone',
-                        'birthday':         '🎂 Birthday Set',
-                        'fan-profile':      '👤 Profile Complete',
-                        'follow-instagram': '📸 Follows Instagram',
-                        'follow-spotify':   '🎵 Follows Spotify',
-                        'follow-youtube':   '▶ Follows YouTube',
-                        'share-love-lost':  '🔗 Shared Love Lost',
-                        'watch-video':      '🎬 Watched Video',
-                      }
+                      const SURVEY_FIELDS = [
+                        { key: 'city',           label: 'City Repping'        },
+                        { key: 'fav_food',       label: 'Favorite Food'       },
+                        { key: 'fav_restaurant', label: 'Favorite Restaurant' },
+                        { key: 'fav_icecream',   label: 'Favorite Ice Cream'  },
+                        { key: 'fav_song',       label: 'Favorite Algee Song' },
+                        { key: 'fav_project',    label: 'Favorite Film/Show'  },
+                        { key: 'discovered',     label: 'How They Found Algee'},
+                      ]
 
                       return (
                         <>
@@ -1153,62 +1151,27 @@ function AdminDashboardInner({
                                   {loading && <div className="adm-fan-detail-loading">Loading…</div>}
 
                                   {profile && (
-                                    <div className="adm-fan-detail-grid">
-
-                                      {/* Missions */}
-                                      <div className="adm-fan-detail-section">
-                                        <div className="adm-fan-detail-title">Missions Completed</div>
-                                        {profile.missions?.length === 0
-                                          ? <div className="adm-fan-detail-empty">No missions yet</div>
-                                          : profile.missions.map((m, i) => (
-                                            <div key={i} className="adm-fan-detail-row">
-                                              <span className="adm-fan-detail-mission-label">
-                                                {MISSION_LABELS[m.mission_id] ?? m.mission_id}
-                                              </span>
-                                              <span className="adm-fan-detail-date">
-                                                {new Date(m.completed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
-                                              </span>
-                                            </div>
-                                          ))
-                                        }
-                                      </div>
-
-                                      {/* Points history */}
-                                      <div className="adm-fan-detail-section">
-                                        <div className="adm-fan-detail-title">Points History</div>
-                                        {profile.points?.length === 0
-                                          ? <div className="adm-fan-detail-empty">No points yet</div>
-                                          : profile.points.map((p, i) => (
-                                            <div key={i} className="adm-fan-detail-row">
-                                              <span className="adm-fan-detail-action">{p.action.replace(/_/g, ' ')}</span>
-                                              <span className="adm-fan-detail-pts" style={{ color: p.points > 0 ? '#4ade80' : '#f87171' }}>
-                                                {p.points > 0 ? '+' : ''}{p.points} pts
-                                              </span>
-                                            </div>
-                                          ))
-                                        }
-                                      </div>
-
-                                      {/* Purchases */}
-                                      <div className="adm-fan-detail-section">
-                                        <div className="adm-fan-detail-title">Purchases</div>
-                                        {profile.purchases?.length === 0
-                                          ? <div className="adm-fan-detail-empty">No purchases</div>
-                                          : profile.purchases.map((p, i) => (
-                                            <div key={i} className="adm-fan-detail-row">
-                                              <span className="adm-fan-detail-action">{p.item_name}</span>
-                                              <span className="adm-fan-detail-pts">${Number(p.amount).toFixed(2)}</span>
-                                            </div>
-                                          ))
-                                        }
-                                        {profile.subscription && (
-                                          <div className="adm-fan-detail-sub-badge">
-                                            {profile.subscription.tier_name === 'bundle' ? '📦 Bundle' : '👑 Inner Circle'} · {profile.subscription.status}
-                                          </div>
-                                        )}
-                                      </div>
-
-                                    </div>
+                                    <>
+                                      {profile.subscription && (
+                                        <div className="adm-fan-detail-sub-badge">
+                                          {profile.subscription.tier_name === 'bundle' ? '📦 Bundle' : '👑 Inner Circle'} · Active
+                                        </div>
+                                      )}
+                                      {profile.survey ? (
+                                        <div className="adm-fan-survey-grid">
+                                          {SURVEY_FIELDS.map(({ key, label }) =>
+                                            profile.survey[key] ? (
+                                              <div key={key} className="adm-fan-survey-row">
+                                                <span className="adm-fan-survey-label">{label}</span>
+                                                <span className="adm-fan-survey-val">{profile.survey[key]}</span>
+                                              </div>
+                                            ) : null
+                                          )}
+                                        </div>
+                                      ) : (
+                                        <div className="adm-fan-detail-empty">No profile survey submitted yet.</div>
+                                      )}
+                                    </>
                                   )}
                                 </div>
                               </td>

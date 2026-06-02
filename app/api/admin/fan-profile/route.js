@@ -15,25 +15,13 @@ export async function GET(req) {
 
   const admin = createAdminClient()
 
-  const [missionsRes, pointsRes, purchasesRes, subRes] = await Promise.all([
+  const [profileRes, subRes] = await Promise.all([
     admin
       .from('fan_missions')
-      .select('mission_id, metadata, completed_at')
+      .select('metadata')
       .eq('user_id', userId)
-      .order('completed_at', { ascending: false }),
-
-    admin
-      .from('fan_points_events')
-      .select('action, points, metadata, created_at')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false })
-      .limit(20),
-
-    admin
-      .from('fan_purchases')
-      .select('item_name, amount, notes, created_at')
-      .eq('user_id', userId)
-      .order('created_at', { ascending: false }),
+      .eq('mission_id', 'fan-profile')
+      .maybeSingle(),
 
     admin
       .from('fan_subscriptions')
@@ -44,9 +32,7 @@ export async function GET(req) {
   ])
 
   return NextResponse.json({
-    missions:     missionsRes.data  ?? [],
-    points:       pointsRes.data    ?? [],
-    purchases:    purchasesRes.data ?? [],
-    subscription: subRes.data       ?? null,
+    survey:       profileRes.data?.metadata ?? null,
+    subscription: subRes.data               ?? null,
   })
 }
