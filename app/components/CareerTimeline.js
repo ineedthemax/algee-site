@@ -126,7 +126,7 @@ const MILESTONES = [
   },
 ]
 
-/* ── Catmull-Rom → cubic bezier path ─────────────────────────── */
+/* ── Catmull-Rom → cubic bezier SVG path ─────────────────────── */
 function catmullRomPath(pts) {
   if (pts.length < 2) return ''
   const t = 1 / 6
@@ -155,7 +155,6 @@ function TimelineCard({ milestone, side }) {
       </div>
       <h3 className="tl-title">{milestone.title}</h3>
       <p className="tl-story">{milestone.story}</p>
-
       {milestone.image ? (
         <div className="tl-img-wrap">
           <Image
@@ -174,10 +173,7 @@ function TimelineCard({ milestone, side }) {
           </div>
         </div>
       )}
-
-      {milestone.current && (
-        <div className="tl-current-badge">● Now</div>
-      )}
+      {milestone.current && <div className="tl-current-badge">● Now</div>}
     </div>
   )
 }
@@ -185,41 +181,61 @@ function TimelineCard({ milestone, side }) {
 /* ── Main component ───────────────────────────────────────────── */
 export default function CareerTimeline() {
   const containerRef = useRef(null)
-  const dotRefs      = useRef([])
-  const [svgState, setSvgState] = useState({ path: '', dots: [], h: 0, w: 0 })
+  const itemRefs     = useRef([])   // one ref per milestone row — for Y measurement
+  const [svgState, setSvgState] = useState({ path: '', dots: [], arms: [], h: 0, w: 0 })
   const [visible,  setVisible]  = useState(new Set())
 
-  /* Measure dot positions and build SVG path */
   const recalc = useCallback(() => {
     const container = containerRef.current
     if (!container) return
-    const cRect = container.getBoundingClientRect()
-    const w     = container.offsetWidth
-    const h     = container.offsetHeight
 
-    const pts = dotRefs.current.map((el) => {
-      if (!el) return null
+    const cRect  = container.getBoundingClientRect()
+    const w      = container.offsetWidth
+    const h      = container.offsetHeight
+    const centerX = w / 2
+
+    // Dot X positions: left cards pull to ~30%, right cards pull to ~70%
+    // This creates a dramatic visible S-curve between them
+    const LEFT_X  = w * 0.28
+    const RIGHT_X = w * 0.72
+
+    const pts  = []   // main curve control points
+    const arms = []   // connector lines from dot to card inner edge
+
+    itemRefs.current.forEach((el, i) => {
+      if (!el) return
       const r = el.getBoundingClientRect()
-      return {
-        x: r.left - cRect.left + r.width  / 2,
-        y: r.top  - cRect.top  + r.height / 2,
-      }
-    }).filter(Boolean)
+      const y = r.top - cRect.top + r.height / 2
+      const isLeft = MILESTONES[i]?.above
 
-    if (pts.length > 0) {
-      setSvgState({ path: catmullRomPath(pts), dots: pts, h, w })
-    }
+      const dotX = isLeft ? LEFT_X : RIGHT_X
+      pts.push({ x: dotX, y })
+
+      // Arm: horizontal connector from the dot toward the center
+      // Left cards: arm goes right (dot → center)
+      // Right cards: arm goes left (center → dot)
+      arms.push({
+        x1: isLeft ? dotX  : centerX,
+        y1: y,
+        x2: isLeft ? centerX : dotX,
+        y2: y,
+        isLeft,
+        isCurrent: !!MILESTONES[i]?.current,
+      })
+    })
+
+    setSvgState({ path: catmullRomPath(pts), dots: pts, arms, h, w })
   }, [])
 
   useEffect(() => {
-    const t = setTimeout(recalc, 120)
+    const t = setTimeout(recalc, 150)
     const ro = new ResizeObserver(recalc)
     if (containerRef.current) ro.observe(containerRef.current)
     window.addEventListener('resize', recalc)
     return () => { clearTimeout(t); ro.disconnect(); window.removeEventListener('resize', recalc) }
   }, [recalc])
 
-  /* Scroll-reveal */
+  /* Scroll-reveal per item */
   useEffect(() => {
     const items = containerRef.current?.querySelectorAll('.tl-v-item')
     if (!items) return
@@ -227,7 +243,7 @@ export default function CareerTimeline() {
       entries.forEach(e => {
         if (e.isIntersecting) setVisible(prev => new Set([...prev, e.target.dataset.idx]))
       })
-    }, { threshold: 0.15 })
+    }, { threshold: 0.12 })
     items.forEach(el => obs.observe(el))
     return () => obs.disconnect()
   }, [])
@@ -263,13 +279,9 @@ export default function CareerTimeline() {
 
       {/* ── Vertical timeline ── */}
       <div className="tl-v-section">
-        <div className="tl-v-header">
-          <div className="label">The Journey</div>
-        </div>
-
         <div className="tl-v-container" ref={containerRef}>
 
-          {/* SVG curve overlay */}
+          {/* ── SVG overlay: curve + arms + dots ── */}
           {svgState.path && (
             <svg
               className="tl-v-svg"
@@ -278,64 +290,90 @@ export default function CareerTimeline() {
               aria-hidden="true"
             >
               <defs>
-                <linearGradient id="tl-path-grad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%"   stopColor="rgba(196,34,46,0.9)" />
-                  <stop offset="50%"  stopColor="rgba(196,34,46,0.4)" />
-                  <stop offset="100%" stopColor="rgba(245,240,235,0.1)" />
+                {/* Curve gradient: red at top → dim at bottom */}
+                <linearGradient id="tl-curve-grad" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%"   stopColor="rgba(196,34,46,1)"   />
+                  <stop offset="60%"  stopColor="rgba(196,34,46,0.6)" />
+                  <stop offset="100%" stopColor="rgba(245,240,235,0.15)" />
                 </linearGradient>
+                {/* Glow filter on the path */}
+                <filter id="tl-glow" x="-50%" y="-10%" width="200%" height="120%">
+                  <feGaussianBlur stdDeviation="3" result="blur" />
+                  <feMerge>
+                    <feMergeNode in="blur" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
               </defs>
 
-              {/* Main curved path */}
+              {/* Glow copy of the main path (blurred, behind) */}
               <path
                 d={svgState.path}
-                stroke="url(#tl-path-grad)"
-                strokeWidth="1.5"
+                stroke="rgba(196,34,46,0.3)"
+                strokeWidth="6"
+                fill="none"
+                strokeLinecap="round"
+                filter="url(#tl-glow)"
+              />
+
+              {/* Main S-curve */}
+              <path
+                d={svgState.path}
+                stroke="url(#tl-curve-grad)"
+                strokeWidth="2"
                 fill="none"
                 strokeLinecap="round"
               />
 
-              {/* Dots */}
+              {/* Connector arms — horizontal lines from curve to card */}
+              {svgState.arms.map((arm, i) => (
+                <line
+                  key={i}
+                  x1={arm.x1} y1={arm.y1}
+                  x2={arm.x2} y2={arm.y2}
+                  stroke={arm.isCurrent ? 'rgba(196,34,46,0.6)' : 'rgba(245,240,235,0.12)'}
+                  strokeWidth="1"
+                  strokeDasharray="3 4"
+                />
+              ))}
+
+              {/* Dots on the curve */}
               {svgState.dots.map((pt, i) => {
                 const m = MILESTONES[i]
                 return (
                   <g key={i}>
-                    {m?.current && (
-                      <circle cx={pt.x} cy={pt.y} r="14" fill="rgba(196,34,46,0.12)" />
-                    )}
+                    {/* Outer glow ring */}
+                    <circle cx={pt.x} cy={pt.y} r="10" fill="rgba(196,34,46,0.08)" />
+                    {/* Inner filled dot */}
                     <circle
                       cx={pt.x} cy={pt.y} r="5"
-                      fill={m?.current ? '#c4222e' : '#0d0d0d'}
-                      stroke={m?.current ? '#c4222e' : 'rgba(245,240,235,0.3)'}
+                      fill={m?.current ? '#c4222e' : '#111'}
+                      stroke={m?.current ? '#c4222e' : 'rgba(245,240,235,0.4)'}
                       strokeWidth="1.5"
                     />
+                    {/* Current milestone pulse ring */}
+                    {m?.current && (
+                      <circle cx={pt.x} cy={pt.y} r="9" fill="none" stroke="rgba(196,34,46,0.4)" strokeWidth="1" />
+                    )}
                   </g>
                 )
               })}
             </svg>
           )}
 
-          {/* Milestone rows */}
+          {/* ── Milestone rows ── */}
           {MILESTONES.map((m, i) => (
             <div
               key={m.id}
+              ref={el => { itemRefs.current[i] = el }}
               className={`tl-v-item ${m.above ? 'tl-v-left' : 'tl-v-right'} ${visible.has(String(i)) ? 'tl-v-visible' : ''}`}
               data-idx={i}
-              style={{ '--delay': `${i * 40}ms` }}
+              style={{ '--delay': `${i * 50}ms` }}
             >
-              {/* Left side */}
               <div className="tl-v-side tl-v-side-left">
                 {m.above && <TimelineCard milestone={m} side="left" />}
               </div>
-
-              {/* Center dot anchor (invisible — SVG draws over it) */}
-              <div className="tl-v-center">
-                <div
-                  ref={el => { dotRefs.current[i] = el }}
-                  className="tl-v-dot-anchor"
-                />
-              </div>
-
-              {/* Right side */}
+              <div className="tl-v-center-spacer" />
               <div className="tl-v-side tl-v-side-right">
                 {!m.above && <TimelineCard milestone={m} side="right" />}
               </div>

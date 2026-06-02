@@ -8335,16 +8335,16 @@ footer::before {
   overflow: visible;
 }
 
-/* Each milestone row */
+/* Each milestone row — two halves with a narrow center spacer */
 .tl-v-item {
   display: grid;
   grid-template-columns: 1fr 80px 1fr;
   align-items: center;
-  gap: 0 16px;
-  padding: 36px 0;
+  gap: 0;
+  padding: 32px 0;
   opacity: 0;
-  transform: translateY(24px);
-  transition: opacity 0.55s ease var(--delay, 0ms), transform 0.55s ease var(--delay, 0ms);
+  transform: translateY(28px);
+  transition: opacity 0.6s ease var(--delay, 0ms), transform 0.6s ease var(--delay, 0ms);
 }
 
 .tl-v-item.tl-v-visible {
@@ -8352,52 +8352,31 @@ footer::before {
   transform: translateY(0);
 }
 
-/* Left / right card placement */
-.tl-v-side {
-  min-height: 1px;
-}
+/* The narrow center column — purely for layout spacing, SVG overlays it */
+.tl-v-center-spacer { /* intentionally empty */ }
 
-.tl-v-side-left {
-  display: flex;
-  justify-content: flex-end;
-}
-
-.tl-v-side-right {
-  display: flex;
-  justify-content: flex-start;
-}
-
-/* Center gutter — dot anchor lives here */
-.tl-v-center {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  z-index: 2;
-}
-
-/* Invisible anchor used only for SVG position measurement */
-.tl-v-dot-anchor {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  visibility: hidden;
-  flex-shrink: 0;
-}
+/* Left / right side columns */
+.tl-v-side       { min-height: 1px; }
+.tl-v-side-left  { display: flex; justify-content: flex-end;  padding-right: 20px; }
+.tl-v-side-right { display: flex; justify-content: flex-start; padding-left: 20px; }
 
 /* End cap */
 .tl-v-endcap {
   display: grid;
   grid-template-columns: 1fr 80px 1fr;
-  gap: 0 16px;
-  padding: 24px 0 48px;
+  gap: 0;
+  padding: 24px 0 60px;
+}
+
+.tl-v-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .tl-v-endcap-center {
-  flex-direction: column;
   gap: 10px;
-  align-items: center;
 }
 
 /* Cards */
@@ -8406,14 +8385,15 @@ footer::before {
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 1.5rem;
-  max-width: 440px;
+  max-width: 420px;
   width: 100%;
-  transition: border-color 0.3s, transform 0.3s;
+  transition: border-color 0.3s, transform 0.3s, box-shadow 0.3s;
 }
 
 .tl-v-card:hover {
   border-color: var(--border-hover);
-  transform: translateY(-2px);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.4);
 }
 
 .tl-v-card-left  { margin-right: 0; }
@@ -8557,28 +8537,21 @@ footer::before {
   .cscroll-card { height: 22rem; }
   .tl-chapter-stats { gap: 1rem; }
 
-  /* Vertical timeline — stack on mobile */
+  /* Vertical timeline — single column on mobile */
   .tl-v-item {
-    grid-template-columns: 40px 1fr;
+    grid-template-columns: 32px 1fr;
     grid-template-rows: auto;
-    gap: 0 12px;
-    padding: 24px 0;
+    padding: 20px 0;
   }
 
-  /* On mobile, all cards go right, dot goes left */
-  .tl-v-side-left  { display: none; }
-  .tl-v-side-right { display: flex; grid-column: 2; }
-  .tl-v-center     { grid-column: 1; grid-row: 1; align-items: center; justify-content: center; }
+  /* All cards go in the right column, spacer goes left */
+  .tl-v-side-left          { display: none !important; }
+  .tl-v-center-spacer      { display: none; }
+  .tl-v-side-right         { display: flex; padding-left: 12px; }
+  .tl-v-left .tl-v-side-right { display: flex; }
 
-  .tl-v-left  .tl-v-side-right { display: flex; }
-  .tl-v-left  .tl-v-center     { grid-column: 1; }
-
-  .tl-v-card { max-width: 100%; }
-
-  .tl-v-endcap {
-    grid-template-columns: 40px 1fr;
-  }
-
+  .tl-v-card  { max-width: 100%; }
+  .tl-v-endcap { grid-template-columns: 32px 1fr; }
   .tl-v-container { padding: 0 1rem; }
 }
 
