@@ -781,6 +781,9 @@ function AdminDashboardInner({
   const [newFan,     setNewFan]     = useState({ email: '', display_name: '', phone: '' })
   const [addingErr,  setAddingErr]  = useState(null)
   const [addingSaving, setAddingSaving] = useState(false)
+  const [expandedFan,   setExpandedFan]   = useState(null)   // fan.id
+  const [fanProfile,    setFanProfile]    = useState({})     // keyed by fan.id
+  const [fanProfileLoad,setFanProfileLoad]= useState({})
   const [clock,      setClock]      = useState('')
   const [activeAdmins, setActiveAdmins] = useState([])
   const router = useRouter()
@@ -828,6 +831,19 @@ function AdminDashboardInner({
     f.email?.toLowerCase().includes(search.toLowerCase()) ||
     f.phone?.includes(search)
   )
+
+  const handleFanClick = async (fan) => {
+    if (expandedFan === fan.id) { setExpandedFan(null); return }
+    setExpandedFan(fan.id)
+    if (fanProfile[fan.id]) return // already loaded
+    setFanProfileLoad(l => ({ ...l, [fan.id]: true }))
+    try {
+      const res  = await fetch(`/api/admin/fan-profile?userId=${fan.id}`)
+      const data = await res.json()
+      setFanProfile(p => ({ ...p, [fan.id]: data }))
+    } catch {}
+    setFanProfileLoad(l => ({ ...l, [fan.id]: false }))
+  }
 
   const handleSignOut = async () => {
     setSigningOut(true)
@@ -1082,11 +1098,11 @@ function AdminDashboardInner({
               <div className="adm2-card adm2-table-wrap">
                 <table className="adm-table">
                   <thead>
-                    <tr><th>#</th><th>Email</th><th>Location</th><th>SMS</th><th>Birthday</th><th>Joined</th></tr>
+                    <tr><th>#</th><th>Fan</th><th>Location</th><th>SMS</th><th>Birthday</th><th>Joined</th><th></th></tr>
                   </thead>
                   <tbody>
                     {filtered.length === 0 ? (
-                      <tr><td colSpan={6} className="adm2-empty">{fansList.length === 0 ? 'No fans yet.' : 'No results.'}</td></tr>
+                      <tr><td colSpan={7} className="adm2-empty">{fansList.length === 0 ? 'No fans yet.' : 'No results.'}</td></tr>
                     ) : filtered.map((fan) => {
                       const loc = fan.city && fan.region
                         ? `${fan.city}, ${fan.region}`
@@ -1095,21 +1111,116 @@ function AdminDashboardInner({
                       const bday = fan.birthday_month && fan.birthday_day
                         ? `${MONTHS[fan.birthday_month - 1]} ${fan.birthday_day}`
                         : '—'
+                      const isOpen    = expandedFan === fan.id
+                      const profile   = fanProfile[fan.id]
+                      const loading   = fanProfileLoad[fan.id]
+
+                      // Mission labels
+                      const MISSION_LABELS = {
+                        'add-phone':        '📱 Added Phone',
+                        'birthday':         '🎂 Birthday Set',
+                        'fan-profile':      '👤 Profile Complete',
+                        'follow-instagram': '📸 Follows Instagram',
+                        'follow-spotify':   '🎵 Follows Spotify',
+                        'follow-youtube':   '▶ Follows YouTube',
+                        'share-love-lost':  '🔗 Shared Love Lost',
+                        'watch-video':      '🎬 Watched Video',
+                      }
+
                       return (
-                        <tr key={fan.id}>
-                          <td className="adm-td-num">{fansList.indexOf(fan) + 1}</td>
-                          <td className="adm-td-email">{fan.email}</td>
-                          <td className="adm-td-phone">{loc}</td>
-                          <td>{fan.phone ? <span className="adm-badge sms-yes">Yes</span> : <span className="adm-badge sms-no">No</span>}</td>
-                          <td className="adm-td-date">{bday}</td>
-                          <td className="adm-td-date">{new Date(fan.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
-                        </tr>
+                        <>
+                          <tr
+                            key={fan.id}
+                            className={`adm-fan-row${isOpen ? ' adm-fan-row-open' : ''}`}
+                            onClick={() => handleFanClick(fan)}
+                            style={{ cursor: 'pointer' }}
+                          >
+                            <td className="adm-td-num">{fansList.indexOf(fan) + 1}</td>
+                            <td className="adm-td-email">
+                              <div>{fan.username ? <><span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 11 }}>@{fan.username}</span><br /></> : null}{fan.email}</div>
+                            </td>
+                            <td className="adm-td-phone">{loc}</td>
+                            <td>{fan.phone ? <span className="adm-badge sms-yes">Yes</span> : <span className="adm-badge sms-no">No</span>}</td>
+                            <td className="adm-td-date">{bday}</td>
+                            <td className="adm-td-date">{new Date(fan.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</td>
+                            <td className="adm-td-chevron">{isOpen ? '▲' : '▼'}</td>
+                          </tr>
+
+                          {isOpen && (
+                            <tr key={`${fan.id}-detail`} className="adm-fan-detail-row">
+                              <td colSpan={7}>
+                                <div className="adm-fan-detail">
+                                  {loading && <div className="adm-fan-detail-loading">Loading…</div>}
+
+                                  {profile && (
+                                    <div className="adm-fan-detail-grid">
+
+                                      {/* Missions */}
+                                      <div className="adm-fan-detail-section">
+                                        <div className="adm-fan-detail-title">Missions Completed</div>
+                                        {profile.missions?.length === 0
+                                          ? <div className="adm-fan-detail-empty">No missions yet</div>
+                                          : profile.missions.map((m, i) => (
+                                            <div key={i} className="adm-fan-detail-row">
+                                              <span className="adm-fan-detail-mission-label">
+                                                {MISSION_LABELS[m.mission_id] ?? m.mission_id}
+                                              </span>
+                                              <span className="adm-fan-detail-date">
+                                                {new Date(m.completed_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                                              </span>
+                                            </div>
+                                          ))
+                                        }
+                                      </div>
+
+                                      {/* Points history */}
+                                      <div className="adm-fan-detail-section">
+                                        <div className="adm-fan-detail-title">Points History</div>
+                                        {profile.points?.length === 0
+                                          ? <div className="adm-fan-detail-empty">No points yet</div>
+                                          : profile.points.map((p, i) => (
+                                            <div key={i} className="adm-fan-detail-row">
+                                              <span className="adm-fan-detail-action">{p.action.replace(/_/g, ' ')}</span>
+                                              <span className="adm-fan-detail-pts" style={{ color: p.points > 0 ? '#4ade80' : '#f87171' }}>
+                                                {p.points > 0 ? '+' : ''}{p.points} pts
+                                              </span>
+                                            </div>
+                                          ))
+                                        }
+                                      </div>
+
+                                      {/* Purchases */}
+                                      <div className="adm-fan-detail-section">
+                                        <div className="adm-fan-detail-title">Purchases</div>
+                                        {profile.purchases?.length === 0
+                                          ? <div className="adm-fan-detail-empty">No purchases</div>
+                                          : profile.purchases.map((p, i) => (
+                                            <div key={i} className="adm-fan-detail-row">
+                                              <span className="adm-fan-detail-action">{p.item_name}</span>
+                                              <span className="adm-fan-detail-pts">${Number(p.amount).toFixed(2)}</span>
+                                            </div>
+                                          ))
+                                        }
+                                        {profile.subscription && (
+                                          <div className="adm-fan-detail-sub-badge">
+                                            {profile.subscription.tier_name === 'bundle' ? '📦 Bundle' : '👑 Inner Circle'} · {profile.subscription.status}
+                                          </div>
+                                        )}
+                                      </div>
+
+                                    </div>
+                                  )}
+                                </div>
+                              </td>
+                            </tr>
+                          )}
+                        </>
                       )
                     })}
                   </tbody>
                 </table>
               </div>
-              <div className="adm2-footer-note">Export → Supabase → Table Editor → profiles → Export CSV</div>
+              <div className="adm2-footer-note">Click any fan to expand their profile · Export → Supabase → Table Editor → profiles → Export CSV</div>
             </>
           )}
 
