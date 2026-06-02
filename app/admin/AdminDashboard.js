@@ -6,7 +6,6 @@ import { createClient } from '../../lib/supabase/client'
 
 const FanMap = lazy(() => import('../components/FanMap'))
 import LinksManager from './LinksManager'
-import PlaylistTracker from './PlaylistTracker'
 import LinkAnalytics from './LinkAnalytics'
 import AnnouncementManager from './AnnouncementManager'
 import CampaignManager from './CampaignManager'
@@ -51,9 +50,8 @@ const NAV_GROUPS = [
   {
     label: 'Content',
     items: [
-      { id: 'Releases',  icon: '◈',  label: 'Releases'   },
-      { id: 'Exclusive', icon: '🔒', label: 'Exclusive'  },
-      { id: 'Playlists', icon: '♫',  label: 'Playlists'  },
+      { id: 'Releases',  icon: '◈',  label: 'Releases'  },
+      { id: 'Exclusive', icon: '🔒', label: 'Exclusive' },
     ],
   },
   {
@@ -337,6 +335,85 @@ function timeAgo(dateStr) {
   return `${days}d ago`
 }
 
+// ── Live Activity Feed ────────────────────────────────────────────────────────
+const FEED_META = {
+  signup:  { icon: '◎', color: '#4caf50', type: 'New fan'  },
+  mission: { icon: '⚡', color: '#f59e0b', type: 'Mission'  },
+}
+const MISSION_FEED_LABELS = {
+  'add-phone':        'Added phone number',
+  'birthday':         'Set birthday',
+  'fan-profile':      'Completed profile survey',
+  'follow-instagram': 'Followed on Instagram',
+  'follow-spotify':   'Followed on Spotify',
+  'follow-youtube':   'Followed on YouTube',
+  'share-love-lost':  'Shared Love Lost',
+  'watch-video':      'Watched a video',
+  'fan-wall-post':    'Posted on fan wall',
+}
+
+function LiveFeed() {
+  const [events,  setEvents]  = useState([])
+  const [loading, setLoading] = useState(true)
+  const [flash,   setFlash]   = useState(new Set())
+  const prevKeys = useRef(new Set())
+
+  const fetchFeed = useCallback(async () => {
+    try {
+      const res = await fetch('/api/admin/activity-feed')
+      if (!res.ok) return
+      const data = await res.json()
+      const incoming = (data.events ?? []).map((e, i) => ({
+        ...e,
+        _key: `${e.type}-${e.time}-${i}`,
+      }))
+      // detect new arrivals
+      const fresh = new Set()
+      incoming.forEach(e => {
+        if (!prevKeys.current.has(e._key)) fresh.add(e._key)
+        prevKeys.current.add(e._key)
+      })
+      setEvents(incoming)
+      if (fresh.size > 0) {
+        setFlash(fresh)
+        setTimeout(() => setFlash(new Set()), 1800)
+      }
+    } finally {
+      setLoading(false)
+    }
+  }, [])
+
+  useEffect(() => {
+    fetchFeed()
+    const id = setInterval(fetchFeed, 30000)
+    return () => clearInterval(id)
+  }, [fetchFeed])
+
+  if (loading) return <div className="adm2-empty">Loading…</div>
+  if (events.length === 0) return <div className="adm2-empty">No recent activity yet.</div>
+
+  return (
+    <div className="adm-feed">
+      {events.map(ev => {
+        const meta  = FEED_META[ev.type] ?? FEED_META.mission
+        const label = ev.type === 'signup'
+          ? ev.label
+          : (MISSION_FEED_LABELS[ev.label] ?? ev.label.replace(/-/g, ' '))
+        return (
+          <div key={ev._key} className={`adm-feed-row${flash.has(ev._key) ? ' adm-feed-flash' : ''}`}>
+            <span className="adm-feed-icon" style={{ color: meta.color }}>{meta.icon}</span>
+            <div className="adm-feed-body">
+              <span className="adm-feed-type" style={{ color: meta.color }}>{meta.type}</span>
+              <span className="adm-feed-label">{label}</span>
+            </div>
+            <span className="adm-feed-time">{timeAgo(ev.time)}</span>
+          </div>
+        )
+      })}
+    </div>
+  )
+}
+
 // ── Overview mirror cards ─────────────────────────────────────────────────────
 function MirrorCard({ icon, label, tabId, lines, setTab, color = '#C4222E' }) {
   const [hovered, setHovered] = useState(false)
@@ -519,10 +596,6 @@ function OverviewTab({ initialStats, initialSignupChart, initialRecentFans, enga
           { value: ov ? `$${ov.spending.revenue.toFixed(2)}` : '-', desc: 'total', color: '#4caf50' },
           { value: ov?.spending.purchases ?? '-', desc: 'purchases' },
         ]} />
-        <MirrorCard icon="♫" label="Playlists" tabId="Playlists" setTab={setTab} color="#1DB954" lines={[
-          { value: ov?.playlists.active ?? '-', desc: 'active' },
-          { value: ov?.playlists.total  ?? '-', desc: 'tracked' },
-        ]} />
         <MirrorCard icon="★" label="Engagement" tabId="Engagement" setTab={setTab} color="#F59E0B" lines={[
           { value: engagement.totalPointsAwarded.toLocaleString(), desc: 'points' },
           { value: engagement.missionCount, desc: 'missions' },
@@ -557,6 +630,12 @@ function OverviewTab({ initialStats, initialSignupChart, initialRecentFans, enga
             </div>
           )
         })}
+      </div>
+
+      {/* Live Activity Feed */}
+      <SectionLabel>⚡ Live Activity</SectionLabel>
+      <div className="adm2-card adm-feed-card">
+        <LiveFeed />
       </div>
 
       {/* Upcoming Birthdays */}
@@ -1188,10 +1267,9 @@ function AdminDashboardInner({
           )}
 
           {/* ── OTHER TABS ── */}
-          {tab === 'Spend'     && <SpendingManager />}
-          {tab === 'Platform'  && <PlatformTab />}
-          {tab === 'Playlists' && <PlaylistTracker />}
-          {tab === 'Links'     && (
+          {tab === 'Spend'    && <SpendingManager />}
+          {tab === 'Platform' && <PlatformTab />}
+          {tab === 'Links'    && (
             <>
               <LinksManager />
               <div style={{ marginTop: 32 }}>
