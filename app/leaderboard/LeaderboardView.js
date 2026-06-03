@@ -93,7 +93,7 @@ export default function LeaderboardView({ board, currentUserId, myPoints, myRank
                     <div className="lb-podium-medal">{RANK_MEDALS[entry.rank]}</div>
                     <div className="lb-podium-name">{displayHandle(entry)}{isMe ? ' (you)' : ''}</div>
                     <div className="lb-podium-pts" style={{ color: tier.color }}>
-                      {entry.total.toLocaleString()}
+                      {(entry.total ?? 0).toLocaleString()}
                       <span className="lb-podium-pts-label"> pts</span>
                     </div>
                     <div className="lb-podium-tier" style={{ color: tier.color }}>{tier.name}</div>
@@ -116,7 +116,7 @@ export default function LeaderboardView({ board, currentUserId, myPoints, myRank
                         {isMe && <span className="lb-you-tag">you</span>}
                       </div>
                       <div className="lb-row-tier" style={{ color: tier.color }}>{tier.name}</div>
-                      <div className="lb-row-pts">{entry.total.toLocaleString()} pts</div>
+                      <div className="lb-row-pts">{(entry.total ?? 0).toLocaleString()} pts</div>
                     </div>
                   )
                 })}
