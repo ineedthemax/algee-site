@@ -2,6 +2,7 @@ import { createAdminClient } from '../../lib/supabase/admin'
 import Link from 'next/link'
 import Image from 'next/image'
 import { CountdownBanner } from '../components/CountdownTimer'
+import TeaserCard from './TeaserCard'
 
 export const metadata = {
   title: 'Releases - Algee Smith',
@@ -12,13 +13,22 @@ export const dynamic = 'force-dynamic'
 
 export default async function ReleasesPage() {
   const admin = createAdminClient()
-  const { data: releases } = await admin
-    .from('releases')
-    .select('*, release_tiers(*)')
-    .eq('status', 'live')
-    .order('release_date', { ascending: false })
 
-  const list = releases ?? []
+  const [{ data: releases }, { data: teasers }] = await Promise.all([
+    admin
+      .from('releases')
+      .select('*, release_tiers(*)')
+      .eq('status', 'live')
+      .order('release_date', { ascending: false }),
+    admin
+      .from('releases')
+      .select('id, slug, title, type, artwork_url, release_date')
+      .eq('status', 'coming-soon')
+      .order('release_date', { ascending: true }),
+  ])
+
+  const list        = releases ?? []
+  const teaserList  = teasers  ?? []
   const [featured, ...rest] = list
 
   return (
@@ -36,6 +46,18 @@ export default async function ReleasesPage() {
 
         {/* ─── Countdown Banner ─── */}
         <CountdownBanner />
+
+        {/* ─── Coming Soon Teasers ─── */}
+        {teaserList.length > 0 && (
+          <div className="releases-teaser-section">
+            <div className="releases-grid-label">Coming Soon</div>
+            <div className="releases-grid">
+              {teaserList.map(r => (
+                <TeaserCard key={r.id} release={r} />
+              ))}
+            </div>
+          </div>
+        )}
 
         {list.length === 0 ? (
           <div className="releases-empty">Nothing live yet. Check back soon.</div>

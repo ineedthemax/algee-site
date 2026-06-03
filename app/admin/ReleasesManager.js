@@ -190,7 +190,9 @@ function ReleaseEditor({ release, onClose, onUpdate }) {
   }
 
   const handleToggleStatus = async () => {
-    const newStatus = status === 'live' ? 'draft' : 'live'
+    // Cycle: draft → coming-soon → live → draft
+    const cycle = { 'draft': 'coming-soon', 'coming-soon': 'live', 'live': 'draft' }
+    const newStatus = cycle[status] ?? 'draft'
     setSaving(true)
     await fetch(`/api/admin/releases/${release.id}`, {
       method: 'PATCH',
@@ -212,10 +214,11 @@ function ReleaseEditor({ release, onClose, onUpdate }) {
         </div>
         <div className="rel-editor-header-actions">
           <button
-            className={`rel-status-btn ${status === 'live' ? 'rel-status-live' : 'rel-status-draft'}`}
+            className={`rel-status-btn ${status === 'live' ? 'rel-status-live' : status === 'coming-soon' ? 'rel-status-soon' : 'rel-status-draft'}`}
             onClick={handleToggleStatus} disabled={saving}
+            title="Click to cycle: Draft → Coming Soon → Live"
           >
-            {status === 'live' ? '● Live' : '○ Draft'}
+            {status === 'live' ? '● Live' : status === 'coming-soon' ? '◑ Coming Soon' : '○ Draft'}
           </button>
           <button className="rel-btn-sm" onClick={onClose}>← Back</button>
         </div>
@@ -408,8 +411,8 @@ export default function ReleasesManager() {
                   ? <img src={r.artwork_url} alt={r.title} className="rel-card-img" />
                   : <div className="rel-card-art-placeholder">◻</div>
                 }
-                <div className={`rel-card-status ${r.status === 'live' ? 'rel-status-live' : 'rel-status-draft'}`}>
-                  {r.status === 'live' ? '● Live' : '○ Draft'}
+                <div className={`rel-card-status ${r.status === 'live' ? 'rel-status-live' : r.status === 'coming-soon' ? 'rel-status-soon' : 'rel-status-draft'}`}>
+                  {r.status === 'live' ? '● Live' : r.status === 'coming-soon' ? '◑ Soon' : '○ Draft'}
                 </div>
               </div>
               <div className="rel-card-info">
