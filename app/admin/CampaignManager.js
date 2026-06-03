@@ -220,28 +220,113 @@ function RichTextEditor({ value, onChange, placeholder }) {
   )
 }
 
+// ── Segment definitions ───────────────────────────────────────────────────────
+const SEGMENTS = [
+  { id: 'all',              label: 'All Fans',           desc: 'Every fan who signed up',                  icon: '◎' },
+  { id: 'has-phone',        label: 'Has Phone (SMS)',     desc: 'Fans who gave their phone number',         icon: '📱' },
+  { id: 'inner-circle',     label: 'Inner Circle',        desc: 'Active paid subscribers',                  icon: '👑' },
+  { id: 'profile-complete', label: 'Profile Complete',    desc: 'Filled out Tell Us About You',             icon: '👤' },
+  { id: 'no-profile',       label: 'No Profile Yet',      desc: 'Haven\'t done the survey — re-engage them', icon: '◻' },
+  { id: 'location',         label: 'By Location',         desc: 'Filter by city, state, or country',        icon: '📍' },
+]
+
+const SEGMENT_LABELS = {
+  'all':              'All Fans',
+  'has-phone':        'Has Phone',
+  'inner-circle':     'Inner Circle',
+  'profile-complete': 'Profile Complete',
+  'no-profile':       'No Profile Yet',
+}
+
+function SegmentPicker({ segment, location, onSegment, onLocation, count, countLoading }) {
+  return (
+    <div className="cm-segment-wrap">
+      <div className="cm-segment-label">
+        <span>Audience</span>
+        {count !== null && !countLoading && (
+          <span className="cm-segment-count">{count.toLocaleString()} fan{count !== 1 ? 's' : ''}</span>
+        )}
+        {countLoading && <span className="cm-segment-count cm-segment-counting">Counting…</span>}
+      </div>
+      <div className="cm-segment-grid">
+        {SEGMENTS.map(seg => (
+          <button
+            key={seg.id}
+            type="button"
+            className={`cm-segment-btn${segment === seg.id ? ' cm-segment-active' : ''}`}
+            onClick={() => onSegment(seg.id)}
+          >
+            <span className="cm-seg-icon">{seg.icon}</span>
+            <span className="cm-seg-body">
+              <span className="cm-seg-name">{seg.label}</span>
+              <span className="cm-seg-desc">{seg.desc}</span>
+            </span>
+            {segment === seg.id && <span className="cm-seg-check">✓</span>}
+          </button>
+        ))}
+      </div>
+      {segment === 'location' && (
+        <div style={{ marginTop: 10 }}>
+          <input
+            className="lm-input"
+            placeholder="Enter city, state, or country (e.g. New York, CA, Netherlands)"
+            value={location}
+            onChange={e => onLocation(e.target.value)}
+            autoFocus
+          />
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ── Campaign Manager ──────────────────────────────────────────────────────────
 export default function CampaignManager() {
-  const [campaigns, setCampaigns] = useState([])
-  const [loading,   setLoading]   = useState(true)
-  const [composing, setComposing] = useState(false)
-  const [form,      setForm]      = useState({ subject: '', body: '' })
-  const [sending,   setSending]   = useState(false)
-  const [result,    setResult]    = useState(null)
-  const [error,     setError]     = useState(null)
+  const [campaigns,    setCampaigns]    = useState([])
+  const [loading,      setLoading]      = useState(true)
+  const [composing,    setComposing]    = useState(false)
+  const [form,         setForm]         = useState({ subject: '', body: '' })
+  const [segment,      setSegment]      = useState('all')
+  const [location,     setLocation]     = useState('')
+  const [segCount,     setSegCount]     = useState(null)
+  const [segCounting,  setSegCounting]  = useState(false)
+  const [sending,      setSending]      = useState(false)
+  const [result,       setResult]       = useState(null)
+  const [error,        setError]        = useState(null)
 
   useEffect(() => {
     fetch('/api/admin/campaigns').then(r => r.json()).then(d => { setCampaigns(Array.isArray(d) ? d : []); setLoading(false) })
   }, [])
 
+  // Fetch audience count when segment or location changes
+  useEffect(() => {
+    if (!composing) return
+    if (segment === 'location' && !location.trim()) { setSegCount(null); return }
+    setSegCounting(true)
+    const params = new URLSearchParams({ segment })
+    if (segment === 'location' && location.trim()) params.set('location', location.trim())
+    const timer = setTimeout(async () => {
+      try {
+        const res  = await fetch(`/api/admin/campaigns/count?${params}`)
+        const data = await res.json()
+        setSegCount(data.count ?? 0)
+      } catch { setSegCount(null) }
+      finally { setSegCounting(false) }
+    }, 400)  // debounce location typing
+    return () => clearTimeout(timer)
+  }, [segment, location, composing])
+
   const handleSend = async () => {
     if (!form.subject.trim() || !form.body.trim()) { setError('Subject and body required'); return }
-    if (!confirm(`Send to ALL fans? This cannot be undone.`)) return
+    const audienceLabel = segment === 'location'
+      ? `fans in "${location}"`
+      : `${segCount?.toLocaleString() ?? '?'} ${SEGMENT_LABELS[segment] ?? 'fans'}`
+    if (!confirm(`Send to ${audienceLabel}? This cannot be undone.`)) return
     setSending(true); setError(null); setResult(null)
     const res  = await fetch('/api/admin/campaigns', {
-      method: 'POST',
+      method:  'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(form),
+      body:    JSON.stringify({ ...form, segment, location }),
     })
     const data = await res.json()
     setSending(false)
@@ -250,6 +335,16 @@ export default function CampaignManager() {
     setCampaigns(c => [data.campaign, ...c])
     setComposing(false)
     setForm({ subject: '', body: '' })
+    setSegment('all')
+    setLocation('')
+  }
+
+  const handleCompose = () => {
+    setComposing(true)
+    setResult(null)
+    setSegment('all')
+    setLocation('')
+    setSegCount(null)
   }
 
   if (loading) return <div className="adm-loading">Loading...</div>
@@ -259,9 +354,9 @@ export default function CampaignManager() {
       <div className="lm-header">
         <div>
           <div className="lm-title">Email Campaigns</div>
-          <div className="lm-sub">Send to your entire fan list · {campaigns.length} sent</div>
+          <div className="lm-sub">Target specific fans or blast your whole list · {campaigns.length} sent</div>
         </div>
-        {!composing && <button className="lm-btn-new" onClick={() => { setComposing(true); setResult(null) }}>+ Compose</button>}
+        {!composing && <button className="lm-btn-new" onClick={handleCompose}>+ Compose</button>}
       </div>
 
       {result && (
@@ -273,6 +368,17 @@ export default function CampaignManager() {
       {composing && (
         <div className="lm-form-wrap">
           <div className="adm-section-label">New Campaign</div>
+
+          {/* Audience segment picker */}
+          <SegmentPicker
+            segment={segment}
+            location={location}
+            onSegment={s => { setSegment(s); setLocation('') }}
+            onLocation={setLocation}
+            count={segCount}
+            countLoading={segCounting}
+          />
+
           <div className="lm-form-field" style={{ marginBottom: 10 }}>
             <label className="lm-label">Subject Line</label>
             <input
@@ -290,14 +396,20 @@ export default function CampaignManager() {
               placeholder="Write your message to fans..."
             />
           </div>
-          <div className="sl-hint" style={{ marginBottom: 12 }}>
-            This will be sent to every fan who has signed up. Make it count.
-          </div>
+
           {error && <div className="lm-error">{error}</div>}
           <div className="lm-form-actions">
             <button className="lm-btn-cancel" onClick={() => setComposing(false)} disabled={sending}>Cancel</button>
-            <button className="lm-btn-save" onClick={handleSend} disabled={sending}>
-              {sending ? 'Sending...' : 'Send Campaign'}
+            <button
+              className="lm-btn-save"
+              onClick={handleSend}
+              disabled={sending || (segment === 'location' && !location.trim())}
+            >
+              {sending
+                ? 'Sending…'
+                : segCount !== null
+                  ? `Send to ${segCount.toLocaleString()} fan${segCount !== 1 ? 's' : ''}`
+                  : 'Send Campaign'}
             </button>
           </div>
         </div>
@@ -307,21 +419,28 @@ export default function CampaignManager() {
         ? <div className="adm-empty adm-card" style={{ textAlign: 'center', padding: '40px 20px' }}>No campaigns sent yet.</div>
         : (
           <div className="lm-list">
-            {campaigns.map(c => (
-              <div key={c.id} className="lm-row">
-                <div className="lm-row-left">
-                  <div className="lm-cat-dot" style={{ background: '#3b82f6' }} />
-                  <div className="lm-row-info">
-                    <div className="lm-row-title">{c.subject}</div>
-                    <div className="lm-row-desc" style={{ maxHeight: 36, overflow: 'hidden' }}
-                      dangerouslySetInnerHTML={{ __html: c.body }} />
-                    <div className="lm-row-live">
-                      Sent to {c.recipient_count?.toLocaleString() ?? '-'} fans · {new Date(c.sent_at ?? c.created_at).toLocaleDateString()}
+            {campaigns.map(c => {
+              const segLabel = c.tier_filter
+                ? (SEGMENT_LABELS[c.tier_filter] ?? c.tier_filter.replace('location:', '📍 '))
+                : 'All Fans'
+              return (
+                <div key={c.id} className="lm-row">
+                  <div className="lm-row-left">
+                    <div className="lm-cat-dot" style={{ background: '#3b82f6' }} />
+                    <div className="lm-row-info">
+                      <div className="lm-row-title">{c.subject}</div>
+                      <div className="lm-row-desc" style={{ maxHeight: 36, overflow: 'hidden' }}
+                        dangerouslySetInnerHTML={{ __html: c.body }} />
+                      <div className="lm-row-live">
+                        <span className="cm-sent-segment">{segLabel}</span>
+                        · {c.recipient_count?.toLocaleString() ?? '-'} fans
+                        · {new Date(c.sent_at ?? c.created_at).toLocaleDateString()}
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
         )
       }

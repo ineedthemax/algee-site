@@ -1,6 +1,7 @@
 import { createClient } from '../../../../lib/supabase/server'
 import { createAdminClient } from '../../../../lib/supabase/admin'
 import { isAdmin } from '../../../../lib/isAdmin'
+import { getEmailsForSegment } from './count/route'
 import { Resend } from 'resend'
 import { NextResponse } from 'next/server'
 
@@ -20,28 +21,22 @@ export async function GET() {
 // POST - send campaign
 export async function POST(request) {
   if (!await guard()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  const { subject, body, tier_filter } = await request.json()
+  const { subject, body, segment = 'all', location = '' } = await request.json()
   if (!subject?.trim() || !body?.trim()) return NextResponse.json({ error: 'Subject and body required' }, { status: 400 })
 
-  const admin = createAdminClient()
+  const admin  = createAdminClient()
   const resend = new Resend(process.env.RESEND_API_KEY)
 
-  // Fetch fan emails
-  let query = admin.from('profiles').select('email, display_name').not('email', 'is', null)
-  // If tier filter, get fans by tier (join points)
-  // For simplicity: send to all for now, tier filter is a label
-  const { data: fans, error: fanError } = await query
-  if (fanError) return NextResponse.json({ error: fanError.message }, { status: 500 })
-
-  const emails = fans.map(f => f.email).filter(Boolean)
-  if (emails.length === 0) return NextResponse.json({ error: 'No fans to send to' }, { status: 400 })
+  // Resolve audience for selected segment
+  const emails = await getEmailsForSegment(admin, segment, location)
+  if (emails.length === 0) return NextResponse.json({ error: 'No fans match this audience segment' }, { status: 400 })
 
   // Save campaign record first
   const { data: campaign } = await admin.from('email_campaigns').insert({
-    subject: subject.trim(),
-    body: body.trim(),
-    tier_filter: tier_filter ?? null,
-    sent_at: new Date().toISOString(),
+    subject:         subject.trim(),
+    body:            body.trim(),
+    tier_filter:     segment !== 'all' ? (segment === 'location' ? `location:${location}` : segment) : null,
+    sent_at:         new Date().toISOString(),
     recipient_count: emails.length,
   }).select().single()
 
