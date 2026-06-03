@@ -1,4 +1,13 @@
+import { createClient } from '../../../../lib/supabase/server'
+import { isAdmin }      from '../../../../lib/isAdmin'
+
 export async function GET() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user || !isAdmin(user.email)) {
+    return Response.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
   try {
     const serverId = '1472662811930005514'
     const res = await fetch(

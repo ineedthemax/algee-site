@@ -55,7 +55,9 @@ export async function getEmailsForSegment(admin, segment, location = '') {
   }
 
   if (segment === 'location' && location.trim()) {
-    const loc = location.trim()
+    // Strip characters that could manipulate the PostgREST filter parser
+    const loc = location.trim().replace(/[^a-zA-Z0-9 ,'.'\-]/g, '').slice(0, 100)
+    if (!loc) return []
     const { data } = await admin
       .from('profiles')
       .select('email')

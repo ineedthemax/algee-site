@@ -2,7 +2,30 @@ import { createAdminClient } from '../../../../lib/supabase/admin'
 import { Resend } from 'resend'
 import { NextResponse } from 'next/server'
 
-const CORS = { 'Access-Control-Allow-Origin': 'https://www.thealgeesmith.com' }
+const CORS = {
+  'Access-Control-Allow-Origin':  'https://www.thealgeesmith.com',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+}
+
+// Simple in-memory rate limiter: max 3 presaves per IP per 5 minutes
+const rateLimitMap = new Map()
+function isRateLimited(ip) {
+  const now    = Date.now()
+  const window = 5 * 60 * 1000  // 5 minutes
+  const max    = 3
+  const entry  = rateLimitMap.get(ip) ?? { count: 0, start: now }
+  if (now - entry.start > window) { rateLimitMap.set(ip, { count: 1, start: now }); return false }
+  if (entry.count >= max) return true
+  entry.count++
+  rateLimitMap.set(ip, entry)
+  return false
+}
+
+// Basic email format check
+function isValidEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)
+}
 
 export async function OPTIONS() {
   return new Response(null, { status: 204, headers: CORS })
@@ -11,8 +34,22 @@ export async function OPTIONS() {
 // POST - fan signs up for a pre-save
 export async function POST(request) {
   try {
+    // Rate limit by IP
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
+    if (isRateLimited(ip)) {
+      return NextResponse.json({ error: 'Too many requests. Try again later.' }, { status: 429, headers: CORS })
+    }
+
     const { slug, email, name } = await request.json()
     if (!slug || !email) return NextResponse.json({ error: 'Missing fields' }, { status: 400, headers: CORS })
+
+    // Validate email format
+    if (!isValidEmail(email)) {
+      return NextResponse.json({ error: 'Invalid email address' }, { status: 400, headers: CORS })
+    }
+
+    // Limit name length to prevent abuse
+    const safeName = name?.trim().slice(0, 100) || null
 
     const admin = createAdminClient()
 
@@ -21,8 +58,8 @@ export async function POST(request) {
 
     const { error } = await admin.from('presave_signups').insert({
       link_id: link.id,
-      email: email.toLowerCase().trim(),
-      name: name?.trim() || null,
+      email:   email.toLowerCase().trim(),
+      name:    safeName,
     })
 
     // Duplicate is fine - ignore unique violation

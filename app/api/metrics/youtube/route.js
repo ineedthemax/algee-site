@@ -1,4 +1,13 @@
+import { createClient } from '../../../../lib/supabase/server'
+import { isAdmin }      from '../../../../lib/isAdmin'
+
 export async function GET() {
+  const supabase = await createClient()
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user || !isAdmin(user.email)) {
+    return Response.json({ error: 'Forbidden' }, { status: 403 })
+  }
+
   try {
     // Get channel by custom URL
     const searchRes = await fetch(

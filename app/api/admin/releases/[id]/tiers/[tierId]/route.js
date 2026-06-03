@@ -12,11 +12,17 @@ async function guard() {
 export async function PATCH(request, { params }) {
   if (!await guard()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { tierId } = await params
-  const body = await request.json()
+  const body    = await request.json()
+  // Whitelist only the fields editors are allowed to change
+  const allowed = ['name', 'description', 'price', 'position', 'stripe_price_id', 'features', 'is_free']
+  const update  = Object.fromEntries(Object.entries(body).filter(([k]) => allowed.includes(k)))
+  if (Object.keys(update).length === 0) {
+    return NextResponse.json({ error: 'No valid fields to update' }, { status: 400 })
+  }
   const admin = createAdminClient()
   const { data, error } = await admin
     .from('release_tiers')
-    .update(body)
+    .update(update)
     .eq('id', tierId)
     .select()
     .single()
