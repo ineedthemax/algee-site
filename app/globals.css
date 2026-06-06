@@ -9619,7 +9619,32 @@ footer::before {
 }
 .sl-cover-preview:hover { border-color: rgba(245,240,235,0.22); }
 .sl-cover-empty       { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-.sl-hint              { font-size: 11px; color: var(--muted); margin-top: 4px; opacity: 0.7; }
+.sl-hint              { font-size: 11px; color: var(--muted); margin-top: 4px; opacity: 0.7; text-align: center; }
+.sl-upload-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 10px;
+  background: rgba(196,34,46,0.08);
+  border: 1px dashed rgba(196,34,46,0.35);
+  border-radius: 8px;
+  color: rgba(196,34,46,0.8);
+  font-family: var(--font-label, sans-serif);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+.sl-upload-btn:hover:not(:disabled) {
+  background: rgba(196,34,46,0.15);
+  border-color: rgba(196,34,46,0.6);
+  color: #c4222e;
+}
+.sl-upload-btn:disabled { opacity: 0.5; cursor: not-allowed; }
 
 /* Slug */
 .sl-slug-prefix       {

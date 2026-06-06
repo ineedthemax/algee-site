@@ -190,68 +190,68 @@ export default function SmartLinkView({ link, destinations }) {
         )}
       </div>
 
-      {/* Platform buttons */}
-      <div style={{
-        width: '100%',
-        maxWidth: 480,
-        padding: '0 20px',
-        display: 'flex',
-        flexDirection: 'column',
-        gap: 10,
-      }}>
-        {destinations.map((dest) => {
-          const { meta } = dest
-          return (
-            <button
-              key={dest.id}
-              onClick={() => handleClick(dest)}
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-                width: '100%',
-                padding: '14px 20px',
-                background: cardBg,
-                border: `1px solid ${border}`,
-                borderRadius: 14,
-                cursor: 'pointer',
-                transition: 'transform 0.12s, opacity 0.12s',
-                textAlign: 'left',
-              }}
-              onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.borderColor = meta.color }}
-              onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.borderColor = border }}
-            >
-              <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
-                {/* Platform icon */}
-                <div style={{
-                  width: 36, height: 36,
-                  background: meta.bg,
-                  borderRadius: 8,
+      {/* Presave form (presave + funnel types) */}
+      {(link.type === 'presave' || link.type === 'funnel') && (
+        <PresaveForm link={link} dark={dark} text={text} subColor={subColor} cardBg={cardBg} border={border} />
+      )}
+
+      {/* Platform buttons (streaming type, or presave with destinations) */}
+      {(link.type === 'streaming' || (destinations.length > 0 && link.type !== 'funnel')) && (
+        <div style={{
+          width: '100%',
+          maxWidth: 480,
+          padding: '0 20px',
+          display: 'flex',
+          flexDirection: 'column',
+          gap: 10,
+          marginTop: link.type === 'presave' ? 16 : 0,
+        }}>
+          {destinations.map((dest) => {
+            const { meta } = dest
+            return (
+              <button
+                key={dest.id}
+                onClick={() => handleClick(dest)}
+                style={{
                   display: 'flex',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  color: meta.text,
-                  flexShrink: 0,
+                  justifyContent: 'space-between',
+                  width: '100%',
+                  padding: '14px 20px',
+                  background: cardBg,
+                  border: `1px solid ${border}`,
+                  borderRadius: 14,
+                  cursor: 'pointer',
+                  transition: 'transform 0.12s, opacity 0.12s',
+                  textAlign: 'left',
                 }}
-                  dangerouslySetInnerHTML={{ __html: `<svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="currentColor">${meta.icon?.match(/<path[^>]*>/g)?.[0] ?? ''}</svg>` }}
-                />
-                <span style={{
-                  fontSize: 15,
-                  fontWeight: 600,
-                  color: text,
-                  letterSpacing: -0.3,
-                }}>
-                  {meta.label}
-                </span>
-              </div>
-              {/* Arrow */}
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={subColor} strokeWidth="2">
-                <path d="M5 12h14M12 5l7 7-7 7"/>
-              </svg>
-            </button>
-          )
-        })}
-      </div>
+                onMouseEnter={e => { e.currentTarget.style.transform = 'scale(1.02)'; e.currentTarget.style.borderColor = meta?.color ?? '#c4222e' }}
+                onMouseLeave={e => { e.currentTarget.style.transform = 'scale(1)'; e.currentTarget.style.borderColor = border }}
+              >
+                <div style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
+                  <div style={{
+                    width: 36, height: 36,
+                    background: meta?.bg ?? '#1a1a1a',
+                    borderRadius: 8,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                    dangerouslySetInnerHTML={{ __html: `<svg style="width:20px;height:20px" viewBox="0 0 24 24" fill="${meta?.text ?? '#fff'}">${meta?.icon?.match(/<path[^>]*>/g)?.[0] ?? ''}</svg>` }}
+                  />
+                  <span style={{ fontSize: 15, fontWeight: 600, color: text, letterSpacing: -0.3 }}>
+                    {meta?.label ?? dest.platform}
+                  </span>
+                </div>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={subColor} strokeWidth="2">
+                  <path d="M5 12h14M12 5l7 7-7 7"/>
+                </svg>
+              </button>
+            )
+          })}
+        </div>
+      )}
 
       {/* Footer */}
       <div style={{

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { PLATFORMS, slugify } from '../../lib/platforms'
 
 const LINK_TYPES = [
@@ -50,11 +50,28 @@ function SmartLinkForm({ initial, onSave, onCancel }) {
       .map(d => ({ platform: d.platform, url: d.url }))
   )
 
-  const [saving, setSaving] = useState(false)
-  const [error,  setError]  = useState(null)
-  const [slugEdited, setSlugEdited] = useState(!!initial)
+  const [saving,      setSaving]      = useState(false)
+  const [error,       setError]       = useState(null)
+  const [slugEdited,  setSlugEdited]  = useState(!!initial)
+  const [uploading,   setUploading]   = useState(false)
+  const coverInputRef = useRef(null)
 
   const set = (k, v) => setForm(f => ({ ...f, [k]: v }))
+
+  const handleCoverUpload = async (e) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setUploading(true)
+    const fd = new FormData()
+    fd.append('file', file)
+    try {
+      const res  = await fetch('/api/admin/upload', { method: 'POST', body: fd })
+      const data = await res.json()
+      if (!res.ok) { setError(data.error ?? 'Upload failed'); return }
+      set('cover_art_url', data.url)
+    } catch { setError('Upload failed') }
+    finally { setUploading(false); e.target.value = '' }
+  }
 
   const handleTitleChange = (v) => {
     set('title', v)
@@ -140,14 +157,30 @@ function SmartLinkForm({ initial, onSave, onCancel }) {
           </div>
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div className="lm-form-field">
-              <label className="lm-label">Cover Art URL</label>
+              <label className="lm-label">Cover Art</label>
+              {/* Upload button */}
+              <input
+                ref={coverInputRef}
+                type="file"
+                accept="image/*"
+                style={{ display: 'none' }}
+                onChange={handleCoverUpload}
+              />
+              <button
+                type="button"
+                className="sl-upload-btn"
+                onClick={() => coverInputRef.current?.click()}
+                disabled={uploading}
+              >
+                {uploading ? '↑ Uploading…' : '↑ Upload Image'}
+              </button>
+              <div className="sl-hint" style={{ margin: '6px 0 4px' }}>— or paste a URL —</div>
               <input
                 className="lm-input"
                 value={form.cover_art_url}
                 onChange={e => set('cover_art_url', e.target.value)}
-                placeholder="https://... (paste image URL)"
+                placeholder="https://... (Apple Music, Spotify, distributor)"
               />
-              <div className="sl-hint">From your distributor, Apple Music, or Spotify</div>
             </div>
           </div>
         </div>

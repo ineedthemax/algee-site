@@ -43,11 +43,8 @@ export default async function SmartLinkPage({ params }) {
     .sort((a, b) => a.sort_order - b.sort_order)
     .map(d => ({ ...d, meta: getPlatform(d.platform) }))
 
-  // Track view server-side (fire and forget)
-  admin.from('smart_links')
-    .update({ view_count: (link.view_count ?? 0) + 1 })
-    .eq('id', link.id)
-    .then(() => {})
+  // View counting is handled client-side via /api/links/track
+  // (which also captures geo + referrer data)
 
   return <SmartLinkView link={link} destinations={destinations} />
 }

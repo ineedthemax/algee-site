@@ -67,8 +67,13 @@ export async function PATCH(request) {
   const { data: { user } } = await supabase.auth.getUser()
   if (!user || !isAdmin(user.email)) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
-  const { id, destinations, ...fields } = await request.json()
+  const body = await request.json()
+  const { id, destinations } = body
   if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
+
+  // Whitelist updatable fields
+  const allowed = ['title', 'slug', 'artist', 'subtext', 'cover_art_url', 'theme', 'type', 'goes_live_at', 'active']
+  const fields  = Object.fromEntries(Object.entries(body).filter(([k]) => allowed.includes(k)))
 
   const admin = createAdminClient()
 
