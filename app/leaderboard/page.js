@@ -1,6 +1,6 @@
 import { createClient } from '../../lib/supabase/server'
 import { createAdminClient } from '../../lib/supabase/admin'
-import { getLeaderboard, getUserPoints, getTier, getUserRank } from '../../lib/points'
+import { getLeaderboard, getWeeklyLeaderboard, getUserPoints, getTier, getUserRank } from '../../lib/points'
 import LeaderboardView from './LeaderboardView'
 
 export const metadata = {
@@ -14,7 +14,10 @@ export default async function LeaderboardPage() {
   const supabase = await createClient()
   const { data: { user } } = await supabase.auth.getUser()
 
-  const board = await getLeaderboard(50)
+  const [board, weeklyBoard] = await Promise.all([
+    getLeaderboard(50),
+    getWeeklyLeaderboard(50),
+  ])
 
   // Fan of the Month
   const admin = createAdminClient()
@@ -39,6 +42,7 @@ export default async function LeaderboardPage() {
   return (
     <LeaderboardView
       board={board}
+      weeklyBoard={weeklyBoard}
       currentUserId={user?.id ?? null}
       myPoints={myPoints}
       myRank={myRank}

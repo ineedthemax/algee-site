@@ -1,6 +1,7 @@
 import { createClient } from '../../../../lib/supabase/server'
 import { createAdminClient } from '../../../../lib/supabase/admin'
 import { getMission } from '../../../../lib/missions'
+import { getWeekStart } from '../../../../lib/points'
 import { NextResponse } from 'next/server'
 
 export async function POST(request) {
@@ -23,13 +24,18 @@ export async function POST(request) {
 
   const admin = createAdminClient()
 
-  // Check if already completed (idempotent)
-  const { data: existing } = await admin
+  // Check if already completed — weekly missions reset each Monday
+  let existingQuery = admin
     .from('fan_missions')
     .select('id')
     .eq('user_id', user.id)
     .eq('mission_id', missionId)
-    .single()
+
+  if (mission.weekly) {
+    existingQuery = existingQuery.gte('completed_at', getWeekStart())
+  }
+
+  const { data: existing } = await existingQuery.maybeSingle()
 
   if (existing) {
     return NextResponse.json({ alreadyDone: true, points: 0 })

@@ -1,5 +1,6 @@
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import { getTier } from '../../lib/tiers'
 
@@ -21,7 +22,59 @@ function displayHandle(entry) {
 
 const MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December']
 
-export default function LeaderboardView({ board, currentUserId, myPoints, myRank, myTier, fanOfMonth }) {
+function BoardList({ board, currentUserId }) {
+  if (board.length === 0) {
+    return (
+      <div className="lb-empty">
+        No activity yet. Start earning points to claim a spot.
+      </div>
+    )
+  }
+  return (
+    <div className="lb-list">
+      <div className="lb-podium">
+        {board.slice(0, 3).map(entry => {
+          const tier = getTier(entry.total ?? 0)
+          const isMe = entry.user_id === currentUserId
+          return (
+            <div key={entry.user_id} className={`lb-podium-card lb-podium-${entry.rank}${isMe ? ' lb-me' : ''}`}>
+              <div className="lb-podium-medal">{RANK_MEDALS[entry.rank]}</div>
+              <div className="lb-podium-name">{displayHandle(entry)}{isMe ? ' (you)' : ''}</div>
+              <div className="lb-podium-pts" style={{ color: tier.color }}>
+                {(entry.total ?? 0).toLocaleString()}
+                <span className="lb-podium-pts-label"> pts</span>
+              </div>
+              <div className="lb-podium-tier" style={{ color: tier.color }}>{tier.name}</div>
+            </div>
+          )
+        })}
+      </div>
+      {board.length > 3 && (
+        <div className="lb-rows">
+          {board.slice(3).map(entry => {
+            const tier = getTier(entry.total ?? 0)
+            const isMe = entry.user_id === currentUserId
+            return (
+              <div key={entry.user_id} className={`lb-row${isMe ? ' lb-me' : ''}`}>
+                <div className="lb-row-rank">{rankLabel(entry.rank)}</div>
+                <div className="lb-row-name">
+                  {displayHandle(entry)}
+                  {isMe && <span className="lb-you-tag">you</span>}
+                </div>
+                <div className="lb-row-tier" style={{ color: tier.color }}>{tier.name}</div>
+                <div className="lb-row-pts">{(entry.total ?? 0).toLocaleString()} pts</div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
+export default function LeaderboardView({ board, weeklyBoard = [], currentUserId, myPoints, myRank, myTier, fanOfMonth }) {
+  const [activeTab, setActiveTab] = useState('alltime')
+  const activeBoard = activeTab === 'weekly' ? weeklyBoard : board
 
   return (
     <div className="lb-page">
@@ -72,58 +125,21 @@ export default function LeaderboardView({ board, currentUserId, myPoints, myRank
           </div>
         )}
 
-        {/* Leaderboard table */}
-        {board.length === 0 ? (
-          <div className="lb-empty">
-            No fans yet - be the first.{' '}
-            <Link href="/account">Join now →</Link>
-          </div>
-        ) : (
-          <div className="lb-list">
-            {/* Top 3 podium */}
-            <div className="lb-podium">
-              {board.slice(0, 3).map(entry => {
-                const tier    = getTier(entry.total)
-                const isMe    = entry.user_id === currentUserId
-                return (
-                  <div
-                    key={entry.user_id}
-                    className={`lb-podium-card lb-podium-${entry.rank}${isMe ? ' lb-me' : ''}`}
-                  >
-                    <div className="lb-podium-medal">{RANK_MEDALS[entry.rank]}</div>
-                    <div className="lb-podium-name">{displayHandle(entry)}{isMe ? ' (you)' : ''}</div>
-                    <div className="lb-podium-pts" style={{ color: tier.color }}>
-                      {(entry.total ?? 0).toLocaleString()}
-                      <span className="lb-podium-pts-label"> pts</span>
-                    </div>
-                    <div className="lb-podium-tier" style={{ color: tier.color }}>{tier.name}</div>
-                  </div>
-                )
-              })}
-            </div>
+        {/* Tab switcher */}
+        <div className="lb-tabs">
+          <button className={`lb-tab${activeTab === 'alltime' ? ' lb-tab-active' : ''}`} onClick={() => setActiveTab('alltime')}>
+            All Time
+          </button>
+          <button className={`lb-tab${activeTab === 'weekly'  ? ' lb-tab-active' : ''}`} onClick={() => setActiveTab('weekly')}>
+            This Week
+          </button>
+        </div>
 
-            {/* Rest of the list */}
-            {board.length > 3 && (
-              <div className="lb-rows">
-                {board.slice(3).map(entry => {
-                  const tier = getTier(entry.total)
-                  const isMe = entry.user_id === currentUserId
-                  return (
-                    <div key={entry.user_id} className={`lb-row${isMe ? ' lb-me' : ''}`}>
-                      <div className="lb-row-rank">{rankLabel(entry.rank)}</div>
-                      <div className="lb-row-name">
-                        {displayHandle(entry)}
-                        {isMe && <span className="lb-you-tag">you</span>}
-                      </div>
-                      <div className="lb-row-tier" style={{ color: tier.color }}>{tier.name}</div>
-                      <div className="lb-row-pts">{(entry.total ?? 0).toLocaleString()} pts</div>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-          </div>
+        {activeTab === 'weekly' && (
+          <div className="lb-weekly-note">Resets every Monday. A fresh shot at the top.</div>
         )}
+
+        <BoardList board={activeBoard} currentUserId={currentUserId} />
 
         {/* How to climb */}
         <div className="lb-earn-section">

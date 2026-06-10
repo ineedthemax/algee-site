@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '../../lib/supabase/server'
 import { createAdminClient } from '../../lib/supabase/admin'
 import { MISSIONS } from '../../lib/missions'
+import { getWeekStart } from '../../lib/points'
 import MissionsHub from './MissionsHub'
 
 export const metadata = {
@@ -22,9 +23,20 @@ export default async function MissionsPage() {
     .select('mission_id, completed_at, metadata')
     .eq('user_id', user.id)
 
+  const weekStart = getWeekStart()
+
+  // Build completedMap — weekly missions only count if completed THIS week
   const completedMap = {}
   for (const row of (completed ?? [])) {
-    completedMap[row.mission_id] = row
+    const mission = MISSIONS.find(m => m.id === row.mission_id)
+    if (mission?.weekly) {
+      // Only mark as done if completed within the current week
+      if (new Date(row.completed_at) >= new Date(weekStart)) {
+        completedMap[row.mission_id] = row
+      }
+    } else {
+      completedMap[row.mission_id] = row
+    }
   }
 
   return <MissionsHub missions={MISSIONS} completedMap={completedMap} />

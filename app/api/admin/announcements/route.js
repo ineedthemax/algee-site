@@ -28,8 +28,11 @@ export async function POST(request) {
 
 export async function PATCH(request) {
   if (!await guard()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-  const { id, ...fields } = await request.json()
+  const body = await request.json()
+  const { id } = body
   if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
+  const allowed = ['title', 'body', 'type', 'active']
+  const fields  = Object.fromEntries(Object.entries(body).filter(([k]) => allowed.includes(k)))
   const admin = createAdminClient()
   const { data, error } = await admin.from('announcements').update(fields).eq('id', id).select().single()
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })

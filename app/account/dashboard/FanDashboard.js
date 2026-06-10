@@ -7,6 +7,7 @@ import Image from 'next/image'
 import { createClient } from '../../../lib/supabase/client'
 import { CountdownCard } from '../../components/CountdownTimer'
 import { useRouter } from 'next/navigation'
+import { MISSIONS } from '../../../lib/missions'
 
 /* ── Tier config ─────────────────────────────────────────────── */
 const TIER_COLORS = { 'Day One': '#c4222e', 'Rider': '#e8a020', 'Legend': '#9b59b6', 'Free': '#666' }
@@ -417,6 +418,43 @@ function ManageSubscriptionBtn() {
   )
 }
 
+/* ── Weekly Progress Card ────────────────────────────────────── */
+function WeeklyProgressCard({ weeklyPoints, lastWeekPoints, missionsCompleted, totalMissions }) {
+  const diff    = weeklyPoints - lastWeekPoints
+  const hasData = weeklyPoints > 0 || lastWeekPoints > 0
+
+  return (
+    <div className="fd-card fd-card-weekly fd-card-animate" style={{ '--i': 5 }}>
+      <div className="fd-card-label">This Week</div>
+      <div className="fd-weekly-pts">
+        {weeklyPoints.toLocaleString()}
+        <span className="fd-weekly-pts-label"> pts</span>
+      </div>
+      {hasData && (
+        <div className={`fd-weekly-trend${diff >= 0 ? ' fd-weekly-up' : ' fd-weekly-down'}`}>
+          {diff >= 0 ? '↑' : '↓'} {Math.abs(diff)} vs last week
+        </div>
+      )}
+      {!hasData && (
+        <div className="fd-weekly-trend" style={{ color: 'var(--muted)' }}>
+          Start earning to get on the board
+        </div>
+      )}
+      <div className="fd-weekly-missions">
+        <div className="fd-weekly-missions-bar">
+          <div
+            className="fd-weekly-missions-fill"
+            style={{ width: `${totalMissions > 0 ? (missionsCompleted / totalMissions) * 100 : 0}%` }}
+          />
+        </div>
+        <div className="fd-weekly-missions-label">
+          {missionsCompleted} / {totalMissions} missions done
+        </div>
+      </div>
+    </div>
+  )
+}
+
 /* ── Main dashboard ──────────────────────────────────────────── */
 export default function FanDashboard({
   user, points = 0, tier, nextTier,
@@ -428,6 +466,9 @@ export default function FanDashboard({
   username = null,
   subscription = null,
   discordInvite = null,
+  weeklyPoints = 0,
+  lastWeekPoints = 0,
+  missionsCompleted = 0,
 }) {
   const [signingOut,      setSigningOut]      = useState(false)
   const [dismissed,       setDismissed]       = useState([])
@@ -717,7 +758,15 @@ export default function FanDashboard({
             <Link href="/leaderboard" className="fd-rank-link">See leaderboard →</Link>
           </div>
 
-          {/* Progress card */}
+          {/* Weekly progress card */}
+          <WeeklyProgressCard
+            weeklyPoints={weeklyPoints}
+            lastWeekPoints={lastWeekPoints}
+            missionsCompleted={missionsCompleted}
+            totalMissions={MISSIONS.length}
+          />
+
+          {/* Tier progress card */}
           <div className="fd-card fd-card-progress fd-card-animate" style={{ '--tc': tierColor, '--i': 3 }}>
             <div className="fd-progress-top">
               <div>
