@@ -10,8 +10,16 @@ export default function QuoteSection() {
   const { scrollYProgress } = useScroll({ target: ref, offset: ['start end', 'end start'] })
   const bgY = useTransform(scrollYProgress, [0, 1], ['-8%', '8%'])
 
+  // Letterbox bars close in as the quote enters frame, open back up on exit —
+  // like the screen shifting to widescreen for an important scene
+  const barH = useTransform(scrollYProgress, [0, 0.35, 0.65, 1], ['0%', '11%', '11%', '0%'])
+
   return (
     <section className="quote-section" ref={ref}>
+
+      {/* Cinematic letterbox bars */}
+      <motion.div className="quote-letterbox quote-letterbox-top"    style={{ height: barH }} aria-hidden="true" />
+      <motion.div className="quote-letterbox quote-letterbox-bottom" style={{ height: barH }} aria-hidden="true" />
 
       {/* Parallax bg text */}
       <motion.div className="quote-bg-word" style={{ y: bgY }} aria-hidden="true">

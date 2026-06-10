@@ -322,6 +322,14 @@ p { font-weight: 300; line-height: 1.75; color: var(--muted); }
   overflow: hidden;
 }
 
+/* Parallax wrapper — mouse move translates this (JS), img zooms inside it */
+.hero-bg-parallax {
+  position: absolute;
+  inset: 0;
+  will-change: transform;
+  transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
 .hero-bg img {
   position: absolute;
   inset: 0;
@@ -331,6 +339,49 @@ p { font-weight: 300; line-height: 1.75; color: var(--muted); }
   object-position: 82% center;
   transform: scale(1.1);
   will-change: transform;
+  animation: hero-ken-burns 36s ease-in-out infinite alternate;
+}
+
+/* Slow cinematic drift — the frame breathes even when the mouse is idle */
+@keyframes hero-ken-burns {
+  0%   { transform: scale(1.1)  translate(0, 0); }
+  100% { transform: scale(1.18) translate(-1.5%, -1%); }
+}
+
+/* Light sweep — a faint beam crosses the frame every ~14s, like a stage light */
+.hero-light-sweep {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+.hero-light-sweep::after {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: -30%;
+  width: 35%;
+  height: 140%;
+  background: linear-gradient(100deg,
+    transparent 0%,
+    rgba(245,240,235,0.045) 45%,
+    rgba(196,34,46,0.03) 55%,
+    transparent 100%
+  );
+  transform: skewX(-12deg) translateX(-120%);
+  animation: hero-sweep 14s ease-in-out infinite;
+}
+@keyframes hero-sweep {
+  0%, 62%  { transform: skewX(-12deg) translateX(-130%); }
+  82%      { transform: skewX(-12deg) translateX(480%); }
+  100%     { transform: skewX(-12deg) translateX(480%); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-bg img          { animation: none; }
+  .hero-light-sweep::after { animation: none; }
+  .hero-bg-text         { animation: none; }
 }
 
 /* Dark gradient: heaviest on left where text lives, fades right so Algee shows through */
@@ -353,7 +404,7 @@ p { font-weight: 300; line-height: 1.75; color: var(--muted); }
     );
 }
 
-/* Ghost "ALGEE" watermark behind text */
+/* Ghost "ALGEE" watermark behind text — drifts slowly like end credits */
 .hero-bg-text {
   position: absolute;
   bottom: -40px;
@@ -368,6 +419,11 @@ p { font-weight: 300; line-height: 1.75; color: var(--muted); }
   user-select: none;
   line-height: 1;
   z-index: 2;
+  animation: hero-watermark-drift 50s ease-in-out infinite alternate;
+}
+@keyframes hero-watermark-drift {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-60px); }
 }
 
 .hero-inner {
@@ -12009,6 +12065,18 @@ footer::before {
   border-bottom: 1px solid rgba(255,255,255,0.04);
 }
 
+/* Letterbox bars — scroll-driven height set inline by framer-motion */
+.quote-letterbox {
+  position: absolute;
+  left: 0;
+  right: 0;
+  background: #050505;
+  z-index: 3;
+  pointer-events: none;
+}
+.quote-letterbox-top    { top: 0;    box-shadow: 0 1px 0 rgba(245,240,235,0.05); }
+.quote-letterbox-bottom { bottom: 0; box-shadow: 0 -1px 0 rgba(245,240,235,0.05); }
+
 /* Giant parallax background word */
 .quote-bg-word {
   position: absolute;
@@ -15668,6 +15736,7 @@ footer::before {
    COUNTDOWN — HOMEPAGE HERO
 ═══════════════════════════════════════ */
 .cd-hero {
+  position: relative;
   background: #0a0a0a;
   border-top: 1px solid rgba(255,255,255,0.05);
   border-bottom: 1px solid rgba(255,255,255,0.05);
@@ -15675,7 +15744,40 @@ footer::before {
   display: flex;
   justify-content: center;
   align-items: center;
+  overflow: hidden;
 }
+
+/* Premiere vignette — dims edges so the digits hold the spotlight */
+.cd-hero::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 70% 120% at center,
+    transparent 30%,
+    rgba(0,0,0,0.55) 100%
+  );
+  pointer-events: none;
+}
+
+/* Faint red premiere glow breathing behind the digits */
+.cd-hero::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 640px;
+  height: 320px;
+  transform: translate(-50%, -50%);
+  background: radial-gradient(ellipse at center, rgba(196,34,46,0.09), transparent 65%);
+  pointer-events: none;
+  animation: cd-premiere-breathe 4s ease-in-out infinite;
+}
+@keyframes cd-premiere-breathe {
+  0%, 100% { opacity: 0.6; }
+  50%       { opacity: 1; }
+}
+
+.cd-hero-inner { position: relative; z-index: 1; }
 
 .cd-hero-inner {
   display: flex;
@@ -15750,6 +15852,7 @@ footer::before {
   min-width: 2ch;
   text-align: center;
   font-variant-numeric: tabular-nums;
+  text-shadow: 0 0 50px rgba(196,34,46,0.25);
 }
 
 .cd-hero-label {

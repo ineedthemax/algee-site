@@ -8,6 +8,7 @@ import ScrollReveal from './components/ScrollReveal'
 import ScrollProgress from './components/ScrollProgress'
 import ScrollToTop from './components/ScrollToTop'
 import LiveSignal from './components/LiveSignal'
+import SmoothScroll from './components/SmoothScroll'
 
 // ─── Brand Fonts ───────────────────────────────────────────────
 const playfair = Playfair_Display({
@@ -70,6 +71,9 @@ export default function RootLayout({ children }) {
 
         {/* Scroll progress bar */}
         <ScrollProgress />
+
+        {/* Lenis smooth scrolling */}
+        <SmoothScroll />
 
         {/* Custom cursor + spotlight */}
         <CustomCursor />

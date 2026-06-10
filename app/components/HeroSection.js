@@ -41,11 +41,13 @@ export default function HeroSection() {
   }, [])
 
   useEffect(() => {
+    // Parallax translates the wrapper — the img itself runs the Ken Burns
+    // zoom via CSS, so both motions compose instead of fighting.
     const onMouseMove = (e) => {
       if (!bgImgRef.current) return
       const x = ((e.clientX / window.innerWidth)  - 0.5) * 22
       const y = ((e.clientY / window.innerHeight) - 0.5) * 12
-      bgImgRef.current.style.transform = `scale(1.1) translate(${x}px, ${y}px)`
+      bgImgRef.current.style.transform = `translate(${x}px, ${y}px)`
     }
     window.addEventListener('mousemove', onMouseMove)
     return () => window.removeEventListener('mousemove', onMouseMove)
@@ -57,17 +59,19 @@ export default function HeroSection() {
     <section className="hero" aria-label="Hero">
       {/* ─── Background photo ─── */}
       <div className="hero-bg">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          ref={bgImgRef}
-          src="/images/hero/algee-hero.webp"
-          alt="Algee Smith"
-          fetchPriority="high"
-        />
+        <div ref={bgImgRef} className="hero-bg-parallax">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/hero/algee-hero.webp"
+            alt="Algee Smith"
+            fetchPriority="high"
+          />
+        </div>
       </div>
 
       {/* Overlays */}
       <div className="hero-overlay" aria-hidden="true" />
+      <div className="hero-light-sweep" aria-hidden="true" />
       <div className="hero-grain" aria-hidden="true" />
 
       {/* Ghost watermark */}
