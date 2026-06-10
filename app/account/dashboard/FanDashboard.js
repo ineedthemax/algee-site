@@ -448,7 +448,7 @@ function WeeklyProgressCard({ weeklyPoints, lastWeekPoints, missionsCompleted, t
           />
         </div>
         <div className="fd-weekly-missions-label">
-          {missionsCompleted} / {totalMissions} missions done
+          {missionsCompleted} / {totalMissions} missions complete (lifetime)
         </div>
       </div>
     </div>

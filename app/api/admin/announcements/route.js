@@ -42,6 +42,7 @@ export async function PATCH(request) {
 export async function DELETE(request) {
   if (!await guard()) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   const { id } = await request.json()
+  if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 })
   const admin = createAdminClient()
   await admin.from('announcements').delete().eq('id', id)
   return NextResponse.json({ success: true })
