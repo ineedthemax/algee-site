@@ -498,6 +498,14 @@ export default function FanDashboard({
     return () => cancelAnimationFrame(raf)
   }, [points])
 
+  // Award daily visit points once per UTC day; refresh server data if awarded
+  useEffect(() => {
+    fetch('/api/points/daily-visit', { method: 'POST' })
+      .then(r => r.json())
+      .then(data => { if (data.success) router.refresh() })
+      .catch(() => {})
+  }, []) // eslint-disable-line react-hooks/exhaustive-deps
+
   const restartTour = useCallback(() => {
     try { localStorage.removeItem('algee_tour_done') } catch {}
     setTourKey(k => k + 1)

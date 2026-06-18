@@ -48,10 +48,22 @@ export default async function ReleasesPage() {
         <CountdownBanner />
 
         {/* ─── Coming Soon Teasers ─── */}
-        {teaserList.length > 0 && (
+        {(teaserList.length > 0 || true) && (
           <div className="releases-teaser-section">
             <div className="releases-grid-label">Coming Soon</div>
             <div className="releases-grid">
+              {/* OTW — standalone landing page */}
+              <TeaserCard
+                release={{
+                  id:          'otw',
+                  slug:        'otw',
+                  href:        '/otw',
+                  title:       'OTW (On The Way)',
+                  type:        'Single',
+                  artwork_url: null,
+                  release_date: '2026-07-07',
+                }}
+              />
               {teaserList.map(r => (
                 <TeaserCard key={r.id} release={r} />
               ))}

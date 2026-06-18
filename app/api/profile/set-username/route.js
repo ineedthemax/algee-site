@@ -39,8 +39,10 @@ export async function POST(request) {
 
   const { error } = await admin
     .from('profiles')
-    .update({ username: clean })
-    .eq('id', user.id)
+    .upsert(
+      { id: user.id, email: user.email, username: clean },
+      { onConflict: 'id' }
+    )
 
   if (error) return NextResponse.json({ error: error.message }, { status: 500 })
 

@@ -21,16 +21,23 @@ export async function POST(req) {
     // Free IP geolocation - no API key needed
     const geo = await fetch(`https://ipapi.co/${ip}/json/`, {
       headers: { 'User-Agent': 'algeesmith-platform/1.0' },
+      signal: AbortSignal.timeout(3000),
     }).then(r => r.json())
 
-    if (!geo?.country_code) return NextResponse.json({ ok: false })
+    // Validate expected shape before writing to DB
+    const cc = geo?.country_code
+    if (!cc || typeof cc !== 'string' || !/^[A-Z]{2}$/.test(cc)) {
+      return NextResponse.json({ ok: false })
+    }
+
+    const safe = (v, max) => (typeof v === 'string' ? v.slice(0, max) : null)
 
     const admin = createAdminClient()
     await admin.from('profiles').update({
-      country:      geo.country_name  ?? null,
-      country_code: geo.country_code  ?? null,
-      region:       geo.region        ?? null,   // state / province
-      city:         geo.city          ?? null,
+      country:      safe(geo.country_name, 100),
+      country_code: cc,
+      region:       safe(geo.region, 100),
+      city:         safe(geo.city, 100),
     }).eq('id', user.id)
 
     return NextResponse.json({ ok: true, country: geo.country_name, region: geo.region, city: geo.city })

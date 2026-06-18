@@ -48,9 +48,10 @@ export async function POST(request) {
   let pointsAwarded = 0
   if (!existing && mission) {
     await admin.from('fan_missions').insert({
-      user_id:    user.id,
-      mission_id: MISSION_ID,
-      metadata:   {},
+      user_id:      user.id,
+      mission_id:   MISSION_ID,
+      metadata:     {},
+      completed_at: new Date().toISOString(),
     })
 
     await admin.from('fan_points_events').insert({

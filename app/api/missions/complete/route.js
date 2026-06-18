@@ -43,7 +43,7 @@ export async function POST(request) {
 
   // Save completion — weekly missions upsert so the row can be reused each week
   // Non-weekly missions just insert (DB unique constraint prevents double-earning)
-  const missionRow = { user_id: user.id, mission_id: missionId, metadata: answers ?? {} }
+  const missionRow = { user_id: user.id, mission_id: missionId, metadata: answers ?? {}, completed_at: new Date().toISOString() }
   const { error: insertError } = mission.weekly
     ? await admin.from('fan_missions').upsert(missionRow, { onConflict: 'user_id,mission_id' })
     : await admin.from('fan_missions').insert(missionRow)

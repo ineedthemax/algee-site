@@ -38,8 +38,9 @@ export default function TeaserCard({ release }) {
 
   if (revealed) {
     // Unblurred — show as a normal clickable card
+    const href = release.href ?? `/releases/${release.slug}`
     return (
-      <a href={`/releases/${release.slug}`} className="releases-card teaser-revealed">
+      <a href={href} className="releases-card teaser-revealed">
         <div className="releases-card-art">
           {release.artwork_url
             ? <img src={release.artwork_url} alt={release.title} className="releases-card-img" />

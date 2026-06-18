@@ -3,6 +3,24 @@ import { NextResponse } from 'next/server'
 
 const CORS = { 'Access-Control-Allow-Origin': '*' }
 
+const VALID_TYPES     = new Set(['view', 'click'])
+const VALID_PLATFORMS = new Set(['spotify', 'apple', 'youtube', 'tidal', 'amazon', 'deezer', 'pandora', 'direct'])
+
+// Simple in-memory rate limit: one event per IP+slug per 10 seconds
+const rateMap = new Map()
+function isRateLimited(ip, slug) {
+  const key = `${ip}:${slug}`
+  const now = Date.now()
+  const last = rateMap.get(key)
+  if (last && now - last < 10_000) return true
+  rateMap.set(key, now)
+  if (rateMap.size > 2000) {
+    const cutoff = now - 10_000
+    for (const [k, v] of rateMap) if (v < cutoff) rateMap.delete(k)
+  }
+  return false
+}
+
 export async function OPTIONS() {
   return new Response(null, { status: 204, headers: CORS })
 }
@@ -13,7 +31,12 @@ export async function POST(request) {
   try {
     const body = await request.json()
     const { slug, type, platform, referrer } = body
-    if (!slug || !type) return NextResponse.json({ ok: true }, { headers: CORS })
+
+    if (!slug || !VALID_TYPES.has(type)) return NextResponse.json({ ok: true }, { headers: CORS })
+    if (platform && !VALID_PLATFORMS.has(platform)) return NextResponse.json({ ok: true }, { headers: CORS })
+
+    const ip = request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown'
+    if (isRateLimited(ip, slug)) return NextResponse.json({ ok: true }, { headers: CORS })
 
     // Geo data from Vercel edge headers (free, no API needed)
     const country = request.headers.get('x-vercel-ip-country')       ?? null
