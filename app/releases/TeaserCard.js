@@ -57,9 +57,11 @@ export default function TeaserCard({ release }) {
     )
   }
 
-  // Blurred — teaser state
+  // Blurred — teaser state (clickable if a landing page href is provided)
+  const Tag   = release.href ? 'a' : 'div'
+  const props = release.href ? { href: release.href } : {}
   return (
-    <div className="teaser-card">
+    <Tag className="teaser-card" {...props}>
       {/* Blurred artwork */}
       <div className="teaser-art">
         {release.artwork_url && (
@@ -103,6 +105,6 @@ export default function TeaserCard({ release }) {
         <div className="teaser-title">Something&apos;s Coming</div>
         <div className="teaser-hint">Drops July 7 · Midnight EST</div>
       </div>
-    </div>
+    </Tag>
   )
 }
