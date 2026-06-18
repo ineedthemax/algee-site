@@ -60,7 +60,7 @@ export default async function ReleasesPage() {
                   href:        '/otw',
                   title:       'OTW (On The Way)',
                   type:        'Single',
-                  artwork_url: null,
+                  artwork_url: '/images/otw-cover.jpg',
                   release_date: '2026-07-07',
                 }}
               />
