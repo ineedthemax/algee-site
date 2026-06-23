@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import React, { useState, useEffect, useCallback, useRef } from 'react'
 import DashboardTour from './DashboardTour'
 import Link from 'next/link'
 import Image from 'next/image'
@@ -11,6 +11,13 @@ import { MISSIONS } from '../../../lib/missions'
 
 /* ── Tier config ─────────────────────────────────────────────── */
 const TIER_COLORS = { 'Day One': '#c4222e', 'Rider': '#e8a020', 'Legend': '#9b59b6', 'Free': '#666' }
+
+const TIER_JOURNEY = [
+  { name: 'Free',    min: 0,    color: '#888',    icon: '◻' },
+  { name: 'Day One', min: 200,  color: '#c4222e', icon: '✦' },
+  { name: 'Rider',   min: 600,  color: '#e8a020', icon: '◈' },
+  { name: 'Legend',  min: 1500, color: '#9b59b6', icon: '★' },
+]
 
 // What fans unlock at each tier - used in the upgrade preview
 const TIER_PREVIEWS = [
@@ -92,6 +99,256 @@ function ComingSoonSection() {
           </div>
         ))}
       </div>
+    </div>
+  )
+}
+
+/* ── Push helper ─────────────────────────────────────────────── */
+function urlBase64ToUint8Array(b64) {
+  const padding = '='.repeat((4 - (b64.length % 4)) % 4)
+  const base64  = (b64 + padding).replace(/-/g, '+').replace(/_/g, '/')
+  const raw     = atob(base64)
+  const arr     = new Uint8Array(raw.length)
+  for (let i = 0; i < raw.length; i++) arr[i] = raw.charCodeAt(i)
+  return arr
+}
+
+/* ── Inline mission: push notifications ──────────────────────── */
+function DashPushMission({ mission, onComplete }) {
+  const [state, setState] = useState('idle') // idle | requesting | done | denied | error
+
+  const handleClick = async () => {
+    if (!('Notification' in window) || !('serviceWorker' in navigator)) {
+      setState('error')
+      return
+    }
+    setState('requesting')
+    try {
+      const reg = await navigator.serviceWorker.register('/sw.js')
+      await navigator.serviceWorker.ready
+      const perm = await Notification.requestPermission()
+      if (perm !== 'granted') { setState('denied'); return }
+      const sub = await reg.pushManager.subscribe({
+        userVisibleOnly:      true,
+        applicationServerKey: urlBase64ToUint8Array(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY),
+      })
+      const res  = await fetch('/api/push/subscribe', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ subscription: sub.toJSON() }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error)
+      setState('done')
+      onComplete(data.points)
+    } catch {
+      setState('error')
+    }
+  }
+
+  if (state === 'done')    return <div className="fd-mp-success">✓ Notifications on · +{mission.points} pts</div>
+  if (state === 'denied')  return <div className="fd-mp-hint">Blocked — allow notifications in your browser settings</div>
+  if (state === 'error')   return <div className="fd-mp-hint">Not supported on this device</div>
+
+  return (
+    <button
+      className="fd-mp-action-btn"
+      style={{ '--mc': mission.color }}
+      onClick={handleClick}
+      disabled={state === 'requesting'}
+    >
+      {state === 'requesting' ? 'Allowing...' : 'Enable →'}
+    </button>
+  )
+}
+
+/* ── Inline mission: phone number ─────────────────────────────── */
+function DashPhoneMission({ mission, onComplete }) {
+  const [expanded,   setExpanded]   = useState(false)
+  const [phone,      setPhone]      = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [error,      setError]      = useState(null)
+  const [done,       setDone]       = useState(false)
+
+  const handleSubmit = async () => {
+    if (phone.trim().length < 7) return
+    setSubmitting(true)
+    setError(null)
+    try {
+      await fetch('/api/profile/update-phone', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ phone }),
+      })
+      const res = await fetch('/api/missions/complete', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ missionId: mission.id }),
+      })
+      if (!res.ok) throw new Error()
+      setDone(true)
+      onComplete(mission.points)
+    } catch {
+      setError('Something went wrong. Try again.')
+      setSubmitting(false)
+    }
+  }
+
+  if (done) return <div className="fd-mp-success">✓ Number saved · +{mission.points} pts</div>
+
+  if (!expanded) {
+    return (
+      <button className="fd-mp-action-btn" style={{ '--mc': mission.color }} onClick={() => setExpanded(true)}>
+        Add Number →
+      </button>
+    )
+  }
+
+  return (
+    <div className="fd-mp-form">
+      <input
+        type="tel"
+        className="fd-mp-input"
+        value={phone}
+        onChange={e => setPhone(e.target.value)}
+        placeholder="+1 (555) 000-0000"
+        autoComplete="tel"
+        autoFocus
+        onKeyDown={e => e.key === 'Enter' && handleSubmit()}
+      />
+      {error && <div className="fd-mp-error">{error}</div>}
+      <button
+        className="fd-mp-action-btn"
+        style={{ '--mc': mission.color }}
+        onClick={handleSubmit}
+        disabled={submitting || phone.trim().length < 7}
+      >
+        {submitting ? 'Saving...' : `Save · +${mission.points} pts`}
+      </button>
+    </div>
+  )
+}
+
+/* ── Inline mission: fan profile (step-by-step) ───────────────── */
+function DashProfileMission({ mission, onComplete }) {
+  const [expanded,   setExpanded]   = useState(false)
+  const [step,       setStep]       = useState(0)
+  const [answers,    setAnswers]    = useState(() => {
+    const init = {}
+    mission.questions.forEach(q => { init[q.id] = '' })
+    return init
+  })
+  const [submitting, setSubmitting] = useState(false)
+  const [error,      setError]      = useState(null)
+  const [done,       setDone]       = useState(false)
+
+  const q       = mission.questions[step]
+  const isLast  = step === mission.questions.length - 1
+  const pct     = Math.round(((step + 1) / mission.questions.length) * 100)
+
+  const handleNext = async () => {
+    if (!answers[q.id]?.trim()) return
+    if (!isLast) { setStep(s => s + 1); return }
+    setSubmitting(true)
+    setError(null)
+    try {
+      const res = await fetch('/api/missions/complete', {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body:    JSON.stringify({ missionId: mission.id, answers }),
+      })
+      if (!res.ok) throw new Error()
+      setDone(true)
+      onComplete(mission.points)
+    } catch {
+      setError('Something went wrong.')
+      setSubmitting(false)
+    }
+  }
+
+  if (done) return <div className="fd-mp-success">✓ Profile complete · +{mission.points} pts</div>
+
+  if (!expanded) {
+    return (
+      <button className="fd-mp-action-btn" style={{ '--mc': mission.color }} onClick={() => setExpanded(true)}>
+        Start →
+      </button>
+    )
+  }
+
+  return (
+    <div className="fd-mp-form">
+      <div className="fd-mp-progress">
+        <div className="fd-mp-progress-fill" style={{ width: `${pct}%`, background: mission.color }} />
+      </div>
+      <div className="fd-mp-q-meta">{step + 1} / {mission.questions.length}</div>
+      <div className="fd-mp-q-text">{q.label}</div>
+      {q.type === 'textarea' ? (
+        <textarea
+          className="fd-mp-input fd-mp-textarea"
+          value={answers[q.id]}
+          onChange={e => setAnswers(a => ({ ...a, [q.id]: e.target.value }))}
+          placeholder={q.placeholder}
+          rows={3}
+          autoFocus
+        />
+      ) : (
+        <input
+          type="text"
+          className="fd-mp-input"
+          value={answers[q.id]}
+          onChange={e => setAnswers(a => ({ ...a, [q.id]: e.target.value }))}
+          placeholder={q.placeholder}
+          onKeyDown={e => e.key === 'Enter' && handleNext()}
+          autoFocus
+        />
+      )}
+      {error && <div className="fd-mp-error">{error}</div>}
+      <div className="fd-mp-q-row">
+        {step > 0 && (
+          <button className="fd-mp-back-btn" onClick={() => setStep(s => s - 1)}>← Back</button>
+        )}
+        <button
+          className="fd-mp-action-btn"
+          style={{ '--mc': mission.color }}
+          onClick={handleNext}
+          disabled={submitting || !answers[q.id]?.trim()}
+        >
+          {submitting ? '...' : isLast ? `Submit · +${mission.points} pts` : 'Next →'}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+/* ── Dashboard missions grid (top 3 by points, interactive) ───── */
+function DashboardMissions({ onPointsEarned }) {
+  const topMissions = MISSIONS.slice().sort((a, b) => b.points - a.points).slice(0, 3)
+
+  return (
+    <div className="fd-mp-grid">
+      {topMissions.map(m => (
+        <div key={m.id} className="fd-mp-card" style={{ '--mc': m.color ?? '#c4222e' }}>
+          <div className="fd-mp-top">
+            <span className="fd-mp-icon">{m.icon}</span>
+            <div className="fd-mp-pts">+{m.points} pts</div>
+          </div>
+          <div className="fd-mp-title">{m.title}</div>
+          <div className="fd-mp-desc">{m.description.split('.')[0]}.</div>
+          {m.type === 'weekly' && (
+            <div className="fd-mp-weekly">Weekly · resets Monday</div>
+          )}
+          <div className="fd-mp-action">
+            {m.type === 'push' ? (
+              <DashPushMission mission={m} onComplete={onPointsEarned} />
+            ) : m.questions ? (
+              <DashProfileMission mission={m} onComplete={onPointsEarned} />
+            ) : (
+              <DashPhoneMission mission={m} onComplete={onPointsEarned} />
+            )}
+          </div>
+        </div>
+      ))}
     </div>
   )
 }
@@ -750,7 +1007,14 @@ export default function FanDashboard({
           <div className="fd-card fd-card-points fd-card-animate" style={{ '--i': 1 }}>
             <div className="fd-card-label">Total Points</div>
             <div className="fd-card-big-num">{displayPoints.toLocaleString()}</div>
-            <div className="fd-card-sub">Lifetime earned</div>
+            {weeklyPoints > 0 ? (
+              <div className="fd-points-velocity">
+                <span className="fd-points-vel-gain">+{weeklyPoints}</span>
+                <span className="fd-points-vel-sub">this week</span>
+              </div>
+            ) : (
+              <div className="fd-card-sub">Lifetime earned</div>
+            )}
             <div className="fd-points-glow" aria-hidden="true" />
           </div>
 
@@ -774,32 +1038,62 @@ export default function FanDashboard({
             totalMissions={MISSIONS.length}
           />
 
-          {/* Tier progress card */}
+          {/* Tier progress card — 4-tier journey strip */}
           <div className="fd-card fd-card-progress fd-card-animate" style={{ '--tc': tierColor, '--i': 3 }}>
-            <div className="fd-progress-top">
-              <div>
-                <div className="fd-card-label">Progress to {nextTier?.name ?? 'Max Tier'}</div>
-                <div className="fd-progress-pct">{progressPct}%</div>
+            <div className="fd-card-label">Your Journey</div>
+            <div className="fd-journey-strip">
+              {(() => {
+                const items = []
+                TIER_JOURNEY.forEach((t, i) => {
+                  if (i > 0) {
+                    const prevMin   = TIER_JOURNEY[i - 1].min
+                    const segFilled = points >= t.min
+                    const segActive = !segFilled && points >= prevMin
+                    const fillWidth = segFilled ? 100 : segActive ? progressPct : 0
+                    items.push(
+                      <div key={`seg-${i}`} className="fd-journey-seg">
+                        {fillWidth > 0 && (
+                          <div
+                            className="fd-journey-seg-fill"
+                            style={{ width: `${fillWidth}%`, background: TIER_JOURNEY[i - 1].color }}
+                          />
+                        )}
+                      </div>
+                    )
+                  }
+                  const isCurrent = t.name === tier?.name
+                  const isFuture  = (tier?.min ?? 0) < t.min
+                  items.push(
+                    <div
+                      key={t.name}
+                      className={`fd-journey-node${isCurrent ? ' fd-journey-node-active' : ''}${isFuture ? ' fd-journey-node-future' : ''}`}
+                    >
+                      {isCurrent && (
+                        <div className="fd-journey-you-badge" style={{ background: t.color }}>YOU</div>
+                      )}
+                      <div className="fd-journey-icon" style={{ color: isFuture ? 'rgba(255,255,255,0.15)' : t.color }}>
+                        {t.icon}
+                      </div>
+                      <div className="fd-journey-tier-name" style={{ color: isFuture ? 'rgba(255,255,255,0.15)' : t.color }}>
+                        {t.name}
+                      </div>
+                    </div>
+                  )
+                })
+                return items
+              })()}
+            </div>
+            {nextTier ? (
+              <div className="fd-journey-footer">
+                <span>{points.toLocaleString()} pts earned</span>
+                <span>
+                  {pointsToNext.toLocaleString()} to{' '}
+                  <span style={{ color: nextTier.color ?? tierColor }}>{nextTier.name}</span>
+                </span>
               </div>
-              {nextTier ? (
-                <div className="fd-progress-hint">
-                  <span className="fd-progress-pts">{pointsToNext.toLocaleString()}</span>
-                  <span className="fd-progress-hint-label">pts to go</span>
-                </div>
-              ) : (
-                <div className="fd-progress-hint">
-                  <span className="fd-progress-pts" style={{ color: tierColor }}>MAX</span>
-                  <span className="fd-progress-hint-label">tier reached</span>
-                </div>
-              )}
-            </div>
-            <div className="fd-progress-track">
-              <div className="fd-progress-fill" style={{ width: `${progressPct}%` }} />
-            </div>
-            {nextTier && (
-              <div className="fd-progress-labels">
-                <span>{tier?.name}</span>
-                <span style={{ color: nextTier?.color ?? tierColor }}>{nextTier.name}</span>
+            ) : (
+              <div className="fd-journey-footer">
+                <span style={{ color: tierColor }}>★ Maximum tier reached</span>
               </div>
             )}
           </div>
@@ -839,6 +1133,10 @@ export default function FanDashboard({
           </div>
 
         </div>
+
+        {/* ── Top Missions Preview ── */}
+        <div className="fd-section-label">Earn Points</div>
+        <DashboardMissions onPointsEarned={() => router.refresh()} />
 
         {/* ── Explore ── */}
         <div className="fd-section-label">Explore</div>
