@@ -12616,6 +12616,8 @@ footer::before {
   align-items: flex-end;
 }
 .filmgrid-card:hover .filmgrid-overlay { opacity: 1; }
+.filmgrid-card--selected { outline: 2px solid rgba(245,245,245,0.7); outline-offset: -2px; }
+.filmgrid-card--selected .filmgrid-img { transform: scale(1.04); }
 
 .filmgrid-overlay-content {
   padding: 20px 16px;

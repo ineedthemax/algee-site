@@ -5,25 +5,26 @@ import { useState } from 'react'
 import { motion } from 'framer-motion'
 import FilmTrailerModal from './FilmTrailerModal'
 
-export default function FilmGrid({ projects }) {
+export default function FilmGrid({ projects, selectedId, onSelect }) {
   const [activeTrailer, setActiveTrailer] = useState(null)
   const [activeScene,   setActiveScene]   = useState(null)
   const [tappedId,      setTappedId]      = useState(null)
 
   const handleTap = (film) => {
-    // Toggle overlay on mobile tap; second tap on same card does nothing special
     setTappedId(prev => prev === film.id ? null : film.id)
+    onSelect?.(film)
   }
 
   return (
     <>
       <div className="filmgrid-wrap">
         {projects.map((film, i) => {
-          const tapped = tappedId === film.id
+          const tapped    = tappedId === film.id
+          const isSelected = selectedId === film.id
           return (
             <motion.div
               key={film.id}
-              className={`filmgrid-card${tapped ? ' tapped' : ''}`}
+              className={`filmgrid-card${tapped ? ' tapped' : ''}${isSelected ? ' filmgrid-card--selected' : ''}`}
               initial={{ opacity: 0, y: 30 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true, margin: '0px 0px -60px 0px' }}

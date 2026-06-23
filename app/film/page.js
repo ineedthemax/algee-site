@@ -1,6 +1,5 @@
-import Image from 'next/image'
 import { PROJECTS } from '../data/film'
-import FilmGrid from '../components/FilmGrid'
+import FilmPageClient from '../components/FilmPageClient'
 import SchemaMarkup from '../components/SchemaMarkup'
 
 export const metadata = {
@@ -40,8 +39,6 @@ const STATS = [
 ]
 
 export default function FilmPage() {
-  const featured = PROJECTS[0]
-
   return (
     <div className="film-page">
       <SchemaMarkup schema={filmographySchema} />
@@ -66,78 +63,8 @@ export default function FilmPage() {
         ))}
       </div>
 
-      {/* ─── Featured Film ─── */}
-      <div className="film-featured-section">
-
-        {/* Full-bleed bg from cover */}
-        <div className="film-featured-bg" aria-hidden="true">
-          <Image
-            src={featured.cover}
-            alt=""
-            fill
-            sizes="100vw"
-            className="film-featured-bg-img"
-            priority
-          />
-          <div className="film-featured-bg-overlay" />
-        </div>
-
-        <div className="film-featured-inner">
-          {/* Poster */}
-          <div className="film-featured-poster">
-            <Image
-              src={featured.cover}
-              alt={featured.title}
-              fill
-              sizes="(max-width: 900px) 60vw, 320px"
-              className="film-featured-poster-img"
-              priority
-            />
-          </div>
-
-          {/* Info */}
-          <div className="film-featured-info">
-            <div className="film-featured-badge">Now Streaming</div>
-            <div className="film-meta-row">
-              <span className="film-tag">{featured.type}</span>
-              <span className="film-year">{featured.year}</span>
-            </div>
-            <div className="film-featured-title">{featured.title}</div>
-            <div className="film-featured-role">as <em>{featured.role}</em></div>
-            <p className="film-featured-logline">{featured.logline}</p>
-
-            {featured.watchLinks?.length > 0 && (
-              <div className="film-watch-links">
-                <div className="film-watch-label">Stream Now</div>
-                <div className="film-watch-grid">
-                  {featured.watchLinks.map((link) => (
-                    <a
-                      key={link.label}
-                      href={link.href}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="film-watch-btn"
-                    >
-                      {link.label}
-                    </a>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      {/* ─── All Credits Grid ─── */}
-      <div className="film-grid-section">
-        <div className="film-grid-header">
-          <span className="film-grid-label">All Credits</span>
-          <div className="film-grid-line" />
-        </div>
-
-        <FilmGrid projects={PROJECTS} />
-      </div>
-
+      {/* ─── Featured + Grid (client, interactive) ─── */}
+      <FilmPageClient projects={PROJECTS} />
     </div>
   )
 }
