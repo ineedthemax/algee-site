@@ -12618,6 +12618,8 @@ footer::before {
 .filmgrid-card:hover .filmgrid-overlay { opacity: 1; }
 .filmgrid-card--selected { outline: 2px solid rgba(245,245,245,0.7); outline-offset: -2px; }
 .filmgrid-card--selected .filmgrid-img { transform: scale(1.04); }
+.film-featured-bg-img--fade { animation: featuredFadeIn 0.6s ease both; }
+@keyframes featuredFadeIn { from { opacity: 0 } to { opacity: 1 } }
 
 .filmgrid-overlay-content {
   padding: 20px 16px;

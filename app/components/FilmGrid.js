@@ -11,8 +11,13 @@ export default function FilmGrid({ projects, selectedId, onSelect }) {
   const [tappedId,      setTappedId]      = useState(null)
 
   const handleTap = (film) => {
-    setTappedId(prev => prev === film.id ? null : film.id)
-    onSelect?.(film)
+    if (onSelect) {
+      // In selectable mode: click = feature this film (no overlay toggle)
+      onSelect(film)
+    } else {
+      // Standalone mode: toggle overlay on mobile
+      setTappedId(prev => prev === film.id ? null : film.id)
+    }
   }
 
   return (
