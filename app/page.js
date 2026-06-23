@@ -2,7 +2,6 @@ import HeroSection from './components/HeroSection'
 import FanWorldSection from './components/FanWorldSection'
 import { CountdownHero } from './components/CountdownTimer'
 
-import TwoWorldsSection from './components/TwoWorldsSection'
 import AlbumSpotlight from './components/AlbumSpotlight'
 import QuoteSection from './components/QuoteSection'
 import PressStrip from './components/PressStrip'
@@ -79,8 +78,6 @@ export default function Home() {
 
       {/* ══ STORY ZONE ══ */}
       <div className="page-zone">
-        <TwoWorldsSection />
-
         {/* Marquee divider */}
         <div className="marquee" aria-hidden="true">
           <div className="marquee-track">
