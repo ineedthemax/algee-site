@@ -74,6 +74,9 @@ export default function TeaserCard({ release }) {
         <div className="teaser-blur" />
         <div className="teaser-overlay">
           <div className="teaser-badge">Coming Soon</div>
+          {release.artwork_url && (
+            <img src={release.artwork_url} alt={release.title} className="teaser-cover-preview" />
+          )}
           {time && (
             <div className="teaser-countdown">
               <div className="teaser-cd-unit">

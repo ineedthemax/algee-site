@@ -103,7 +103,6 @@ export default function TwoWorldsSection() {
         style={{ x: leftX, opacity }}
       >
         <div className="tw-panel-eyebrow">The Actor</div>
-        <div className="tw-panel-headline">Screen.<br /><em>Legacy.</em></div>
         <div className="tw-credits">
           {FILM_CREDITS.map((item, i) => (
             <CreditRow key={item.title} item={item} index={i} side="left" />
@@ -118,7 +117,6 @@ export default function TwoWorldsSection() {
         style={{ x: rightX, opacity }}
       >
         <div className="tw-panel-eyebrow">The Artist</div>
-        <div className="tw-panel-headline">Sound.<br /><em>Soul.</em></div>
         <div className="tw-credits">
           {MUSIC_CREDITS.map((item, i) => (
             <CreditRow key={item.title} item={item} index={i} side="right" />

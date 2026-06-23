@@ -25,7 +25,7 @@ const CREDITS = [
 ]
 
 const STATS = [
-  { value: '17+',    label: 'Film & TV Credits' },
+  { value: '29+',    label: 'Film & TV Credits' },
   { value: '2017',   label: 'BET Award Winner'  },
   { value: '∞',      label: 'Love from Fans'   },
 ]

@@ -11145,6 +11145,13 @@ footer::before {
   border-radius: 100px;
   padding: 4px 14px;
 }
+.teaser-cover-preview {
+  width: 90px;
+  height: 90px;
+  object-fit: cover;
+  border-radius: 4px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.6);
+}
 .teaser-countdown {
   display: flex;
   align-items: center;

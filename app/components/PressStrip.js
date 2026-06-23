@@ -1,7 +1,7 @@
 // Server component - no interactivity needed
 const PRESS = [
   { name: 'HBO',                sub: 'Euphoria'          },
-  { name: 'Apple TV+',          sub: 'The Gates'         },
+  { name: 'Lionsgate',           sub: 'The Gates'         },
   { name: 'BET',                sub: 'New Edition Story' },
   { name: '20th Century Fox',   sub: 'The Hate U Give'  },
   { name: 'Warner Bros.',       sub: 'Judas & The Black Messiah' },
