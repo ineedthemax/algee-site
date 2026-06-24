@@ -8774,6 +8774,75 @@ footer::before {
    VERTICAL TIMELINE
    ══════════════════════════════════════════ */
 
+/* OTW Pre-Save strip above timeline */
+.otw-presave-strip {
+  background: var(--deep);
+  border-top: 1px solid rgba(245,245,245,0.07);
+  border-bottom: 1px solid rgba(245,245,245,0.07);
+  padding: 40px 24px;
+}
+.otw-presave-inner {
+  max-width: 800px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 28px;
+}
+.otw-presave-cover {
+  width: 120px;
+  height: 120px;
+  object-fit: cover;
+  border-radius: 6px;
+  flex-shrink: 0;
+  box-shadow: 0 12px 40px rgba(0,0,0,0.6);
+}
+.otw-presave-text {
+  flex: 1;
+}
+.otw-presave-label {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: rgba(245,245,245,0.45);
+  margin-bottom: 6px;
+}
+.otw-presave-title {
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 900;
+  color: var(--white);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+.otw-presave-date {
+  font-family: 'Barlow', sans-serif;
+  font-size: 13px;
+  color: rgba(245,245,245,0.45);
+}
+.otw-presave-btn {
+  font-family: 'Barlow Condensed', sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--black);
+  background: var(--white);
+  padding: 14px 28px;
+  border-radius: 2px;
+  text-decoration: none;
+  white-space: nowrap;
+  flex-shrink: 0;
+  transition: opacity 0.2s;
+}
+.otw-presave-btn:hover { opacity: 0.85; }
+@media (max-width: 600px) {
+  .otw-presave-inner { flex-wrap: wrap; }
+  .otw-presave-cover { width: 80px; height: 80px; }
+  .otw-presave-btn { width: 100%; text-align: center; }
+}
+
 .tl-v-section {
   background: var(--deep);
   padding: 0 0 8rem;

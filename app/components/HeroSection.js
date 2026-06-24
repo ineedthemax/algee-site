@@ -130,7 +130,7 @@ export default function HeroSection() {
             transition={{ duration: 0.6, ease: 'easeOut', delay: 0.95 }}
           >
             <Link href="/music" className="btn btn-primary">
-              <span>Listen Now</span>
+              <span>Hear The Music</span>
               <span className="btn-arrow" aria-hidden="true">→</span>
             </Link>
             <Link href="/film" className="btn">

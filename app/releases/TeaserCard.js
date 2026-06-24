@@ -105,7 +105,7 @@ export default function TeaserCard({ release }) {
 
       <div className="teaser-body">
         <div className="teaser-type">{release.type}</div>
-        <div className="teaser-title">Something&apos;s Coming</div>
+        <div className="teaser-title">OTW</div>
         <div className="teaser-hint">Drops July 7 · Midnight EST</div>
       </div>
     </Tag>

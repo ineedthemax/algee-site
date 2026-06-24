@@ -141,6 +141,32 @@ export default function AboutPage() {
         </div>
       </div>
 
+      {/* ─── OTW Pre-Save ─── */}
+      <div className="otw-presave-strip">
+        <div className="otw-presave-inner">
+          <Image
+            src="/images/otw-cover.jpg"
+            alt="OTW — New Single"
+            width={120}
+            height={120}
+            className="otw-presave-cover"
+          />
+          <div className="otw-presave-text">
+            <div className="otw-presave-label">New Single</div>
+            <div className="otw-presave-title">OTW</div>
+            <div className="otw-presave-date">Dropping July 7</div>
+          </div>
+          <a
+            href="https://lnk.to/otwsong"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="otw-presave-btn"
+          >
+            Pre-Save Now
+          </a>
+        </div>
+      </div>
+
       {/* ─── Career Timeline ─── */}
       <CareerTimeline />
 
