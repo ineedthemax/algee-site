@@ -656,7 +656,7 @@ function ManageSubscriptionBtn() {
     try {
       const res  = await fetch('/api/stripe/portal', { method: 'POST' })
       const data = await res.json()
-      if (data.url) window.location.href = data.url
+      if (data.url && data.url.startsWith('https://billing.stripe.com/')) window.location.href = data.url
     } catch {
       // silent - if it fails the button just stops spinning
     } finally {

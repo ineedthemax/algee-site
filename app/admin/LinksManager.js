@@ -3,6 +3,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { PLATFORMS, slugify } from '../../lib/platforms'
 
+// Extract only the path `d` attribute to prevent SVG event-handler injection
+function safeSvgPath(icon) {
+  const m = icon?.match(/\bd="([^"]+)"/)
+  return m ? `<path d="${m[1]}"/>` : ''
+}
+
 const LINK_TYPES = [
   { id: 'streaming', icon: '🎵', label: 'Streaming Link', desc: 'Direct fans to listen on any DSP' },
   { id: 'presave',   icon: '🔔', label: 'Pre-Save Link',  desc: 'Fans save before release drops'   },
@@ -254,7 +260,7 @@ function SmartLinkForm({ initial, onSave, onCancel }) {
               return (
                 <div key={d.platform} className="sl-dest-row" style={{ '--dest-color': meta?.bg ?? '#333' }}>
                   <div className="sl-dest-icon" style={{ background: meta?.bg ?? '#222' }}
-                    dangerouslySetInnerHTML={{ __html: meta?.icon ? `<svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="${meta.text ?? '#fff'}">${meta.icon.match(/<path[^>]*>/g)?.[0] ?? ''}</svg>` : '' }}
+                    dangerouslySetInnerHTML={{ __html: meta?.icon ? `<svg style="width:16px;height:16px" viewBox="0 0 24 24" fill="${meta.text ?? '#fff'}">${safeSvgPath(meta.icon)}</svg>` : '' }}
                   />
                   <span className="sl-dest-name">{meta?.label ?? d.platform}</span>
                   <input
@@ -279,7 +285,7 @@ function SmartLinkForm({ initial, onSave, onCancel }) {
             <button key={p.id} className="sl-platform-add" onClick={() => addDestination(p.id)}
               style={{ '--p-color': p.bg }}>
               <div className="sl-platform-add-icon" style={{ background: p.bg }}
-                dangerouslySetInnerHTML={{ __html: `<svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="${p.text}">${p.icon?.match(/<path[^>]*>/g)?.[0] ?? ''}</svg>` }}
+                dangerouslySetInnerHTML={{ __html: `<svg style="width:14px;height:14px" viewBox="0 0 24 24" fill="${p.text}">${safeSvgPath(p.icon)}</svg>` }}
               />
               {p.label}
             </button>
@@ -453,7 +459,7 @@ export default function LinksManager() {
                               background: meta?.bg ?? '#333',
                               display: 'flex', alignItems: 'center', justifyContent: 'center',
                             }}
-                              dangerouslySetInnerHTML={{ __html: meta?.icon ? `<svg style="width:11px;height:11px" viewBox="0 0 24 24" fill="${meta.text}">${meta.icon.match(/<path[^>]*>/g)?.[0] ?? ''}</svg>` : '' }}
+                              dangerouslySetInnerHTML={{ __html: meta?.icon ? `<svg style="width:11px;height:11px" viewBox="0 0 24 24" fill="${meta.text}">${safeSvgPath(meta.icon)}</svg>` : '' }}
                             />
                           )
                         })}

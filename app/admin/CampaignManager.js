@@ -1,5 +1,6 @@
 'use client'
 import { useState, useEffect, useRef, useCallback, useId } from 'react'
+import DOMPurify from 'dompurify'
 
 // ── Rich Text Toolbar ─────────────────────────────────────────────────────────
 const FONT_SIZES = [
@@ -38,7 +39,7 @@ function RichTextEditor({ value, onChange, placeholder }) {
   // Sync initial value once
   useEffect(() => {
     if (editorRef.current && !editorRef.current.innerHTML && value) {
-      editorRef.current.innerHTML = value
+      editorRef.current.innerHTML = DOMPurify.sanitize(value)
     }
   }, []) // eslint-disable-line
 
@@ -430,7 +431,7 @@ export default function CampaignManager() {
                     <div className="lm-row-info">
                       <div className="lm-row-title">{c.subject}</div>
                       <div className="lm-row-desc" style={{ maxHeight: 36, overflow: 'hidden' }}
-                        dangerouslySetInnerHTML={{ __html: c.body }} />
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(c.body) }} />
                       <div className="lm-row-live">
                         <span className="cm-sent-segment">{segLabel}</span>
                         · {c.recipient_count?.toLocaleString() ?? '-'} fans
