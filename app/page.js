@@ -75,8 +75,6 @@ export default function Home() {
       {/* ══ HERO ZONE ══ */}
       <HeroSection />
       <PressStrip />
-      <CountdownHero />
-
       {/* ── OTW Pre-Save ── */}
       <div className="otw-presave-strip">
         <div className="otw-presave-inner">
@@ -102,6 +100,8 @@ export default function Home() {
           </a>
         </div>
       </div>
+
+      <CountdownHero />
 
       {/* ══ STORY ZONE ══ */}
       <div className="page-zone">
