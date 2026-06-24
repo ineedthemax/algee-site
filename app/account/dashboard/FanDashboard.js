@@ -895,28 +895,28 @@ export default function FanDashboard({
         <div className="fd-drop-hero">
           <div className="fd-drop-hero-img">
             <Image
-              src="https://img.youtube.com/vi/TjOHVPo5iwM/maxresdefault.jpg"
-              alt="Spiraling"
+              src="/images/otw-cover.jpg"
+              alt="OTW"
               fill
               sizes="600px"
-              style={{ objectFit: 'cover', objectPosition: 'center top' }}
+              style={{ objectFit: 'cover', objectPosition: 'center' }}
             />
             <div className="fd-drop-hero-overlay" />
           </div>
           <div className="fd-drop-hero-content">
-            <div className="fd-drop-hero-eyebrow">Latest Drop</div>
-            <div className="fd-drop-hero-title">Spiraling</div>
-            <div className="fd-drop-hero-sub">Official Visual · Out Now</div>
+            <div className="fd-drop-hero-eyebrow">New Single</div>
+            <div className="fd-drop-hero-title">OTW</div>
+            <div className="fd-drop-hero-sub">Dropping July 7 · Midnight EST</div>
             <div className="fd-drop-hero-actions">
               <a
-                href="https://www.youtube.com/watch?v=TjOHVPo5iwM"
+                href="https://lnk.to/otwsong"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="fd-drop-hero-btn"
               >
-                ▶ Watch Now
+                Pre-Save Now
               </a>
-              <Link href="/music" className="fd-drop-hero-ghost">Stream →</Link>
+              <a href="https://lnk.to/otwsong" target="_blank" rel="noopener noreferrer" className="fd-drop-hero-ghost">All Platforms →</a>
             </div>
           </div>
         </div>
