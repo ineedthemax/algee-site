@@ -41,7 +41,7 @@ export function CountdownHero() {
       <div className="cd-hero-inner">
         <div className="cd-hero-pulse-row">
           <span className="cd-hero-pulse" />
-          <span className="cd-hero-pulse-label">something&apos;s coming</span>
+          <span className="cd-hero-pulse-label">OTW</span>
         </div>
 
         {time ? (
@@ -83,7 +83,7 @@ export function CountdownBanner() {
     <div className="cd-banner">
       <div className="cd-banner-left">
         <span className="cd-banner-pulse" />
-        <span className="cd-banner-label">something&apos;s coming</span>
+        <span className="cd-banner-label">OTW</span>
       </div>
       {time ? (
         <div className="cd-banner-units">
@@ -117,7 +117,7 @@ export function CountdownCard() {
       <div className="cd-card-top">
         <div className="cd-card-pulse-row">
           <span className="cd-card-pulse" />
-          <span className="cd-card-coming">something&apos;s coming</span>
+          <span className="cd-card-coming">OTW</span>
         </div>
         <div className="cd-card-soon-badge">SOON</div>
       </div>
