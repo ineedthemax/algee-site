@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>OTW (On The Way) · Algee Smith · July 7</title>
 <meta name="description" content="OTW — the new single from Algee Smith. July 7. Wherever you're headed, this one's for the road.">
-<link rel="icon" type="image/jpeg" href="/images/otw-cover.jpg">
+<link rel="icon" type="image/png" href="/images/otw-cover.png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Barlow:wght@200;300;400;500&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -72,7 +72,11 @@ body{background:var(--bg);color:var(--fg);font-family:'Barlow',sans-serif;font-w
 /* ========================================
    ACT II · THE SIGNAL
    ======================================== */
-.act-signal{text-align:center;gap:clamp(20px,3vw,32px)}
+.act-signal{text-align:center;gap:clamp(20px,3vw,32px);overflow:hidden}
+.signal-bg{position:absolute;inset:0;z-index:0}
+.signal-bg img{width:100%;height:100%;object-fit:cover;object-position:center top;filter:grayscale(1) contrast(1.05);opacity:.18}
+.signal-bg::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(6,6,6,.4) 0%,rgba(6,6,6,.6) 60%,rgba(6,6,6,.95) 100%)}
+.act-signal>*:not(.signal-bg){position:relative;z-index:1}
 .signal-line{
   font-family:'Barlow',sans-serif;
   font-weight:200;
@@ -280,6 +284,7 @@ footer{border-top:1px solid var(--line);padding:60px 40px;display:flex;flex-dire
 
 <!-- ======= ACT II · THE SIGNAL ======= -->
 <section class="act act-signal" id="signal">
+  <div class="signal-bg"><img src="/images/otw-promo.jpg" alt="" /></div>
   <p class="signal-line reveal">You're on the way.</p>
   <p class="signal-sub reveal reveal-d1">to something.</p>
   <div class="rule reveal reveal-d2"></div>
@@ -332,7 +337,7 @@ footer{border-top:1px solid var(--line);padding:60px 40px;display:flex;flex-dire
   <div class="almost-spacer" id="almostSpacer">
     <div class="almost-sticky">
       <div class="almost-bgphoto">
-        <img src="/images/otw-cover.jpg" alt="" />
+        <img src="/images/otw-promo.jpg" alt="" />
       </div>
       <div class="almost-inner">
         <div class="almost-label">Mile Three · The Arrival</div>
@@ -353,7 +358,7 @@ footer{border-top:1px solid var(--line);padding:60px 40px;display:flex;flex-dire
 <section class="act act-listen" id="listen">
   <p class="listen-arrived reveal">We here.</p>
   <div class="listen-cover reveal reveal-d1">
-    <img src="/images/otw-cover.jpg" alt="OTW — Algee Smith" />
+    <img src="/images/otw-cover.png" alt="OTW — Algee Smith" />
   </div>
   <p class="listen-meta reveal reveal-d2">OTW &nbsp;·&nbsp; Algee Smith &nbsp;·&nbsp; July 7</p>
   <div class="listen-ctas reveal reveal-d3">
