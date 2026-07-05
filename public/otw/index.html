@@ -6,6 +6,10 @@
 <title>OTW (On The Way) · Algee Smith · July 7</title>
 <meta name="description" content="OTW — the new single from Algee Smith. July 7. Wherever you're headed, this one's for the road.">
 <link rel="icon" type="image/png" href="/images/otw-cover.png">
+<!-- Meta Pixel -->
+<script>!function(f,b,e,v,n,t,s){if(f.fbq)return;n=f.fbq=function(){n.callMethod?n.callMethod.apply(n,arguments):n.queue.push(arguments)};if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';n.queue=[];t=b.createElement(e);t.async=!0;t.src=v;s=b.getElementsByTagName(e)[0];s.parentNode.insertBefore(t,s)}(window,document,'script','https://connect.facebook.net/en_US/fbevents.js');fbq('init','1608368563147794');fbq('track','PageView');</script>
+<noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1608368563147794&ev=PageView&noscript=1"/></noscript>
+<!-- End Meta Pixel -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700;1,900&family=Barlow:wght@200;300;400;500&family=Barlow+Condensed:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -493,6 +497,11 @@ const SUPABASE_URL = 'https://hvdnwkkggbbrhytrszdk.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2ZG53a2tnZ2Jicmh5dHJzemRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNzg0MTksImV4cCI6MjA5MTk1NDQxOX0.YHQOLyUwnorb6fkvtBKSl1M2_3JNJvdS7816bi9ScN0';
 const OTW_LINK_ID = 'aa840810-2288-4d0a-a60b-2cfbb1c216b6';
 
+// Pre-save click tracking
+document.querySelectorAll('a[href="https://lnk.to/otwsong"]').forEach(el => {
+  el.addEventListener('click', () => fbq('track', 'InitiateCheckout', { content_name: 'OTW Pre-Save' }));
+});
+
 // Email signup
 document.getElementById('signupForm').addEventListener('submit', async (e) => {
   e.preventDefault();
@@ -518,6 +527,7 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
       body: JSON.stringify({ link_id: OTW_LINK_ID, email, name: name||null, phone: phone||null })
     });
     if (!res.ok) throw new Error();
+    fbq('track', 'Lead', { content_name: 'OTW Pre-Save Signup' });
     btn.textContent = "You're On The Way ✓";
     btn.style.opacity = '.6';
     form.querySelectorAll('input').forEach(i => i.disabled = true);
