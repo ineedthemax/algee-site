@@ -52,6 +52,10 @@ body{background:var(--bg);color:var(--fg);font-family:'Barlow',sans-serif;font-w
 /* ── Thin divider ── */
 .rule{width:40px;height:1px;background:var(--line);margin:0 auto}
 
+/* ── Scroll-lit words ── */
+.sw{color:rgba(240,237,232,.15);transition:color .25s ease,text-shadow .25s ease;display:inline}
+.sw.lit{color:var(--fg);text-shadow:0 0 24px rgba(240,237,232,.2)}
+
 /* ========================================
    ACT I · HERO
    ======================================== */
@@ -496,6 +500,42 @@ onScroll();
 const SUPABASE_URL = 'https://hvdnwkkggbbrhytrszdk.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh2ZG53a2tnZ2Jicmh5dHJzemRrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzYzNzg0MTksImV4cCI6MjA5MTk1NDQxOX0.YHQOLyUwnorb6fkvtBKSl1M2_3JNJvdS7816bi9ScN0';
 const OTW_LINK_ID = 'aa840810-2288-4d0a-a60b-2cfbb1c216b6';
+
+// Scroll-lit word-by-word highlight
+(function(){
+  const CURSOR = 0.46; // reading line at 46% from top of viewport
+  const selectors = ['.signal-line', '.signal-sub', '.q-lyric', '.road-lyric'];
+  const litEls = [];
+
+  selectors.forEach(sel => {
+    document.querySelectorAll(sel).forEach(el => {
+      // wrap each word (preserving punctuation) in a span
+      el.innerHTML = el.innerHTML.replace(/(\S+)/g, '<span class="sw">$1</span>');
+      litEls.push(el);
+    });
+  });
+
+  function updateLit() {
+    const cursor = window.innerHeight * CURSOR;
+    litEls.forEach(el => {
+      if (!el.classList.contains('in')) return; // wait for reveal
+      el.querySelectorAll('.sw').forEach(sw => {
+        const r = sw.getBoundingClientRect();
+        sw.classList.toggle('lit', r.top + r.height * 0.5 < cursor);
+      });
+    });
+  }
+
+  addEventListener('scroll', updateLit, { passive: true });
+  // also run on reveal so words already above cursor light up immediately
+  document.querySelectorAll('.reveal').forEach(el => {
+    const obs = new IntersectionObserver(entries => {
+      entries.forEach(e => { if (e.isIntersecting) { setTimeout(updateLit, 800); obs.disconnect(); } });
+    }, { threshold: 0.1 });
+    obs.observe(el);
+  });
+  updateLit();
+})();
 
 // Pre-save click tracking
 document.querySelectorAll('a[href="https://lnk.to/otwsong"]').forEach(el => {
