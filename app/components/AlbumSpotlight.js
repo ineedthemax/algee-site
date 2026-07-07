@@ -89,6 +89,7 @@ export default function AlbumSpotlight() {
                 rel="noopener noreferrer"
                 className="alb-stream-btn"
                 aria-label={`Listen on ${s.label}`}
+                onClick={() => fetch('/api/points/stream-music', { method: 'POST' }).catch(() => {})}
               >
                 {s.label}
               </a>

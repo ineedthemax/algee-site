@@ -1,6 +1,7 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import { notFound } from 'next/navigation'
+import StreamingLinks from '../../components/StreamingLinks'
 import { TRACKS, getTrackBySlug, getAdjacentTracks } from '../../data/music'
 
 // ─── Static params for all track slugs ────────────────────────
@@ -74,19 +75,7 @@ export default async function TrackPage({ params }) {
 
             {/* Streaming */}
             <div className="streaming-label">Stream on</div>
-            <div className="streaming-grid">
-              {track.streaming.map((platform) => (
-                <a
-                  key={platform.id}
-                  href={platform.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="streaming-btn"
-                >
-                  {platform.label}
-                </a>
-              ))}
-            </div>
+            <StreamingLinks platforms={track.streaming} />
 
             {/* Track navigation */}
             {(prev || next) && (

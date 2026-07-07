@@ -143,6 +143,8 @@ function ShareMissionButton({ mission, onComplete }) {
       setState('fallback')
     }
     setState('saving')
+    // Award general SHARE points (once per day, separate from mission points)
+    fetch('/api/points/share', { method: 'POST' }).catch(() => {})
     try {
       await fetch('/api/missions/complete', {
         method: 'POST',
