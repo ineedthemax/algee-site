@@ -568,6 +568,11 @@ document.getElementById('signupForm').addEventListener('submit', async (e) => {
     });
     if (!res.ok) throw new Error();
     fbq('track', 'Lead', { content_name: 'OTW Listen Now Signup' });
+    fetch('/api/otw-confirm', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, name: name || null })
+    }).catch(() => {});
     btn.textContent = "You're On The Way ✓";
     btn.style.opacity = '.6';
     form.querySelectorAll('input').forEach(i => i.disabled = true);
