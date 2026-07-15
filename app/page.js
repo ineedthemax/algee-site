@@ -73,7 +73,6 @@ export default function Home() {
 
       {/* ══ HERO ZONE ══ */}
       <HeroSection />
-      <PressStrip />
       {/* ── OTW Out Now ── */}
       <div className="otw-presave-strip">
         <div className="otw-presave-inner">
@@ -85,7 +84,10 @@ export default function Home() {
             className="otw-presave-cover"
           />
           <div className="otw-presave-text">
-            <div className="otw-presave-label">Out Now</div>
+            <div className="otw-presave-label">
+              <span className="otw-presave-dot" aria-hidden="true" />
+              Out Now
+            </div>
             <div className="otw-presave-title">OTW</div>
             <div className="otw-presave-date">Algee Smith · New Single</div>
           </div>
@@ -99,6 +101,7 @@ export default function Home() {
           </a>
         </div>
       </div>
+      <PressStrip />
 
       {/* ══ STORY ZONE ══ */}
       <div className="page-zone">
